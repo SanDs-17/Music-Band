@@ -1,0 +1,56 @@
+"""
+Database models for Venue space profiles.
+Maps venue features, pricing details, facilities list, availability rules, and verification pipelines.
+"""
+
+from sqlalchemy import Column, String, ForeignKey, Numeric, Integer, Table, JSON
+from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import UUID
+from app.common.models.base import BaseModel
+from app.core.database import Base
+
+# Junction table for Venue many-to-many Categories (categories type='venue_category')
+venue_categories = Table(
+    "venue_categories",
+    Base.metadata,
+    Column("venue_id", UUID(as_uuid=True), ForeignKey("venues.id", ondelete="CASCADE"), primary_key=True),
+    Column("category_id", UUID(as_uuid=True), ForeignKey("categories.id", ondelete="CASCADE"), primary_key=True),
+)
+
+
+class Venue(BaseModel):
+    """Event space listing entity."""
+    __tablename__ = "venues"
+
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    name = Column(String(150), nullable=False, index=True)
+    description = Column(String(2000), nullable=True)
+    address = Column(String(255), nullable=False)
+    city_id = Column(UUID(as_uuid=True), ForeignKey("cities.id", ondelete="RESTRICT"), nullable=False, index=True)
+    
+    base_price = Column(Numeric(10, 2), default=0.0, nullable=False)
+    capacity = Column(Integer, default=0, nullable=False)  # max capacity
+    min_capacity = Column(Integer, default=0, nullable=False)
+    
+    venue_type = Column(String(50), nullable=True)  # Marriage Hall, Resort, etc.
+    business_name = Column(String(150), nullable=True)
+    contact_details = Column(String(255), nullable=True)
+    pincode = Column(String(20), nullable=True)
+    state = Column(String(100), nullable=True)
+    country = Column(String(100), nullable=True)
+    google_map_location = Column(String(255), nullable=True)
+
+    # Verification pipeline statuses: 'pending', 'approved', 'rejected'
+    verification_status = Column(String(30), default="pending", nullable=False, index=True)
+    verification_notes = Column(String(255), nullable=True)
+
+    # JSON config fields
+    facilities = Column(JSON, default=list, nullable=False)         # ["sound_system", "stage", "valet_parking"]
+    gallery = Column(JSON, default=list, nullable=False)            # ["url1", "url2"]
+    pricing_details = Column(JSON, default=dict, nullable=False)    # { "rent_price": 50000, "caution_deposit": 20000 }
+    availability_rules = Column(JSON, default=dict, nullable=False) # { "weekdays": "9am-10pm", "weekend": "9am-12pm" }
+
+    # Relationships
+    user = relationship("User", backref="venues")
+    city = relationship("City", backref="venues")
+    categories = relationship("Category", secondary=venue_categories, backref="venues")
