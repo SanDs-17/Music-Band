@@ -30,6 +30,9 @@ jobs:
           ruff check .
 
       - name: Run pytest
+        env:
+          DATABASE_URL: "sqlite:///./test.db"
+          SECRET_KEY: "ci-test-secret-key-not-used-in-production"
         run: |
           cd backend
           pytest --cov=app --cov-report=xml
