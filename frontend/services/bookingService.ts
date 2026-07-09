@@ -43,4 +43,39 @@ export const bookingService = {
     const response = await api.put<any>(`/bookings/${bookingId}/cancel`);
     return response.data.data;
   },
+
+  getVenueBookings: async (params: {
+    status?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<BookingsListResponse> => {
+    const response = await api.get<any>("/bookings/venue", { params });
+    return response.data.data;
+  },
+
+  getVenueBookingDetails: async (bookingId: string): Promise<BookingRequestDetail> => {
+    const response = await api.get<any>(`/bookings/venue/${bookingId}`);
+    return response.data.data;
+  },
+
+  acceptVenueBooking: async (bookingId: string): Promise<BookingRequestDetail> => {
+    const response = await api.put<any>(`/bookings/venue/${bookingId}/accept`);
+    return response.data.data;
+  },
+
+  rejectVenueBooking: async (bookingId: string): Promise<BookingRequestDetail> => {
+    const response = await api.put<any>(`/bookings/venue/${bookingId}/reject`);
+    return response.data.data;
+  },
+
+  completeVenueBooking: async (bookingId: string): Promise<BookingRequestDetail> => {
+    const response = await api.put<any>(`/bookings/venue/${bookingId}/complete`);
+    return response.data.data;
+  },
+
+  cancelVenueBooking: async (bookingId: string): Promise<BookingRequestDetail> => {
+    const response = await api.put<any>(`/bookings/venue/${bookingId}/cancel`);
+    return response.data.data;
+  },
 };

@@ -27,4 +27,26 @@ class EarningsService:
             "transactions": tx_history
         }
 
+    def get_venue_profile(self, db: Session, user_id: str):
+        from app.features.venues.crud import VenueCRUD
+        venues = VenueCRUD().get_by_user_id(db, user_id)
+        if not venues:
+            raise NotFoundException("Venue profile not found.")
+        return venues[0]
+
+    def get_venue_earnings_summary(self, db: Session, user_id: str) -> dict:
+        venue = self.get_venue_profile(db, user_id)
+        
+        # Seed mock data if none exists
+        transaction_crud.seed_venue_mock_transactions_if_empty(db, venue.id)
+        
+        stats = transaction_crud.get_venue_summary_stats(db, venue.id)
+        tx_history = transaction_crud.get_by_venue(db, venue.id, offset=0, limit=20)
+        
+        return {
+            **stats,
+            "transactions": tx_history
+        }
+
 earnings_service = EarningsService()
+

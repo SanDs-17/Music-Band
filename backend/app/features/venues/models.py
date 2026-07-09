@@ -49,6 +49,8 @@ class Venue(BaseModel):
     gallery = Column(JSON, default=list, nullable=False)            # ["url1", "url2"]
     pricing_details = Column(JSON, default=dict, nullable=False)    # { "rent_price": 50000, "caution_deposit": 20000 }
     availability_rules = Column(JSON, default=dict, nullable=False) # { "weekdays": "9am-10pm", "weekend": "9am-12pm" }
+    documents = Column(JSON, default=dict, nullable=False)
+    metadata_fields = Column(JSON, default=dict, nullable=False)
 
     # Relationships
     user = relationship("User", backref="venues")

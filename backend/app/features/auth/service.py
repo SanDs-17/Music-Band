@@ -215,7 +215,9 @@ class AuthService:
 
     def soft_delete_user(self, db: Session, user_id: str) -> None:
         """Flags user account details for logical deletion placeholder."""
-        user = self.user_crud.get(db, user_id)
+        import uuid
+        uid = uuid.UUID(user_id) if isinstance(user_id, str) else user_id
+        user = self.user_crud.get(db, uid)
         if not user:
             raise NotFoundException("User not found.")
         
@@ -236,3 +238,19 @@ class AuthService:
         ).update({"is_active": is_active}, synchronize_session=False)
         db.commit()
         logger.info(f"Bulk toggled activity status to {is_active} for {len(user_ids)} users.")
+
+    def change_password(self, db: Session, user_id: str, old_password: str, new_password: str) -> None:
+        """Verifies old password and updates it to new password."""
+        import uuid
+        uid = uuid.UUID(user_id) if isinstance(user_id, str) else user_id
+        user = self.user_crud.get(db, uid)
+        if not user or user.deleted_at is not None:
+            raise NotFoundException("User not found.")
+            
+        if not verify_password(old_password, user.password_hash):
+            raise UnauthorizedException("Incorrect old password.")
+            
+        user.password_hash = get_password_hash(new_password)
+        db.add(user)
+        db.commit()
+        logger.info(f"Password successfully changed for user: {user.email}")

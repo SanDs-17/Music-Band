@@ -2,7 +2,7 @@
 Database CRUD repository operations for Venue listings.
 """
 
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, List, Any
 from sqlalchemy.orm import Session, joinedload
 from app.common.repositories.base import BaseRepository
 from app.features.venues.models import Venue
@@ -13,6 +13,23 @@ from app.features.auth.models import User
 class VenueCRUD(BaseRepository[Venue]):
     def __init__(self):
         super().__init__(Venue)
+
+    def get_by_user_id(self, db: Session, user_id: Any) -> List[Venue]:
+        """Fetch all active venues registered under the given user UUID."""
+        if isinstance(user_id, str):
+            from uuid import UUID as PyUUID
+            try:
+                user_id = PyUUID(user_id)
+            except ValueError:
+                pass
+        return (
+            db.query(Venue)
+            .filter(
+                Venue.user_id == user_id,
+                Venue.deleted_at.is_(None)
+            )
+            .all()
+        )
 
     def get_filtered_venues(
         self,

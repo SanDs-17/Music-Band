@@ -19,7 +19,7 @@ export interface BookingRequestDetail {
   end_time: string;
   proposed_price: number;
   counter_price: number | null;
-  status: "pending" | "counter_offered" | "accepted" | "rejected" | "cancelled";
+  status: "pending" | "counter_offered" | "accepted" | "rejected" | "cancelled" | "completed";
   location: string;
   notes: string | null;
   client: ClientBrief;

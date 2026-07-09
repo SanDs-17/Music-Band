@@ -37,7 +37,8 @@ class BookingResponse(BookingBriefResponse):
 
 
 class BookingCreateRequest(BaseSchema):
-    artist_profile_id: UUID
+    artist_profile_id: Optional[UUID] = None
+    venue_id: Optional[UUID] = None
     event_name: str
     event_date: str  # YYYY-MM-DD
     start_time: str  # HH:MM

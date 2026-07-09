@@ -6,7 +6,8 @@ from app.common.models.base import BaseModel
 class Transaction(BaseModel):
     __tablename__ = "transactions"
 
-    artist_profile_id = Column(UUID(as_uuid=True), ForeignKey("artist_profiles.id", ondelete="CASCADE"), nullable=False, index=True)
+    artist_profile_id = Column(UUID(as_uuid=True), ForeignKey("artist_profiles.id", ondelete="CASCADE"), nullable=True, index=True)
+    venue_id = Column(UUID(as_uuid=True), ForeignKey("venues.id", ondelete="CASCADE"), nullable=True, index=True)
     booking_id = Column(UUID(as_uuid=True), ForeignKey("bookings.id", ondelete="SET NULL"), nullable=True, index=True)
     
     amount = Column(Numeric(12, 2), nullable=False, default=0.0)
@@ -16,4 +17,5 @@ class Transaction(BaseModel):
 
     # Relationships
     artist_profile = relationship("ArtistProfile", backref="transactions")
+    venue = relationship("Venue", backref="transactions")
     booking = relationship("Booking", backref="transactions")

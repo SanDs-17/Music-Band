@@ -43,6 +43,12 @@ class ResetPasswordRequest(BaseSchema):
     token: str
     new_password: str = Field(..., min_length=8)
 
+
+class ChangePasswordRequest(BaseSchema):
+    old_password: str
+    new_password: str = Field(..., min_length=8)
+
+
 class UserResponse(BaseSchema):
     id: UUID
     email: EmailStr

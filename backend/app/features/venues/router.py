@@ -53,6 +53,8 @@ def _format_venue_profile(venue) -> VenueResponse:
         gallery=venue.gallery or [],
         pricing_details=venue.pricing_details or {},
         availability_rules=venue.availability_rules or {},
+        documents=venue.documents or {},
+        metadata_fields=venue.metadata_fields or {},
         categories=[
             CategoryResponse(
                 id=c.id,

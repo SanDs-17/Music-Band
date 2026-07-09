@@ -8,8 +8,8 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.core.database import Base
-from app.core.dependencies import get_db
+from app.core.database import Base, get_db as db_get_db
+from app.core.dependencies import get_db as dep_get_db
 from main import app
 
 # Use synchronous sqlite database for unit testing speed
@@ -54,7 +54,8 @@ def client(db_session) -> Generator[TestClient, None, None]:
         finally:
             pass
             
-    app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[dep_get_db] = override_get_db
+    app.dependency_overrides[db_get_db] = override_get_db
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()

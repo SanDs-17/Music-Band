@@ -17,7 +17,8 @@ from app.features.auth.schemas import (
     UserResponse,
     UserStatusUpdate,
     BulkStatusUpdate,
-    PaginatedUserList
+    PaginatedUserList,
+    ChangePasswordRequest
 )
 from app.features.auth.service import AuthService
 from app.common.schemas.base import SuccessResponse
@@ -172,6 +173,54 @@ async def get_me(
         success=True,
         data=user,
         message="User profile retrieved successfully."
+    )
+
+
+@router.post(
+    "/change-password",
+    response_model=SuccessResponse[None],
+    status_code=status.HTTP_200_OK,
+    summary="Change user password (authenticated)"
+)
+async def change_user_password(
+    data: ChangePasswordRequest,
+    current_user_claims: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Verifies old password and updates it to new password.
+    """
+    auth_service.change_password(
+        db, 
+        current_user_claims["sub"], 
+        data.old_password, 
+        data.new_password
+    )
+    return SuccessResponse(
+        success=True,
+        data=None,
+        message="Password changed successfully."
+    )
+
+
+@router.delete(
+    "/me",
+    response_model=SuccessResponse[None],
+    status_code=status.HTTP_200_OK,
+    summary="Delete own user account (authenticated)"
+)
+async def delete_own_user(
+    current_user_claims: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Flags the logged-in user account for logical soft deletion.
+    """
+    auth_service.soft_delete_user(db, current_user_claims["sub"])
+    return SuccessResponse(
+        success=True,
+        data=None,
+        message="Your user account has been successfully deleted."
     )
 
 @router.get(

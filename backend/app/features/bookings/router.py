@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from uuid import UUID
 from typing import Optional
 from app.core.database import get_db
-from app.core.dependencies import get_current_user, get_current_client, get_current_artist
+from app.core.dependencies import get_current_user, get_current_client, get_current_artist, get_current_venue_owner
 from app.common.schemas.base import SuccessResponse
 from app.features.bookings.schemas import (
     BookingResponse,
@@ -160,6 +160,136 @@ async def cancel_booking_request(
         success=True,
         data=_format_booking(booking),
         message="Booking request cancelled."
+    )
+
+
+@router.get(
+    "/venue",
+    response_model=SuccessResponse[dict],
+    status_code=status.HTTP_200_OK,
+    summary="Get bookings and requests list for the authenticated venue owner"
+)
+async def get_venue_bookings_list(
+    status: Optional[str] = Query(None, description="Filter by pending, accepted, rejected, cancelled, completed"),
+    search: Optional[str] = Query(None, description="Search by client name, event name, or location"),
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    current_user_claims: dict = Depends(get_current_venue_owner),
+    db: Session = Depends(get_db)
+):
+    """
+    Retrieves a paginated list of incoming booking requests and confirmed event reservations for the venue.
+    """
+    results, total = booking_service.get_venue_bookings(
+        db, current_user_claims["sub"], status, search, page, limit
+    )
+    return SuccessResponse(
+        success=True,
+        data={
+            "bookings": [_format_booking_brief(b) for b in results],
+            "total": total,
+            "page": page,
+            "limit": limit
+        },
+        message="Venue bookings list retrieved."
+    )
+
+
+@router.get(
+    "/venue/{booking_id}",
+    response_model=SuccessResponse[BookingResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Get venue booking details including timeline and client details"
+)
+async def get_venue_booking_details(
+    booking_id: UUID,
+    current_user_claims: dict = Depends(get_current_venue_owner),
+    db: Session = Depends(get_db)
+):
+    """
+    Retrieves full details of a specific venue booking. Accessible by target venue owner.
+    """
+    booking = booking_service.get_venue_booking_details(db, current_user_claims["sub"], booking_id)
+    return SuccessResponse(
+        success=True,
+        data=_format_booking(booking),
+        message="Venue booking details retrieved."
+    )
+
+
+@router.put(
+    "/venue/{booking_id}/accept",
+    response_model=SuccessResponse[BookingResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Accept an incoming venue booking request"
+)
+async def accept_venue_booking_request(
+    booking_id: UUID,
+    current_user_claims: dict = Depends(get_current_venue_owner),
+    db: Session = Depends(get_db)
+):
+    booking = booking_service.accept_venue_booking(db, current_user_claims["sub"], booking_id)
+    return SuccessResponse(
+        success=True,
+        data=_format_booking(booking),
+        message="Venue booking request accepted successfully."
+    )
+
+
+@router.put(
+    "/venue/{booking_id}/reject",
+    response_model=SuccessResponse[BookingResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Reject an incoming venue booking request"
+)
+async def reject_venue_booking_request(
+    booking_id: UUID,
+    current_user_claims: dict = Depends(get_current_venue_owner),
+    db: Session = Depends(get_db)
+):
+    booking = booking_service.reject_venue_booking(db, current_user_claims["sub"], booking_id)
+    return SuccessResponse(
+        success=True,
+        data=_format_booking(booking),
+        message="Venue booking request rejected successfully."
+    )
+
+
+@router.put(
+    "/venue/{booking_id}/complete",
+    response_model=SuccessResponse[BookingResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Mark a confirmed venue booking as completed"
+)
+async def complete_venue_booking_request(
+    booking_id: UUID,
+    current_user_claims: dict = Depends(get_current_venue_owner),
+    db: Session = Depends(get_db)
+):
+    booking = booking_service.complete_venue_booking(db, current_user_claims["sub"], booking_id)
+    return SuccessResponse(
+        success=True,
+        data=_format_booking(booking),
+        message="Venue booking marked as completed successfully."
+    )
+
+
+@router.put(
+    "/venue/{booking_id}/cancel",
+    response_model=SuccessResponse[BookingResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Cancel a venue booking request"
+)
+async def cancel_venue_booking_request(
+    booking_id: UUID,
+    current_user_claims: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    booking = booking_service.cancel_venue_booking(db, current_user_claims["sub"], booking_id)
+    return SuccessResponse(
+        success=True,
+        data=_format_booking(booking),
+        message="Venue booking request cancelled."
     )
 
 

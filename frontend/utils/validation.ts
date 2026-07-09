@@ -150,7 +150,9 @@ export const venueRegisterSchema = z.object({
   // Step 2: Owner Details
   owner_name: z.string().min(2, "Owner Name must be at least 2 characters"),
   business_name: z.string().min(2, "Business Name must be at least 2 characters"),
-  contact_details: z.string().optional().default(""),
+  contact_person: z.string().optional().default(""),
+  gst_number: z.string().optional().default(""),
+  pan_number: z.string().optional().default(""),
 
   // Step 3: Venue Details
   venue_name: z.string().min(2, "Venue Name must be at least 2 characters"),
@@ -167,31 +169,43 @@ export const venueRegisterSchema = z.object({
     "Others"
   ]),
   description: z.string().max(2000, "Description cannot exceed 2000 characters").optional().default(""),
+  established_year: z.coerce.number().int().min(1800, "Invalid year").max(new Date().getFullYear(), "Year cannot be in the future").optional().nullable(),
+  indoor_outdoor: z.enum(["Indoor", "Outdoor", "Both"]).default("Both"),
 
   // Step 4: Location
   country: z.string().min(1, "Country is required"),
   state: z.string().min(1, "State is required"),
+  district: z.string().optional().default(""),
   city_id: z.string().uuid("City is required"),
+  area: z.string().optional().default(""),
   address: z.string().min(5, "Address must be at least 5 characters"),
-  google_map_location: z.string().optional().default(""),
+  landmark: z.string().optional().default(""),
   pincode: z.string().min(6, "Pincode must be at least 6 digits"),
+  latitude: z.coerce.number().optional().nullable(),
+  longitude: z.coerce.number().optional().nullable(),
+  google_map_location: z.string().optional().default(""),
 
   // Step 5: Facilities
   facilities: z.array(z.string()).default([]),
 
   // Step 6: Capacity
-  min_capacity: z.number().min(1, "Minimum capacity must be at least 1"),
-  max_capacity: z.number().min(1, "Maximum capacity must be at least 1"),
+  min_capacity: z.coerce.number().min(1, "Minimum capacity must be at least 1"),
+  max_capacity: z.coerce.number().min(1, "Maximum capacity must be at least 1"),
 
   // Step 7: Pricing
-  base_price: z.number().min(0, "Base price cannot be negative"),
-  hourly_price: z.number().min(0, "Hourly price cannot be negative"),
-  extra_charges: z.number().min(0, "Extra charges cannot be negative").default(0),
-  security_deposit: z.number().min(0, "Security deposit cannot be negative").default(0),
+  base_price: z.coerce.number().min(0, "Base price cannot be negative"),
+  hourly_price: z.coerce.number().min(0, "Hourly price cannot be negative"),
+  weekend_price: z.coerce.number().min(0, "Weekend price cannot be negative").optional().default(0),
+  holiday_price: z.coerce.number().min(0, "Holiday price cannot be negative").optional().default(0),
+  security_deposit: z.coerce.number().min(0, "Security deposit cannot be negative").optional().default(0),
+  cancellation_charges: z.coerce.number().min(0, "Cancellation charges cannot be negative").optional().default(0),
+  extra_hour_charges: z.coerce.number().min(0, "Extra hour charges cannot be negative").optional().default(0),
 
   // Step 8: Gallery
+  cover_image: z.string().optional().default(""),
   images: z.array(z.string()).default([]),
   videos: z.array(z.string()).default([]),
+  youtube_links: z.array(z.string()).default([]),
   virtual_tour: z.string().optional().default(""),
 
   // Step 9: Availability
@@ -200,10 +214,19 @@ export const venueRegisterSchema = z.object({
     start: z.string().default("09:00"),
     end: z.string().default("22:00")
   })).default({}),
-  holidays: z.array(z.string()).default([]),
   blocked_dates: z.array(z.string()).default([]),
+  maintenance_days: z.array(z.string()).default([]),
+  public_holidays: z.array(z.string()).default([]),
+  booking_buffer_time: z.coerce.number().min(0).optional().default(0),
 
-  // Step 10: Terms
+  // Step 10: Documents
+  doc_pan: z.string().min(1, "PAN card document is required"),
+  doc_gst: z.string().optional().default(""),
+  doc_ownership_proof: z.string().min(1, "Ownership proof document is required"),
+  doc_government_id: z.string().min(1, "Government ID is required"),
+  doc_business_license: z.string().optional().default(""),
+
+  // Step 11: Terms
   acceptTerms: z.boolean().refine((val) => val === true, {
     message: "You must accept the terms and conditions",
   }),
@@ -216,4 +239,79 @@ export const venueRegisterSchema = z.object({
 });
 
 export type VenueRegisterFormData = z.infer<typeof venueRegisterSchema>;
+
+
+export const venueProfileUpdateSchema = z.object({
+  // Owner Details
+  owner_name: z.string().min(2, "Owner Name must be at least 2 characters"),
+  business_name: z.string().min(2, "Business Name must be at least 2 characters"),
+  contact_person: z.string().optional().default(""),
+  gst_number: z.string().optional().default(""),
+  pan_number: z.string().optional().default(""),
+
+  // Venue Details
+  venue_name: z.string().min(2, "Venue Name must be at least 2 characters"),
+  venue_type: z.enum([
+    "Marriage Hall",
+    "Resort",
+    "Hotel",
+    "Banquet Hall",
+    "Farm House",
+    "Open Ground",
+    "Club",
+    "Pub",
+    "Restaurant",
+    "Others"
+  ]),
+  description: z.string().max(2000, "Description cannot exceed 2000 characters").optional().default(""),
+  established_year: z.coerce.number().int().min(1800, "Invalid year").max(new Date().getFullYear(), "Year cannot be in the future").optional().nullable(),
+  indoor_outdoor: z.enum(["Indoor", "Outdoor", "Both"]).default("Both"),
+
+  // Location
+  country: z.string().min(1, "Country is required"),
+  state: z.string().min(1, "State is required"),
+  district: z.string().optional().default(""),
+  city_id: z.string().uuid("City is required"),
+  area: z.string().optional().default(""),
+  address: z.string().min(5, "Address must be at least 5 characters"),
+  landmark: z.string().optional().default(""),
+  pincode: z.string().min(6, "Pincode must be at least 6 digits"),
+  latitude: z.coerce.number().optional().nullable(),
+  longitude: z.coerce.number().optional().nullable(),
+  google_map_location: z.string().optional().default(""),
+
+  // Facilities
+  facilities: z.array(z.string()).default([]),
+
+  // Capacity
+  min_capacity: z.coerce.number().min(1, "Minimum capacity must be at least 1"),
+  max_capacity: z.coerce.number().min(1, "Maximum capacity must be at least 1"),
+
+  // Availability
+  weekly_schedule: z.record(z.string(), z.object({
+    available: z.boolean().default(false),
+    start: z.string().default("09:00"),
+    end: z.string().default("22:00")
+  })).default({}),
+  blocked_dates: z.array(z.string()).default([]),
+  maintenance_days: z.array(z.string()).default([]),
+  public_holidays: z.array(z.string()).default([]),
+  booking_buffer_time: z.coerce.number().min(0).optional().default(0),
+
+  // Documents
+  doc_pan: z.string().optional().default(""),
+  doc_gst: z.string().optional().default(""),
+  doc_ownership_proof: z.string().optional().default(""),
+  doc_government_id: z.string().optional().default(""),
+  doc_business_license: z.string().optional().default(""),
+
+  youtube_links: z.array(z.string()).default([]),
+}).refine((data) => data.max_capacity >= data.min_capacity, {
+  message: "Maximum capacity must be greater than or equal to minimum capacity",
+  path: ["max_capacity"],
+});
+
+export type VenueProfileUpdateFormData = z.infer<typeof venueProfileUpdateSchema>;
+
+
 

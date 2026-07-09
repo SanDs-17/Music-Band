@@ -6,7 +6,8 @@ from app.common.models.base import BaseModel
 class Booking(BaseModel):
     __tablename__ = "bookings"
 
-    artist_profile_id = Column(UUID(as_uuid=True), ForeignKey("artist_profiles.id", ondelete="CASCADE"), nullable=False, index=True)
+    artist_profile_id = Column(UUID(as_uuid=True), ForeignKey("artist_profiles.id", ondelete="CASCADE"), nullable=True, index=True)
+    venue_id = Column(UUID(as_uuid=True), ForeignKey("venues.id", ondelete="CASCADE"), nullable=True, index=True)
     client_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     
     event_name = Column(String(100), nullable=False)
@@ -24,5 +25,7 @@ class Booking(BaseModel):
 
     # Relationships
     artist_profile = relationship("ArtistProfile", backref="bookings")
+    venue = relationship("Venue", backref="bookings")
     client = relationship("User", backref="client_bookings")
+
 

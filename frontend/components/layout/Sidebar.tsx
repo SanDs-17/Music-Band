@@ -13,7 +13,9 @@ import {
   Users,
   Settings,
   ShieldCheck,
-  AlertCircle
+  AlertCircle,
+  MessageSquare,
+  TrendingUp
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 
@@ -39,12 +41,17 @@ export function Sidebar({ role }: SidebarProps) {
           { name: "Public Profile", href: "/artist/profile", icon: User },
           { name: "Incoming Gigs", href: "/artist/bookings", icon: Music },
           { name: "Earnings", href: "/artist/earnings", icon: IndianRupee },
+          { name: "Reviews Feedback", href: "/artist/reviews", icon: MessageSquare },
         ];
       case "venue":
         return [
           { name: "Dashboard", href: "/venue/dashboard", icon: LayoutDashboard },
           { name: "My Venues", href: "/venue/venues", icon: Building2 },
           { name: "Venue Calendar", href: "/venue/bookings", icon: Calendar },
+          { name: "Client Reviews", href: "/venue/reviews", icon: MessageSquare },
+          { name: "Earnings", href: "/venue/earnings", icon: IndianRupee },
+          { name: "Analytics", href: "/venue/analytics", icon: TrendingUp },
+          { name: "Verification", href: "/venue/verification", icon: ShieldCheck },
         ];
       case "admin":
         return [

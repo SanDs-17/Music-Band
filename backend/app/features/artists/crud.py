@@ -2,7 +2,7 @@
 Database CRUD repository operations for Artist profiles.
 """
 
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, List, Any
 from sqlalchemy.orm import Session, joinedload
 from app.common.repositories.base import BaseRepository
 from app.features.artists.models import ArtistProfile
@@ -47,7 +47,13 @@ class ArtistProfileCRUD(BaseRepository[ArtistProfile]):
         results = query.offset(offset).limit(limit).all()
         return results, total_count
 
-    def get_by_user_id(self, db: Session, user_id: str) -> Optional[ArtistProfile]:
+    def get_by_user_id(self, db: Session, user_id: Any) -> Optional[ArtistProfile]:
+        if isinstance(user_id, str):
+            from uuid import UUID as PyUUID
+            try:
+                user_id = PyUUID(user_id)
+            except ValueError:
+                pass
         return (
             db.query(ArtistProfile)
             .options(
