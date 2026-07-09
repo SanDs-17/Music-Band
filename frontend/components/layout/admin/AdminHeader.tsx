@@ -29,7 +29,7 @@ export function AdminHeader() {
           <Menu className="h-5 w-5" />
         </Button>
         <Link href="/admin/dashboard" className="hidden sm:flex items-center gap-2">
-          <span className="font-extrabold text-lg tracking-tighter text-white">
+          <span className="font-extrabold text-lg tracking-tighter text-text-primary">
             Band<span className="text-primary">Connect</span>
             <span className="ml-1 text-[10px] bg-primary/20 text-primary border border-primary/30 px-1.5 py-0.5 rounded-full font-bold">
               Admin

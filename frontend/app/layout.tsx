@@ -43,7 +43,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${syne.variable}`} suppressHydrationWarning>
-      <body className="antialiased min-h-screen bg-bg-primary text-text-primary selection:bg-primary/30">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                var theme = localStorage.getItem('theme') || 'dark';
+                document.documentElement.setAttribute('data-theme', theme);
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className="antialiased min-h-screen bg-bg-primary text-text-primary">
         <QueryProvider>
           <ThemeProvider>
             <AuthProvider>

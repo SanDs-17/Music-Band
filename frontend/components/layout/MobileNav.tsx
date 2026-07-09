@@ -86,7 +86,7 @@ export function MobileNav({ open, onOpenChange, role }: MobileNavProps) {
             <div className="p-1.5 bg-primary rounded-lg">
               <Music className="h-5 w-5 text-white" />
             </div>
-            <span className="font-extrabold text-lg tracking-tighter text-white">
+            <span className="font-extrabold text-lg tracking-tighter text-text-primary">
               Band<span className="text-primary">Connect</span>
             </span>
           </Link>
