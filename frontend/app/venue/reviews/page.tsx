@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { reviewService } from "@/services/reviewService";
 import { useReviews } from "@/hooks/use-reviews";
 import { ReviewDetail } from "@/types/review";
@@ -186,7 +187,9 @@ export default function VenueReviewsPage() {
                         rel="noreferrer"
                         className="h-14 w-14 border border-border rounded-lg overflow-hidden block relative hover:border-primary transition-all"
                       >
-                        <img src={img} alt="review pic" className="h-full w-full object-cover" />
+                        <div className="relative h-full w-full">
+                          <Image src={img} alt="review pic" fill className="object-cover" />
+                        </div>
                       </a>
                     ))}
                   </div>

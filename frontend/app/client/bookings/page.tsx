@@ -71,6 +71,15 @@ export default function ClientBookingsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Portal Breadcrumb: Dashboard > My Bookings */}
+      <nav className="flex items-center gap-2 text-xs font-semibold text-text-secondary">
+        <a href="/client/dashboard" className="hover:text-white transition-colors">
+          Dashboard
+        </a>
+        <span className="text-text-muted">›</span>
+        <span className="text-white">My Bookings</span>
+      </nav>
+
       {/* Header Panel */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">

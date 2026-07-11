@@ -12,6 +12,21 @@ export const bookingService = {
     return response.data.data;
   },
 
+  getClientBookings: async (params: {
+    status?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<BookingsListResponse> => {
+    const response = await api.get<any>("/bookings/client", { params });
+    return response.data.data;
+  },
+
+  createBooking: async (data: Record<string, unknown>): Promise<BookingRequestDetail> => {
+    const response = await api.post<any>("/bookings", data);
+    return response.data.data;
+  },
+
   getBookingDetails: async (bookingId: string): Promise<BookingRequestDetail> => {
     const response = await api.get<any>(`/bookings/${bookingId}`);
     return response.data.data;
@@ -76,6 +91,11 @@ export const bookingService = {
 
   cancelVenueBooking: async (bookingId: string): Promise<BookingRequestDetail> => {
     const response = await api.put<any>(`/bookings/venue/${bookingId}/cancel`);
+    return response.data.data;
+  },
+
+  addBookingNote: async (bookingId: string, content: string): Promise<any> => {
+    const response = await api.post<any>(`/bookings/${bookingId}/notes`, { content });
     return response.data.data;
   },
 };

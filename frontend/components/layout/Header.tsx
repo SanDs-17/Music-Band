@@ -5,6 +5,7 @@ import { Music, Menu, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/providers/theme-provider";
+import { getRoleDashboard } from "@/utils/role-routes";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -59,7 +60,7 @@ export function Header({ onMenuClick }: HeaderProps) {
 
         {user ? (
           <div className="flex items-center gap-4">
-            <Link href={`/${user.role}/dashboard`}>
+            <Link href={getRoleDashboard(user.role)}>
               <Button variant="outline" size="sm" className="font-bold">
                 Dashboard
               </Button>

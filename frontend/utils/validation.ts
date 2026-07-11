@@ -313,5 +313,24 @@ export const venueProfileUpdateSchema = z.object({
 
 export type VenueProfileUpdateFormData = z.infer<typeof venueProfileUpdateSchema>;
 
+export const bookingRequestSchema = z.object({
+  artist_profile_id: z.string().uuid().nullable().optional(),
+  venue_id: z.string().uuid().nullable().optional(),
+  event_title: z.string().min(2, "Event title must be at least 2 characters"),
+  event_type: z.string().min(1, "Event type is required"),
+  event_date: z.string().min(1, "Event date is required"),
+  start_time: z.string().min(1, "Start time is required"),
+  end_time: z.string().min(1, "End time is required"),
+  guest_count: z.number().min(1, "Guest count must be at least 1").default(50),
+  proposed_price: z.number().min(0, "Price cannot be negative").default(0),
+  location: z.string().optional().default(""),
+  address: z.string().optional().default(""),
+  city: z.string().optional().default(""),
+  state: z.string().optional().default(""),
+  country: z.string().optional().default("India"),
+  google_maps_coords: z.string().optional().default(""),
+  special_requests: z.string().optional().default(""),
+  notes: z.string().optional().default(""),
+});
 
-
+export type BookingRequestFormData = z.infer<typeof bookingRequestSchema>;

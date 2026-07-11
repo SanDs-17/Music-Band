@@ -11,11 +11,12 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
 import { api } from "@/services/api";
 import toast from "react-hot-toast";
+import { getRoleDashboard } from "@/utils/role-routes";
 
 export default function LoginPage() {
   const { setAuth } = useAuth();
   const router = useRouter();
-  
+
   const {
     register,
     handleSubmit,
@@ -27,32 +28,52 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      // 1. Post to login endpoint
-      const response = await api.post("/auth/login", data);
-      const { success, data: tokenData, message } = response.data;
-      
-      if (success && tokenData) {
-        const { access_token } = tokenData;
-        
-        // 2. Fetch current user profiles
-        // We set access token in local storage so that interceptor automatically attaches it
-        localStorage.setItem("access_token", access_token);
-        
-        const profileResponse = await api.get("/auth/me");
-        const { data: userData } = profileResponse.data;
-        
-        if (userData) {
-          // 3. Update Zustand Store state
-          setAuth(userData, access_token);
-          toast.success(message || "Successfully logged in!");
-          
-          // 4. Redirect to role dashboard
-          router.replace(`/${userData.roles[0].name}/dashboard`);
-        }
+      // 1. Exchange credentials for tokens
+      const loginResponse = await api.post("/auth/login", data);
+      const { success, data: tokenData, message } = loginResponse.data;
+
+      if (!success || !tokenData) {
+        toast.error("Login failed. Please try again.");
+        return;
       }
+
+      const { access_token } = tokenData;
+
+      // 2. Store the access token in localStorage BEFORE calling /auth/me
+      //    so the Axios request interceptor auto-attaches the Bearer header.
+      localStorage.setItem("access_token", access_token);
+
+      // 3. Fetch the authenticated user profile (includes roles array)
+      const meResponse = await api.get("/auth/me");
+      const { data: userData } = meResponse.data;
+
+      if (!userData) {
+        toast.error("Failed to load user profile. Please try again.");
+        return;
+      }
+
+      // 4. Persist to Zustand store.
+      //    setAuth also mirrors the token to a cookie so Next.js middleware
+      //    allows access to protected dashboard routes.
+      //    normaliseUserRole() inside setAuth derives user.role from roles[0].name.
+      setAuth(userData, access_token);
+
+      toast.success(message || "Successfully logged in!");
+
+      // 5. Navigate to the correct role dashboard using the centralized resolver.
+      //    Use the first role from the backend response (canonical source).
+      const primaryRole =
+        userData.roles?.[0]?.name ?? userData.role ?? "client";
+      const destination = getRoleDashboard(primaryRole);
+
+      // router.replace so the login page is not in browser history
+      router.replace(destination);
     } catch (err) {
-      const error = err as { response?: { data?: { error?: { message?: string } } } };
-      const errMsg = error.response?.data?.error?.message || "Invalid login credentials.";
+      const error = err as {
+        response?: { data?: { error?: { message?: string } } };
+      };
+      const errMsg =
+        error.response?.data?.error?.message ?? "Invalid login credentials.";
       toast.error(errMsg);
     }
   };
@@ -60,7 +81,9 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col space-y-6">
       <div className="flex flex-col space-y-2 text-center">
-        <h1 className="text-2xl font-bold tracking-tight text-white font-heading">Welcome back</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-white font-heading">
+          Welcome back
+        </h1>
         <p className="text-sm text-text-secondary">
           Enter your credentials to access your dashboard
         </p>
@@ -77,7 +100,9 @@ export default function LoginPage() {
             {...register("email")}
           />
           {errors.email && (
-            <p className="text-xs text-error font-medium mt-1">{errors.email.message}</p>
+            <p className="text-xs text-error font-medium mt-1">
+              {errors.email.message}
+            </p>
           )}
         </div>
 
@@ -99,11 +124,17 @@ export default function LoginPage() {
             {...register("password")}
           />
           {errors.password && (
-            <p className="text-xs text-error font-medium mt-1">{errors.password.message}</p>
+            <p className="text-xs text-error font-medium mt-1">
+              {errors.password.message}
+            </p>
           )}
         </div>
 
-        <Button type="submit" className="w-full font-bold h-10 mt-2" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          className="w-full font-bold h-10 mt-2"
+          disabled={isSubmitting}
+        >
           {isSubmitting ? "Logging in..." : "Log In"}
         </Button>
       </form>

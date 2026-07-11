@@ -50,7 +50,7 @@ export default function VenueCalendarPage() {
 
   // Dialog and input configurations
   const [editingSchedule, setEditingSchedule] = React.useState(false);
-  const [tempSchedule, setTempSchedule] = React.useState<Record<string, any>>({});
+  const [tempSchedule, setTempSchedule] = React.useState<Record<string, { available: boolean; start: string; end: string }>>({});
   const [tempBuffer, setTempBuffer] = React.useState(0);
 
   // New Date rules inputs

@@ -75,7 +75,7 @@ export function BookingDetailsDialog({
         res = await bookingService.cancelBooking(bookingId);
         toast.success("Booking cancelled.");
       } else {
-        res = await bookingService.completeBooking(bookingId);
+        res = await bookingService.completeVenueBooking(bookingId);
         toast.success("Event marked as completed!");
       }
       setBooking(res);

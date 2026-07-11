@@ -56,7 +56,7 @@ export function BookingDashboardEntry({ role }: { role: BookingRole }) {
       <div className="flex flex-col gap-3">
         <BookingDashboardBreadcrumb
           items={[
-            { label: details.breadcrumbLabel, href: `/${role}/dashboard` },
+            { label: "Dashboard", href: `/${role === "venue" ? "venue" : role}/dashboard` },
             { label: "Bookings", href: details.actionLink, isCurrent: true },
           ]}
         />

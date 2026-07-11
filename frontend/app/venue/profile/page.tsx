@@ -160,16 +160,16 @@ export default function VenueProfilePage() {
   const galleryVideos: VenueVideoItem[] = [];
   
   if (Array.isArray(profile.gallery)) {
-    profile.gallery.forEach((item: any) => {
+    profile.gallery.forEach((item: string | { type?: string; url?: string; category?: string; is_cover?: boolean; album?: string }) => {
       if (item && typeof item === "object") {
         if (item.type === "video") {
           galleryVideos.push({
-            url: item.url,
+            url: item.url ?? "",
             category: item.category || "General"
           });
         } else {
           galleryImages.push({
-            url: item.url,
+            url: item.url ?? "",
             is_cover: !!item.is_cover,
             album: item.album || "General"
           });

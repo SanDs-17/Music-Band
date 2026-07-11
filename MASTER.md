@@ -3436,3 +3436,56 @@ All engineers and AI assistants must comply with these non-negotiable rules:
 *This document is the single source of truth for BandConnect.*
 *Any deviation from these standards requires an ADR and team approval.*
 *Last Updated: 2026-07-08 | Version: 1.0.0 | Maintained by: Chief Software Architect*
+
+---
+
+## 27. Permanent Architecture Rules
+
+### 27.1 Authenticated Role Navigation Policy
+
+After successful authentication, BandConnect must resolve the authoritative authenticated user's canonical backend role and navigate to that role's overview dashboard through one centralized role-to-dashboard resolver (`frontend/utils/role-routes.ts` — `getRoleDashboard()`).
+
+- Role routing must not default authenticated users to Client.
+- Role routing must not use the first allowed role in `allowedRoles[]` as the user's identity.
+- Login redirect and global Dashboard navigation must reuse `getRoleDashboard()`.
+- `GuestRoute` must redirect authenticated users to their correct role dashboard, not `/`.
+
+### 27.2 Role Portal Dashboard Policy
+
+A role Dashboard route represents the role's **overview/landing page**, not a feature page.
+
+Feature pages such as Bookings, Earnings, Reviews, Profile, Calendar, Users, Venues, or Reports must **not** replace the role overview dashboard.
+
+Sidebar and breadcrumb navigation must preserve the hierarchy:
+
+```
+Role Overview Dashboard
+    ↓
+Feature Page (My Bookings, Incoming Gigs, My Venues, etc.)
+```
+
+### 27.3 Public vs Role Portal Navigation Policy
+
+BandConnect public marketplace navigation and authenticated role portal navigation are separate navigation spaces.
+
+- Public Home / Landing navigation must not be ambiguously represented as portal Home inside role breadcrumbs.
+- Role portal breadcrumbs (`BookingDashboardBreadcrumb`) must represent the portal hierarchy only (e.g., Dashboard > My Bookings).
+- Navigation back to the public marketplace must use a clear marketplace/public navigation label such as "Back to Marketplace" or existing explicit project convention — not a generic "Home" link pointing to `/`.
+
+### 27.4 Theme Architecture Policy
+
+BandConnect uses one centralized theme provider (`frontend/providers/theme-provider.tsx`).
+
+- Theme state is managed through `ThemeProvider` and exposed via `useTheme()`.
+- Theme is applied by setting `data-theme` on `document.documentElement`.
+- CSS variables respond to `[data-theme="light"]` and `[data-theme="dark"]` (default is dark).
+- Theme state must not be duplicated across independent providers or local component theme systems.
+- Shared theme toggles must use `useTheme()` from the centralized provider.
+
+### 27.5 Secret Management Policy
+
+- Production `SECRET_KEY` values must be externally configured and must never be committed to source control.
+- Local development may use the clearly identified development-only fallback (`bandconnect-local-development-secret-not-for-production`) when `ENVIRONMENT=development` and `SECRET_KEY` is empty. Real JWT authentication still works with this key.
+- The development fallback must never be accepted in production.
+- Production must fail fast (via `effective_secret_key` property in `config.py`) when `SECRET_KEY` is missing, empty, or equal to the known development fallback.
+- A `backend/.env.example` file must document all required environment variables with safe placeholder values only.

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import { venueService } from "@/services/venueService";
 import { reviewService } from "@/services/reviewService";
@@ -59,9 +60,9 @@ export default function PublicVenueProfilePage() {
     try {
       const data = await venueService.getPublicVenueDetail(venueId);
       setVenue(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setErrorVenue(
-        err.response?.data?.error?.message || "Failed to load public venue details."
+        (err as { response?: { data?: { error?: { message?: string } } } }).response?.data?.error?.message || "Failed to load public venue details."
       );
     } finally {
       setLoadingVenue(false);
@@ -78,7 +79,7 @@ export default function PublicVenueProfilePage() {
         limit: 5
       });
       setReviewsData(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to load venue reviews publicly.", err);
     } finally {
       setLoadingReviews(false);
@@ -139,10 +140,12 @@ export default function PublicVenueProfilePage() {
       
       {/* 1. HERO & GALLERY */}
       <div className="relative h-[45vh] md:h-[60vh] w-full overflow-hidden">
-        <img 
+        <Image 
           src={coverImage} 
           alt={venue.name} 
+          fill
           className="absolute inset-0 h-full w-full object-cover filter brightness-75"
+          priority
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
         
@@ -260,10 +263,10 @@ export default function PublicVenueProfilePage() {
               <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-4">
                 <span className="text-[10px] text-text-muted uppercase font-bold block mb-2 tracking-wider">Opening Schedule</span>
                 <div className="space-y-2">
-                  {Object.entries(schedule).map(([day, hours]: any, idx) => (
+                  {Object.entries(schedule).map(([day, hours], idx) => (
                     <div key={idx} className="flex justify-between text-xs border-b border-border/30 pb-1.5">
                       <span className="capitalize font-bold text-white">{day}</span>
-                      <span className="text-text-secondary font-mono">{hours}</span>
+                      <span className="text-text-secondary font-mono">{String(hours)}</span>
                     </div>
                   ))}
                   {Object.keys(schedule).length === 0 && (
@@ -558,10 +561,11 @@ export default function PublicVenueProfilePage() {
 
           <div className="max-w-4xl max-h-[85vh] w-full flex items-center justify-center overflow-hidden rounded-xl border border-white/10">
             {activeMediaType === "image" ? (
-              <img 
+              <Image 
                 src={activeMediaUrl} 
                 alt="Gallery display" 
-                className="max-w-full max-h-[85vh] object-contain"
+                fill
+                className="object-contain"
               />
             ) : (
               <div className="relative w-full aspect-video">

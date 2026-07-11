@@ -41,7 +41,7 @@ export function BookingDashboardWidgets({
             upcomingEvents.map((booking) => (
               <div key={booking.id} className="flex items-center justify-between gap-3 p-4">
                 <div>
-                  <p className="font-semibold text-white">{booking.event_title}</p>
+                  <p className="font-semibold text-white">{booking.event_name}</p>
                   <p className="text-[11px] text-text-muted">
                     {format(new Date(booking.event_date), "PP")} • {booking.start_time} -{" "}
                     {booking.end_time}
@@ -68,7 +68,7 @@ export function BookingDashboardWidgets({
             recentBookings.map((booking) => (
               <div key={booking.id} className="flex items-center justify-between gap-3 p-4">
                 <div>
-                  <p className="font-semibold text-white">{booking.event_title}</p>
+                  <p className="font-semibold text-white">{booking.event_name}</p>
                   <p className="text-[11px] text-text-muted">
                     {booking.location} • {formatCurrency(booking.proposed_price)}
                   </p>
@@ -132,7 +132,7 @@ export function BookingDashboardWidgets({
             todaysSchedule.map((booking) => (
               <div key={booking.id} className="flex items-center justify-between gap-3 p-4">
                 <div>
-                  <p className="font-semibold text-white">{booking.event_title}</p>
+                  <p className="font-semibold text-white">{booking.event_name}</p>
                   <p className="text-[11px] text-text-muted">
                     {booking.location} • {booking.start_time} - {booking.end_time}
                   </p>
@@ -161,7 +161,7 @@ export function BookingDashboardWidgets({
             pendingRequests.map((booking) => (
               <div key={booking.id} className="flex items-center justify-between gap-3 p-4">
                 <div>
-                  <p className="font-semibold text-white">{booking.event_title}</p>
+                  <p className="font-semibold text-white">{booking.event_name}</p>
                   <p className="text-[11px] text-text-muted">
                     {format(new Date(booking.event_date), "PP")} • {booking.location}
                   </p>

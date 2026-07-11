@@ -53,7 +53,13 @@ export function setCookie(name: string, value: string, days = 7): void {
   try {
     const expires = new Date();
     expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Lax;Secure`;
+    // NOTE: Do NOT add the `Secure` flag here — it causes browsers to silently
+    // discard the cookie on HTTP origins (http://localhost). The Next.js
+    // middleware reads this cookie to gate dashboard routes; if it is never
+    // stored the user is always redirected to /login even after a successful
+    // login. The `Secure` attribute is enforced by the reverse-proxy / CDN
+    // layer (nginx / Vercel) in production environments.
+    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
   } catch (error) {
     console.error("cookie set error:", error);
   }

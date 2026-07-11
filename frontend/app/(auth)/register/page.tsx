@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, RegisterFormData } from "@/utils/validation";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ export default function RegisterPage() {
   const {
     register,
     handleSubmit,
-    setValue,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -79,19 +79,22 @@ export default function RegisterPage() {
 
         <div className="space-y-1">
           <Label htmlFor="role_name">Account Type</Label>
-          <Select
-            onValueChange={(val) => setValue("role_name", val as "client" | "artist" | "venue_owner")}
-            defaultValue="client"
-          >
-            <SelectTrigger id="role_name" className="w-full">
-              <SelectValue placeholder="Select account role type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="client">Client (Event Host)</SelectItem>
-              <SelectItem value="artist">Artist / Music Band</SelectItem>
-              <SelectItem value="venue_owner">Venue Owner</SelectItem>
-            </SelectContent>
-          </Select>
+          <Controller
+            control={control}
+            name="role_name"
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} value={field.value}>
+                <SelectTrigger id="role_name" className="w-full">
+                  <SelectValue placeholder="Select account role type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="client">Client (Event Host)</SelectItem>
+                  <SelectItem value="artist">Artist / Music Band</SelectItem>
+                  <SelectItem value="venue_owner">Venue Owner</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
           {errors.role_name && (
             <p className="text-xs text-error font-medium mt-1">{errors.role_name.message}</p>
           )}

@@ -259,7 +259,7 @@ export default function VenueEarningsPage() {
 }
 
 // Inline helper list icon
-function List(props: any) {
+function List(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

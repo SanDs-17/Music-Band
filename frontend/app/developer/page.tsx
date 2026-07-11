@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { isDevMode, makeDevToken, mockUsers } from "@/utils/dev-mode";
+import { User } from "@/types/auth";
 import { useRouter } from "next/navigation";
 
 export default function DeveloperPage() {
@@ -25,10 +26,10 @@ export default function DeveloperPage() {
     try {
       localStorage.setItem("dev_auth_token", token);
       localStorage.setItem("access_token", token);
-    } catch (e) {
+    } catch (_e) {
       // ignore storage errors
     }
-    setAuth(u as any, token);
+    setAuth(u as User, token);
     const path = `/${u.role === "venue_owner" ? "venue" : u.role}/dashboard`;
     router.push(path);
   };
@@ -37,7 +38,7 @@ export default function DeveloperPage() {
     try {
       localStorage.removeItem("dev_auth_token");
       localStorage.removeItem("access_token");
-    } catch (e) {
+    } catch (_e) {
       // ignore
     }
     clearAuth();
@@ -66,7 +67,7 @@ export default function DeveloperPage() {
                 <div className="mb-3 text-xs text-text-secondary">
                   Permissions: {u.permissions.join(", ")}
                 </div>
-                <Button size="sm" onClick={() => handleSelect(r as any)} className="w-full">
+                <Button size="sm" onClick={() => handleSelect(r as keyof typeof mockUsers)} className="w-full">
                   Login as{" "}
                   {u.role === "venue_owner"
                     ? "Venue Owner"

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { ReviewDetail } from "@/types/review";
 import { 
   Dialog, 
@@ -121,7 +122,9 @@ export function VenueReviewDetailsReply({
                       rel="noreferrer"
                       className="aspect-square border border-border rounded-lg overflow-hidden block relative hover:border-primary transition-all"
                     >
-                      <img src={img} alt="review attachment" className="h-full w-full object-cover" />
+                      <div className="relative h-full w-full">
+                        <Image src={img} alt="review attachment" fill className="object-cover" />
+                      </div>
                     </a>
                   ))}
                 </div>

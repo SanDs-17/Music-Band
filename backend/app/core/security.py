@@ -48,7 +48,7 @@ def create_access_token(
         "iat": datetime.now(timezone.utc)
     }
     
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, settings.effective_secret_key, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
 
@@ -69,7 +69,7 @@ def create_refresh_token(
         "type": "refresh"
     }
     
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, settings.effective_secret_key, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
 
@@ -81,7 +81,7 @@ def decode_token(token: str) -> dict:
     try:
         payload = jwt.decode(
             token,
-            settings.SECRET_KEY,
+            settings.effective_secret_key,
             algorithms=[settings.ALGORITHM]
         )
         return payload
