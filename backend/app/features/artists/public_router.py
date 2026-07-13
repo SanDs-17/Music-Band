@@ -65,7 +65,6 @@ async def create_artist_profile(
     This endpoint creates the missing ArtistProfile record.
     Returns 409 Conflict if a profile already exists for this user.
     """
-    from app.core.exceptions import ConflictException
     artist = service.create_artist_profile_for_user(db, current_user_claims["sub"], data)
     return SuccessResponse(
         success=True,

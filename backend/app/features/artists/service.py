@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from loguru import logger
 from app.features.artists.crud import ArtistProfileCRUD
 from app.features.artists.models import ArtistProfile
-from app.features.artists.schemas import ArtistVerificationUpdate, ArtistRegisterRequest, ArtistProfileUpdate
+from app.features.artists.schemas import ArtistVerificationUpdate, ArtistRegisterRequest, ArtistProfileUpdate, ArtistProfileCreateRequest
 from app.features.auth.crud import UserCRUD, RoleCRUD
 from app.features.categories.models import Category
 from app.core.exceptions import NotFoundException, ConflictException
@@ -117,14 +117,13 @@ class ArtistService:
         self,
         db: Session,
         user_id: str,
-        data: "ArtistProfileCreateRequest"
+        data: ArtistProfileCreateRequest
     ) -> ArtistProfile:
         """
         Creates an Artist/Band profile for an already-authenticated user who was registered
         via the standard /auth/register endpoint (role=artist). The User account already
         exists — we only create the ArtistProfile domain record.
         """
-        from app.features.artists.schemas import ArtistProfileCreateRequest  # local import to avoid circular
         from app.core.exceptions import ConflictException
         from uuid import UUID as PyUUID
 
