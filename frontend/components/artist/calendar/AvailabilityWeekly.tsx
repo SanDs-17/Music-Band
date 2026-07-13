@@ -61,7 +61,7 @@ export function AvailabilityWeekly({ availability, onSave }: AvailabilityWeeklyP
       {/* Break Times Card */}
       <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 shadow-xl">
         <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
             <Coffee className="h-4.5 w-4.5 text-primary" />
             Performer Daily Break Slot
           </h3>
@@ -76,7 +76,7 @@ export function AvailabilityWeekly({ availability, onSave }: AvailabilityWeeklyP
                 type="time"
                 value={breakTime.start}
                 onChange={e => setBreakTime(prev => ({ ...prev, start: e.target.value }))}
-                className="h-9 px-3 rounded-lg border border-border bg-bg-elevated text-white text-xs focus:outline-none"
+                className="h-9 px-3 rounded-lg border border-border bg-bg-elevated text-text-primary text-xs focus:outline-none"
               />
             </div>
             <span className="text-text-muted mt-5 text-xs">to</span>
@@ -86,7 +86,7 @@ export function AvailabilityWeekly({ availability, onSave }: AvailabilityWeeklyP
                 type="time"
                 value={breakTime.end}
                 onChange={e => setBreakTime(prev => ({ ...prev, end: e.target.value }))}
-                className="h-9 px-3 rounded-lg border border-border bg-bg-elevated text-white text-xs focus:outline-none"
+                className="h-9 px-3 rounded-lg border border-border bg-bg-elevated text-text-primary text-xs focus:outline-none"
               />
             </div>
           </div>
@@ -96,7 +96,7 @@ export function AvailabilityWeekly({ availability, onSave }: AvailabilityWeeklyP
       {/* Weekly Schedule days Card */}
       <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 shadow-xl">
         <CardHeader className="pb-3 border-b border-border/50">
-          <CardTitle className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+          <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
             <Clock className="h-4.5 w-4.5 text-primary" />
             Working Hours Weekly Schedule
           </CardTitle>
@@ -114,7 +114,7 @@ export function AvailabilityWeekly({ availability, onSave }: AvailabilityWeeklyP
                     onChange={() => handleToggle(day)}
                     className="w-4.5 h-4.5 accent-primary rounded bg-bg-card border-border cursor-pointer"
                   />
-                  <label htmlFor={`weekly-${day}`} className={`text-sm font-bold cursor-pointer ${config.available ? "text-white" : "text-text-muted"}`}>
+                  <label htmlFor={`weekly-${day}`} className={`text-sm font-bold cursor-pointer ${config.available ? "text-text-primary" : "text-text-muted"}`}>
                     {day}
                   </label>
                 </div>
@@ -126,14 +126,14 @@ export function AvailabilityWeekly({ availability, onSave }: AvailabilityWeeklyP
                       type="time"
                       value={config.start}
                       onChange={e => handleTimeChange(day, "start", e.target.value)}
-                      className="h-8 px-2 text-xs rounded border border-border bg-bg-elevated text-white focus:outline-none"
+                      className="h-8 px-2 text-xs rounded border border-border bg-bg-elevated text-text-primary focus:outline-none"
                     />
                     <span className="text-xs text-text-muted">to</span>
                     <input
                       type="time"
                       value={config.end}
                       onChange={e => handleTimeChange(day, "end", e.target.value)}
-                      className="h-8 px-2 text-xs rounded border border-border bg-bg-elevated text-white focus:outline-none"
+                      className="h-8 px-2 text-xs rounded border border-border bg-bg-elevated text-text-primary focus:outline-none"
                     />
                   </div>
                 )}

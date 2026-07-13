@@ -1,3 +1,5 @@
+import toast from "react-hot-toast";
+
 export function isDevMode(): boolean {
   return (
     process.env.NODE_ENV === "development" &&
@@ -11,6 +13,7 @@ export const mockUsers = {
     name: "Dev Admin",
     email: "admin@dev.local",
     role: "admin",
+    roles: [{ id: "r-admin", name: "admin" }],
     permissions: ["users.manage", "artists.verify", "venues.verify"],
   },
   artist: {
@@ -18,6 +21,7 @@ export const mockUsers = {
     name: "Dev Artist",
     email: "artist@dev.local",
     role: "artist",
+    roles: [{ id: "r-artist", name: "artist" }],
     permissions: ["bookings.manage", "profile.edit"],
   },
   venue_owner: {
@@ -25,6 +29,7 @@ export const mockUsers = {
     name: "Dev Venue",
     email: "venue@dev.local",
     role: "venue_owner",
+    roles: [{ id: "r-venue", name: "venue_owner" }],
     permissions: ["venue.manage", "bookings.manage"],
   },
   client: {
@@ -32,6 +37,7 @@ export const mockUsers = {
     name: "Dev Client",
     email: "client@dev.local",
     role: "client",
+    roles: [{ id: "r-client", name: "client" }],
     permissions: ["bookings.request"],
   },
 };
@@ -40,3 +46,19 @@ export function makeDevToken(role: string, id: string) {
   // Simple dev token format: dev-<role>-<id>
   return `dev-${role}-${id}`;
 }
+
+export function isPreviewActive(): boolean {
+  if (typeof window === "undefined") return false;
+  return isDevMode() && localStorage.getItem("dev_preview_enabled") === "true";
+}
+
+export function getPreviewRole(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("dev_preview_role");
+}
+
+export function toastMutationBlocked(): Promise<never> {
+  toast.error("Real authentication is required for this action.");
+  return Promise.reject(new Error("Preview mode mutation blocked."));
+}
+

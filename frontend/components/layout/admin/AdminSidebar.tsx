@@ -116,10 +116,10 @@ export function AdminSidebar() {
                     <button
                       onClick={() => toggleSubmenu(item.name)}
                       type="button"
-                      className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-elevated hover:text-white transition-all group text-left cursor-pointer"
+                      className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-elevated hover:text-text-primary transition-all group text-left cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
-                        <Icon className="h-4 w-4 text-text-secondary group-hover:text-white transition-transform group-hover:scale-110" />
+                        <Icon className="h-4 w-4 text-text-secondary group-hover:text-text-primary transition-transform group-hover:scale-110" />
                         <span>{item.name}</span>
                       </div>
                       {isExpanded ? (
@@ -135,7 +135,7 @@ export function AdminSidebar() {
                         "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-all group",
                         pathname === item.href
                           ? "bg-primary text-white"
-                          : "text-text-secondary hover:bg-bg-elevated hover:text-white"
+                          : "text-text-secondary hover:bg-bg-elevated hover:text-text-primary"
                       )}
                     >
                       <Icon className="h-4 w-4" />
@@ -159,10 +159,10 @@ export function AdminSidebar() {
                               "flex items-center gap-3 rounded-md px-3 py-2 text-xs font-semibold transition-all group",
                               isSubActive
                                 ? "text-primary bg-primary/5"
-                                : "text-text-secondary hover:text-white hover:bg-bg-elevated/40"
+                                : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/40"
                             )}
                           >
-                            <SubIcon className={cn("h-3.5 w-3.5", isSubActive ? "text-primary" : "text-text-muted group-hover:text-white")} />
+                            <SubIcon className={cn("h-3.5 w-3.5", isSubActive ? "text-primary" : "text-text-muted group-hover:text-text-primary")} />
                             <span>{sub.name}</span>
                           </Link>
                         );

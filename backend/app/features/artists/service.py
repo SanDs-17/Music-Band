@@ -113,6 +113,103 @@ class ArtistService:
         logger.info(f"Artist/Band onboarding completed successfully for user {user.email}")
         return artist
 
+    def create_artist_profile_for_user(
+        self,
+        db: Session,
+        user_id: str,
+        data: "ArtistProfileCreateRequest"
+    ) -> ArtistProfile:
+        """
+        Creates an Artist/Band profile for an already-authenticated user who was registered
+        via the standard /auth/register endpoint (role=artist). The User account already
+        exists — we only create the ArtistProfile domain record.
+        """
+        from app.features.artists.schemas import ArtistProfileCreateRequest  # local import to avoid circular
+        from app.core.exceptions import ConflictException
+        from uuid import UUID as PyUUID
+
+        # Convert JWT sub (string) to UUID for repository calls
+        try:
+            user_uuid = PyUUID(user_id)
+        except (ValueError, AttributeError):
+            raise NotFoundException("Invalid user ID format.")
+
+        # 1. Guard: profile must not already exist
+        existing = self.crud.get_by_user_id(db, user_uuid)
+        if existing:
+            raise ConflictException("Artist profile already exists for this user.")
+
+        # 2. Verify the user exists
+        user = self.user_crud.get(db, user_uuid)
+        if not user:
+            raise NotFoundException("User account not found.")
+
+
+        # 3. Create Artist Profile
+        artist = self.crud.create(
+            db,
+            obj_in={
+                "user_id": user.id,
+                "bio": data.bio,
+                "base_rate": data.base_rate,
+                "rating": 5.0,
+                "verification_status": "pending",
+                "display_name": data.display_name,
+                "mobile_number": data.mobile_number,
+                "years_of_experience": data.years_of_experience,
+                "profile_image": data.profile_image,
+                "cover_image": data.cover_image,
+                "band_type": data.band_type,
+                "total_members": data.total_members,
+                "currency": data.currency,
+                "travel_radius": data.travel_radius,
+                "travel_charges": data.travel_charges,
+                "min_booking_hours": data.min_booking_hours,
+                "max_booking_hours": data.max_booking_hours,
+                "equipment": data.equipment,
+                "availability": data.availability,
+                "gallery": data.gallery,
+                "videos": data.videos,
+                "youtube_links": data.youtube_links,
+                "documents": [],
+                "pricing_details": {
+                    "hourly_rate": data.base_rate,
+                    "travel_charge": data.travel_charges
+                }
+            }
+        )
+
+        # 4. Resolve Genres
+        for genre_name in data.genres:
+            genre = db.query(Category).filter(
+                Category.name.ilike(genre_name),
+                Category.type == "music_genre",
+                Category.deleted_at.is_(None)
+            ).first()
+            if not genre:
+                genre = Category(name=genre_name, type="music_genre", is_active=True)
+                db.add(genre)
+                db.flush()
+            artist.genres.append(genre)
+
+        # 5. Resolve Languages
+        for lang_name in data.languages:
+            lang = db.query(Category).filter(
+                Category.name.ilike(lang_name),
+                Category.type == "language",
+                Category.deleted_at.is_(None)
+            ).first()
+            if not lang:
+                lang = Category(name=lang_name, type="language", is_active=True)
+                db.add(lang)
+                db.flush()
+            artist.languages.append(lang)
+
+        db.commit()
+        db.refresh(artist)
+        logger.info(f"Artist profile created for existing user {user.email} (id={user_id})")
+        return artist
+
     def update_verification_status(
         self,
         db: Session,
@@ -120,6 +217,7 @@ class ArtistService:
         data: ArtistVerificationUpdate
     ) -> ArtistProfile:
         """Approves, rejects, or flags a performer's profile details verification request."""
+
         artist = self.crud.get(db, artist_id)
         if not artist or artist.deleted_at is not None:
             raise NotFoundException("Artist profile not found.")

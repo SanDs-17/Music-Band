@@ -33,7 +33,7 @@ export function RecentActivityWidget({ activity }: RecentActivityWidgetProps) {
   return (
     <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 shadow-xl h-full">
       <CardHeader className="pb-3 border-b border-border/50 flex flex-row items-center justify-between">
-        <CardTitle className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+        <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-primary animate-pulse" />
           <span>Recent Activity</span>
         </CardTitle>
@@ -58,7 +58,7 @@ export function RecentActivityWidget({ activity }: RecentActivityWidgetProps) {
                   {/* Activity Details */}
                   <div className="space-y-1">
                     <div className="flex items-center justify-between gap-4">
-                      <span className="text-xs font-bold text-white group-hover:text-primary transition-colors">
+                      <span className="text-xs font-bold text-text-primary group-hover:text-primary transition-colors">
                         {act.title}
                       </span>
                       <span className="text-[9px] text-text-muted font-medium whitespace-nowrap bg-bg-elevated/40 border border-border/30 px-2 py-0.5 rounded-full">

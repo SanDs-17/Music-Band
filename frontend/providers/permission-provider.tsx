@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuthStore } from "@/store/auth-store";
+import { useAuthContext } from "@/providers/auth-provider";
 
 interface PermissionContextType {
   permissions: string[];
@@ -14,18 +15,28 @@ interface PermissionContextType {
 const PermissionContext = React.createContext<PermissionContextType | null>(null);
 
 export function PermissionProvider({ children }: { children: React.ReactNode }) {
-  const { accessToken, user, isLoading: authLoading } = useAuth();
+  // Use stable selectors from Zustand store to prevent triggers on unrelated store edits
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const user = useAuthStore((state) => state.user);
+  const { isLoading: authLoading } = useAuthContext();
+
   const [permissions, setPermissions] = React.useState<string[]>([]);
   const [roles, setRoles] = React.useState<string[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
 
+  // Derive stable primitive values for the effect dependency array to avoid object reference changes
+  const userId = user?.id;
+  const userRolesStr = React.useMemo(() => {
+    return JSON.stringify(user?.roles || []);
+  }, [user?.roles]);
+
   React.useEffect(() => {
     if (authLoading) return;
 
-    if (!accessToken || !user) {
-      setPermissions([]);
-      setRoles([]);
-      setIsLoading(false);
+    if (!accessToken || !userId) {
+      setPermissions((prev) => (prev.length > 0 ? [] : prev));
+      setRoles((prev) => (prev.length > 0 ? [] : prev));
+      setIsLoading((prev) => (prev ? false : prev));
       return;
     }
 
@@ -42,16 +53,26 @@ export function PermissionProvider({ children }: { children: React.ReactNode }) 
       );
       
       const payload = JSON.parse(jsonPayload);
-      setPermissions(payload.permissions || []);
-      setRoles(user.roles?.map((r: any) => r.name) || [payload.role].filter(Boolean));
+      const decodedPermissions = payload.permissions || [];
+      const decodedRoles = user?.roles?.map((r: any) => r.name) || [payload.role].filter(Boolean);
+
+      // Only perform React state updates if values are different to guarantee idempotency
+      setPermissions((prev) => {
+        if (JSON.stringify(prev) === JSON.stringify(decodedPermissions)) return prev;
+        return decodedPermissions;
+      });
+      setRoles((prev) => {
+        if (JSON.stringify(prev) === JSON.stringify(decodedRoles)) return prev;
+        return decodedRoles;
+      });
     } catch (error) {
       console.error("Failed to decode token permissions claim:", error);
-      setPermissions([]);
-      setRoles([]);
+      setPermissions((prev) => (prev.length > 0 ? [] : prev));
+      setRoles((prev) => (prev.length > 0 ? [] : prev));
     } finally {
-      setIsLoading(false);
+      setIsLoading((prev) => (prev ? false : prev));
     }
-  }, [accessToken, user, authLoading]);
+  }, [accessToken, userId, userRolesStr, authLoading]);
 
   const hasPermission = React.useCallback(
     (permission: string) => {

@@ -266,7 +266,7 @@ export function VenueProfileEdit({ profile, onSuccess }: VenueProfileEditProps) 
       className="space-y-8 bg-bg-card/45 backdrop-blur-md border border-border/80 p-6 md:p-8 rounded-3xl shadow-xl"
     >
       <div className="border-b border-border/50 pb-4">
-        <h2 className="text-xl font-bold text-white">Edit Venue Profile Details</h2>
+        <h2 className="text-xl font-bold text-text-primary">Edit Venue Profile Details</h2>
         <p className="text-xs text-text-secondary">Update your workspace information, capacity constraints, location, and operating hours.</p>
       </div>
 
@@ -274,7 +274,7 @@ export function VenueProfileEdit({ profile, onSuccess }: VenueProfileEditProps) 
       <div className="space-y-4">
         <div className="flex items-center gap-2 border-b border-border/30 pb-2">
           <Building2 className="h-4.5 w-4.5 text-primary" />
-          <span className="text-sm font-bold text-white uppercase tracking-wider">Basic Space Information</span>
+          <span className="text-sm font-bold text-text-primary uppercase tracking-wider">Basic Space Information</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -288,7 +288,7 @@ export function VenueProfileEdit({ profile, onSuccess }: VenueProfileEditProps) 
             <Label htmlFor="venue_type">Venue Type</Label>
             <select 
               id="venue_type"
-              className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-white text-xs"
+              className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-text-primary text-xs"
               {...register("venue_type")}
             >
               {VENUE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
@@ -305,7 +305,7 @@ export function VenueProfileEdit({ profile, onSuccess }: VenueProfileEditProps) 
             <Label htmlFor="indoor_outdoor">Preference Area</Label>
             <select 
               id="indoor_outdoor"
-              className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-white text-xs"
+              className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-text-primary text-xs"
               {...register("indoor_outdoor")}
             >
               <option value="Indoor">Indoor</option>
@@ -326,7 +326,7 @@ export function VenueProfileEdit({ profile, onSuccess }: VenueProfileEditProps) 
       <div className="space-y-4">
         <div className="flex items-center gap-2 border-b border-border/30 pb-2">
           <Briefcase className="h-4.5 w-4.5 text-primary" />
-          <span className="text-sm font-bold text-white uppercase tracking-wider">Owner & Business Information</span>
+          <span className="text-sm font-bold text-text-primary uppercase tracking-wider">Owner & Business Information</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -363,14 +363,14 @@ export function VenueProfileEdit({ profile, onSuccess }: VenueProfileEditProps) 
       <div className="space-y-4">
         <div className="flex items-center gap-2 border-b border-border/30 pb-2">
           <MapPin className="h-4.5 w-4.5 text-primary" />
-          <span className="text-sm font-bold text-white uppercase tracking-wider">Address Management & Maps</span>
+          <span className="text-sm font-bold text-text-primary uppercase tracking-wider">Address Management & Maps</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div className="space-y-1.5">
             <Label>Country</Label>
             <select 
-              className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-white text-xs"
+              className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-text-primary text-xs"
               value={watch("country")}
               onChange={e => handleCountryChange(e.target.value)}
             >
@@ -383,7 +383,7 @@ export function VenueProfileEdit({ profile, onSuccess }: VenueProfileEditProps) 
           <div className="space-y-1.5">
             <Label>State</Label>
             <select 
-              className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-white text-xs"
+              className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-text-primary text-xs"
               value={watch("state")}
               onChange={e => handleStateChange(e.target.value)}
               disabled={!watch("country") || loadingLocations}
@@ -397,7 +397,7 @@ export function VenueProfileEdit({ profile, onSuccess }: VenueProfileEditProps) 
           <div className="space-y-1.5">
             <Label>City</Label>
             <select 
-              className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-white text-xs"
+              className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-text-primary text-xs"
               value={watch("city_id")}
               onChange={e => setValue("city_id", e.target.value)}
               disabled={!watch("state") || loadingLocations}
@@ -456,7 +456,7 @@ export function VenueProfileEdit({ profile, onSuccess }: VenueProfileEditProps) 
       <div className="space-y-4">
         <div className="flex items-center gap-2 border-b border-border/30 pb-2">
           <Grid className="h-4.5 w-4.5 text-primary" />
-          <span className="text-sm font-bold text-white uppercase tracking-wider">Amenities Summary</span>
+          <span className="text-sm font-bold text-text-primary uppercase tracking-wider">Amenities Summary</span>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -483,7 +483,7 @@ export function VenueProfileEdit({ profile, onSuccess }: VenueProfileEditProps) 
       <div className="space-y-4">
         <div className="flex items-center gap-2 border-b border-border/30 pb-2">
           <Users className="h-4.5 w-4.5 text-primary" />
-          <span className="text-sm font-bold text-white uppercase tracking-wider">Guest Capacity Limits</span>
+          <span className="text-sm font-bold text-text-primary uppercase tracking-wider">Guest Capacity Limits</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -505,7 +505,7 @@ export function VenueProfileEdit({ profile, onSuccess }: VenueProfileEditProps) 
       <div className="space-y-4">
         <div className="flex items-center gap-2 border-b border-border/30 pb-2">
           <Clock className="h-4.5 w-4.5 text-primary" />
-          <span className="text-sm font-bold text-white uppercase tracking-wider">Operational availability rules</span>
+          <span className="text-sm font-bold text-text-primary uppercase tracking-wider">Operational availability rules</span>
         </div>
 
         <div className="space-y-3.5">
@@ -514,7 +514,7 @@ export function VenueProfileEdit({ profile, onSuccess }: VenueProfileEditProps) 
             return (
               <div key={day} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl border border-border bg-bg-elevated/20">
                 <div className="flex items-center gap-4">
-                  <span className="text-xs font-bold text-white w-24 block">{day}</span>
+                  <span className="text-xs font-bold text-text-primary w-24 block">{day}</span>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input 
                       type="checkbox"
@@ -570,7 +570,7 @@ export function VenueProfileEdit({ profile, onSuccess }: VenueProfileEditProps) 
             </div>
             <div className="flex flex-wrap gap-1.5">
               {watchedBlockedDates.map((d, i) => (
-                <div key={i} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-border bg-bg-elevated text-[10px] text-white">
+                <div key={i} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-border bg-bg-elevated text-[10px] text-text-primary">
                   <span>{d}</span>
                   <button type="button" onClick={() => {
                     const current = [...watchedBlockedDates];
@@ -601,7 +601,7 @@ export function VenueProfileEdit({ profile, onSuccess }: VenueProfileEditProps) 
             </div>
             <div className="flex flex-wrap gap-1.5">
               {watchedMaintenanceDays.map((d, i) => (
-                <div key={i} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-border bg-bg-elevated text-[10px] text-white">
+                <div key={i} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-border bg-bg-elevated text-[10px] text-text-primary">
                   <span>{d}</span>
                   <button type="button" onClick={() => {
                     const current = [...watchedMaintenanceDays];
@@ -620,7 +620,7 @@ export function VenueProfileEdit({ profile, onSuccess }: VenueProfileEditProps) 
       <div className="space-y-4">
         <div className="flex items-center gap-2 border-b border-border/30 pb-2">
           <Video className="h-4.5 w-4.5 text-primary" />
-          <span className="text-sm font-bold text-white uppercase tracking-wider">Social Links & Youtube Media</span>
+          <span className="text-sm font-bold text-text-primary uppercase tracking-wider">Social Links & Youtube Media</span>
         </div>
 
         <div className="space-y-3">
@@ -660,7 +660,7 @@ export function VenueProfileEdit({ profile, onSuccess }: VenueProfileEditProps) 
       <div className="space-y-4">
         <div className="flex items-center gap-2 border-b border-border/30 pb-2">
           <FileText className="h-4.5 w-4.5 text-primary" />
-          <span className="text-sm font-bold text-white uppercase tracking-wider">Credentials & Verification Documents</span>
+          <span className="text-sm font-bold text-text-primary uppercase tracking-wider">Credentials & Verification Documents</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

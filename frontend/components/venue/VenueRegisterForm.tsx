@@ -389,7 +389,7 @@ export function VenueRegisterForm() {
             <CheckCircle2 className="h-10 w-10 text-emerald-400" />
           </div>
         </div>
-        <h2 className="text-2xl font-black text-white">Registration Application Submitted!</h2>
+        <h2 className="text-2xl font-black text-text-primary">Registration Application Submitted!</h2>
         <p className="text-sm text-text-secondary leading-relaxed max-w-md mx-auto">
           Thank you for registering your venue. Our administrative audit team is reviewing your profile specs, facilities, and location. You will receive an email activation note once your profile verification changes status to Approved.
         </p>
@@ -416,7 +416,7 @@ export function VenueRegisterForm() {
           {/* STEP 1: ACCOUNT DETAILS */}
           {currentStep === 1 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-black text-white flex items-center gap-2">
+              <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-primary" /> Setup Owner Credentials
               </h3>
               <p className="text-xs text-text-secondary">Please configure your admin login email credentials.</p>
@@ -451,7 +451,7 @@ export function VenueRegisterForm() {
           {/* STEP 2: OWNER INFO */}
           {currentStep === 2 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-black text-white flex items-center gap-2">
+              <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
                 <FileText className="h-5 w-5 text-primary" /> Owner Information
               </h3>
               <p className="text-xs text-text-secondary">Provide profile properties for the primary business contact.</p>
@@ -492,7 +492,7 @@ export function VenueRegisterForm() {
           {/* STEP 3: VENUE DETAILS */}
           {currentStep === 3 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-black text-white flex items-center gap-2">
+              <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
                 <Building2 className="h-5 w-5 text-primary" /> Venue Information
               </h3>
               <p className="text-xs text-text-secondary">Describe your space highlights and capacity parameters.</p>
@@ -509,7 +509,7 @@ export function VenueRegisterForm() {
                   <select
                     id="reg_venue_type"
                     {...register("venue_type")}
-                    className="flex h-10 w-full rounded-lg border border-border bg-bg-card px-3 py-2 text-xs text-white focus:outline-none focus:border-primary"
+                    className="flex h-10 w-full rounded-lg border border-border bg-bg-card px-3 py-2 text-xs text-text-primary focus:outline-none focus:border-primary"
                   >
                     {VENUE_TYPES.map(vt => (
                       <option key={vt} value={vt}>{vt}</option>
@@ -535,7 +535,7 @@ export function VenueRegisterForm() {
                   <select
                     id="reg_indoor_outdoor"
                     {...register("indoor_outdoor")}
-                    className="flex h-10 w-full rounded-lg border border-border bg-bg-card px-3 py-2 text-xs text-white focus:outline-none focus:border-primary"
+                    className="flex h-10 w-full rounded-lg border border-border bg-bg-card px-3 py-2 text-xs text-text-primary focus:outline-none focus:border-primary"
                   >
                     <option value="Indoor">Indoor</option>
                     <option value="Outdoor">Outdoor</option>
@@ -578,7 +578,7 @@ export function VenueRegisterForm() {
           {/* STEP 4: ADDRESS & LOCATION */}
           {currentStep === 4 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-black text-white flex items-center gap-2">
+              <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-primary" /> Address & Location
               </h3>
               <p className="text-xs text-text-secondary">Specify where your space is situated for client directions.</p>
@@ -590,7 +590,7 @@ export function VenueRegisterForm() {
                     id="reg_country"
                     onChange={(e) => handleCountryChange(e.target.value)}
                     value={watch("country") || ""}
-                    className="flex h-10 w-full rounded-lg border border-border bg-bg-card px-3 py-2 text-xs text-white focus:outline-none focus:border-primary"
+                    className="flex h-10 w-full rounded-lg border border-border bg-bg-card px-3 py-2 text-xs text-text-primary focus:outline-none focus:border-primary"
                   >
                     <option value="">Select Country</option>
                     {countries.map(c => (
@@ -607,7 +607,7 @@ export function VenueRegisterForm() {
                     disabled={!watch("country") || loadingLocations}
                     onChange={(e) => handleStateChange(e.target.value)}
                     value={watch("state") || ""}
-                    className="flex h-10 w-full rounded-lg border border-border bg-bg-card px-3 py-2 text-xs text-white focus:outline-none focus:border-primary"
+                    className="flex h-10 w-full rounded-lg border border-border bg-bg-card px-3 py-2 text-xs text-text-primary focus:outline-none focus:border-primary"
                   >
                     <option value="">Select State</option>
                     {states.map(s => (
@@ -623,7 +623,7 @@ export function VenueRegisterForm() {
                     id="reg_city"
                     disabled={!watch("state") || loadingLocations}
                     {...register("city_id")}
-                    className="flex h-10 w-full rounded-lg border border-border bg-bg-card px-3 py-2 text-xs text-white focus:outline-none focus:border-primary"
+                    className="flex h-10 w-full rounded-lg border border-border bg-bg-card px-3 py-2 text-xs text-text-primary focus:outline-none focus:border-primary"
                   >
                     <option value="">Select City</option>
                     {cities.map(c => (
@@ -682,7 +682,7 @@ export function VenueRegisterForm() {
           {/* STEP 5: FACILITIES */}
           {currentStep === 5 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-black text-white">Included Facilities</h3>
+              <h3 className="text-lg font-black text-text-primary">Included Facilities</h3>
               <p className="text-xs text-text-secondary">Mark checkbox flags for all amenities available at the venue space.</p>
               
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-2">
@@ -692,7 +692,7 @@ export function VenueRegisterForm() {
                     <div 
                       key={f.id}
                       onClick={() => toggleFacility(f.id)}
-                      className={`flex items-center gap-2.5 p-3 rounded-xl border border-border/80 cursor-pointer transition-all ${checked ? "bg-primary/10 border-primary text-white" : "bg-bg-elevated/5 hover:bg-bg-elevated/10 text-text-muted"}`}
+                      className={`flex items-center gap-2.5 p-3 rounded-xl border border-border/80 cursor-pointer transition-all ${checked ? "bg-primary/10 border-primary text-text-primary" : "bg-bg-elevated/5 hover:bg-bg-elevated/10 text-text-muted"}`}
                     >
                       <input 
                         type="checkbox" 
@@ -711,7 +711,7 @@ export function VenueRegisterForm() {
           {/* STEP 6: PRICING */}
           {currentStep === 6 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-black text-white flex items-center gap-2">
+              <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
                 <DollarSign className="h-5 w-5 text-primary" /> Pricing & Deposit Settings
               </h3>
               <p className="text-xs text-text-secondary">Define rental tariffs structures for days and hourly slots.</p>
@@ -795,7 +795,7 @@ export function VenueRegisterForm() {
           {/* STEP 7: GALLERY & MEDIA */}
           {currentStep === 7 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-black text-white flex items-center gap-2">
+              <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
                 <ImageIcon className="h-5 w-5 text-primary" /> Gallery Showcase Uploads
               </h3>
               <p className="text-xs text-text-secondary">Upload high-resolution shots, cover images and embed virtual tours.</p>
@@ -868,7 +868,7 @@ export function VenueRegisterForm() {
 
                     <div className="space-y-1 max-h-32 overflow-y-auto">
                       {watchedYoutubeLinks.map((link, i) => (
-                        <div key={i} className="flex justify-between items-center text-xs bg-bg-elevated/40 p-2 rounded border border-border/50 text-white">
+                        <div key={i} className="flex justify-between items-center text-xs bg-bg-elevated/40 p-2 rounded border border-border/50 text-text-primary">
                           <span className="truncate max-w-[200px]">{link}</span>
                           <button type="button" onClick={() => removeYoutubeLink(i)} className="text-error hover:text-red-400">
                             <Trash2 className="h-3.5 w-3.5" />
@@ -890,7 +890,7 @@ export function VenueRegisterForm() {
           {/* STEP 8: AVAILABILITY SCHEDULER */}
           {currentStep === 8 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-black text-white flex items-center gap-2">
+              <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
                 <Clock className="h-5 w-5 text-primary" /> Availability Settings
               </h3>
               <p className="text-xs text-text-secondary">Configure available slots timings, blocked schedules and buffer times.</p>
@@ -912,7 +912,7 @@ export function VenueRegisterForm() {
                             }}
                             className="rounded border-border text-primary h-4.5 w-4.5"
                           />
-                          <span className="text-xs font-bold text-white w-20 capitalize">{day}</span>
+                          <span className="text-xs font-bold text-text-primary w-20 capitalize">{day}</span>
                         </div>
 
                         {dayData.available ? (
@@ -921,14 +921,14 @@ export function VenueRegisterForm() {
                               type="time" 
                               value={dayData.start}
                               onChange={(e) => setValue(`weekly_schedule.${day}.start`, e.target.value)}
-                              className="bg-bg-card border border-border rounded px-2 py-1 text-white"
+                              className="bg-bg-card border border-border rounded px-2 py-1 text-text-primary"
                             />
                             <span className="text-text-muted">to</span>
                             <input 
                               type="time" 
                               value={dayData.end}
                               onChange={(e) => setValue(`weekly_schedule.${day}.end`, e.target.value)}
-                              className="bg-bg-card border border-border rounded px-2 py-1 text-white"
+                              className="bg-bg-card border border-border rounded px-2 py-1 text-text-primary"
                             />
                           </div>
                         ) : (
@@ -950,7 +950,7 @@ export function VenueRegisterForm() {
                     </div>
                     <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
                       {watchedBlockedDates.map(d => (
-                        <span key={d} className="inline-flex items-center gap-1 bg-bg-elevated/45 text-white border border-border/80 px-2 py-0.5 rounded-full text-xs">
+                        <span key={d} className="inline-flex items-center gap-1 bg-bg-elevated/45 text-text-primary border border-border/80 px-2 py-0.5 rounded-full text-xs">
                           {d}
                           <button type="button" onClick={() => removeBlockedDate(d)} className="text-error hover:text-red-400 font-bold ml-1">×</button>
                         </span>
@@ -967,7 +967,7 @@ export function VenueRegisterForm() {
                     </div>
                     <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
                       {watchedMaintenanceDays.map(d => (
-                        <span key={d} className="inline-flex items-center gap-1 bg-bg-elevated/45 text-white border border-border/80 px-2 py-0.5 rounded-full text-xs">
+                        <span key={d} className="inline-flex items-center gap-1 bg-bg-elevated/45 text-text-primary border border-border/80 px-2 py-0.5 rounded-full text-xs">
                           {d}
                           <button type="button" onClick={() => removeMaintenanceDay(d)} className="text-error hover:text-red-400 font-bold ml-1">×</button>
                         </span>
@@ -984,7 +984,7 @@ export function VenueRegisterForm() {
                     </div>
                     <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
                       {watchedPublicHolidays.map(d => (
-                        <span key={d} className="inline-flex items-center gap-1 bg-bg-elevated/45 text-white border border-border/80 px-2 py-0.5 rounded-full text-xs">
+                        <span key={d} className="inline-flex items-center gap-1 bg-bg-elevated/45 text-text-primary border border-border/80 px-2 py-0.5 rounded-full text-xs">
                           {d}
                           <button type="button" onClick={() => removePublicHoliday(d)} className="text-error hover:text-red-400 font-bold ml-1">×</button>
                         </span>
@@ -998,7 +998,7 @@ export function VenueRegisterForm() {
                     <select
                       id="reg_buffer"
                       {...register("booking_buffer_time", { valueAsNumber: true })}
-                      className="flex h-10 w-full rounded-lg border border-border bg-bg-card px-3 py-2 text-xs text-white focus:outline-none focus:border-primary"
+                      className="flex h-10 w-full rounded-lg border border-border bg-bg-card px-3 py-2 text-xs text-text-primary focus:outline-none focus:border-primary"
                     >
                       <option value={0}>No Buffer</option>
                       <option value={15}>15 Minutes</option>
@@ -1016,7 +1016,7 @@ export function VenueRegisterForm() {
           {/* STEP 9: DOCUMENTS */}
           {currentStep === 9 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-black text-white flex items-center gap-2">
+              <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
                 <FileText className="h-5 w-5 text-primary" /> Verification Documents Upload
               </h3>
               <p className="text-xs text-text-secondary">Please submit scanned proof of your business licenses and ID cards.</p>
@@ -1026,7 +1026,7 @@ export function VenueRegisterForm() {
                 {/* PAN UPLOAD */}
                 <div className="p-4 border border-border/55 rounded-2xl bg-bg-elevated/5 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                   <div className="space-y-1">
-                    <Label className="font-extrabold text-white">PAN Card Document (Required)</Label>
+                    <Label className="font-extrabold text-text-primary">PAN Card Document (Required)</Label>
                     <p className="text-xs text-text-secondary">Scanned card in JPEG, PNG or PDF format.</p>
                     {watchedDocPan && (
                       <span className="inline-block text-[10px] text-emerald-400 truncate max-w-[250px]">{watchedDocPan}</span>
@@ -1056,7 +1056,7 @@ export function VenueRegisterForm() {
                 {/* GST UPLOAD */}
                 <div className="p-4 border border-border/55 rounded-2xl bg-bg-elevated/5 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                   <div className="space-y-1">
-                    <Label className="font-extrabold text-white">GST Certificate (Optional)</Label>
+                    <Label className="font-extrabold text-text-primary">GST Certificate (Optional)</Label>
                     <p className="text-xs text-text-secondary">Tax registration document scan.</p>
                     {watchedDocGst && (
                       <span className="inline-block text-[10px] text-emerald-400 truncate max-w-[250px]">{watchedDocGst}</span>
@@ -1085,7 +1085,7 @@ export function VenueRegisterForm() {
                 {/* OWNERSHIP PROOF */}
                 <div className="p-4 border border-border/55 rounded-2xl bg-bg-elevated/5 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                   <div className="space-y-1">
-                    <Label className="font-extrabold text-white">Ownership Proof (Required)</Label>
+                    <Label className="font-extrabold text-text-primary">Ownership Proof (Required)</Label>
                     <p className="text-xs text-text-secondary">Property registry deed scan or rental agreement.</p>
                     {watchedDocOwnershipProof && (
                       <span className="inline-block text-[10px] text-emerald-400 truncate max-w-[250px]">{watchedDocOwnershipProof}</span>
@@ -1115,7 +1115,7 @@ export function VenueRegisterForm() {
                 {/* GOVERNMENT ID */}
                 <div className="p-4 border border-border/55 rounded-2xl bg-bg-elevated/5 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                   <div className="space-y-1">
-                    <Label className="font-extrabold text-white">Government Issued ID (Required)</Label>
+                    <Label className="font-extrabold text-text-primary">Government Issued ID (Required)</Label>
                     <p className="text-xs text-text-secondary">Aadhaar card, Passport, or Driving License.</p>
                     {watchedDocGovId && (
                       <span className="inline-block text-[10px] text-emerald-400 truncate max-w-[250px]">{watchedDocGovId}</span>
@@ -1145,7 +1145,7 @@ export function VenueRegisterForm() {
                 {/* BUSINESS LICENSE */}
                 <div className="p-4 border border-border/55 rounded-2xl bg-bg-elevated/5 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                   <div className="space-y-1">
-                    <Label className="font-extrabold text-white">Business License (Optional)</Label>
+                    <Label className="font-extrabold text-text-primary">Business License (Optional)</Label>
                     <p className="text-xs text-text-secondary">Local municipal license certificate scan.</p>
                     {watchedDocLicense && (
                       <span className="inline-block text-[10px] text-emerald-400 truncate max-w-[250px]">{watchedDocLicense}</span>
@@ -1178,60 +1178,60 @@ export function VenueRegisterForm() {
           {/* STEP 10: TERMS & REVIEW */}
           {currentStep === 10 && (
             <div className="space-y-6">
-              <h3 className="text-lg font-black text-white flex items-center gap-2">
-                <ShieldCheck className="h-5.5 w-5.5 text-primary" /> Summary Review & Terms
+              <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5 text-primary" /> Review Application Details
               </h3>
-              
-              {/* Premium review details panel */}
-              <div className="border border-border rounded-2xl p-5 bg-bg-card/30 space-y-4 text-xs text-text-secondary max-h-[40vh] overflow-y-auto">
-                <h4 className="font-extrabold text-white text-sm border-b border-border/50 pb-2">Application Properties Summary</h4>
+              <p className="text-xs text-text-secondary">Please audit all your onboarding records before submitting.</p>
+
+              <div className="border border-border/80 rounded-2xl p-5 bg-bg-elevated/5">
+                <h4 className="font-extrabold text-text-primary text-sm border-b border-border/50 pb-2">Application Properties Summary</h4>
                 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-3.5 text-xs">
                   <div>
-                    <span className="font-bold text-text-muted">Account Email:</span>
-                    <p className="text-white font-semibold">{watch("email")}</p>
+                    <span className="font-bold text-text-muted">Contact Email:</span>
+                    <p className="text-text-primary font-semibold">{watch("email")}</p>
                   </div>
                   <div>
-                    <span className="font-bold text-text-muted">Mobile Number:</span>
-                    <p className="text-white font-semibold">{watch("mobile")}</p>
+                    <span className="font-bold text-text-muted">Contact Mobile:</span>
+                    <p className="text-text-primary font-semibold">{watch("mobile")}</p>
                   </div>
                   <div>
                     <span className="font-bold text-text-muted">Owner Name:</span>
-                    <p className="text-white font-semibold">{watch("owner_name")}</p>
+                    <p className="text-text-primary font-semibold">{watch("owner_name")}</p>
                   </div>
                   <div>
                     <span className="font-bold text-text-muted">Business Name:</span>
-                    <p className="text-white font-semibold">{watch("business_name")}</p>
+                    <p className="text-text-primary font-semibold">{watch("business_name")}</p>
                   </div>
                   <div>
                     <span className="font-bold text-text-muted">Venue Name:</span>
-                    <p className="text-white font-semibold">{watch("venue_name")}</p>
+                    <p className="text-text-primary font-semibold">{watch("venue_name")}</p>
                   </div>
                   <div>
                     <span className="font-bold text-text-muted">Venue Type:</span>
-                    <p className="text-white font-semibold">{watch("venue_type")}</p>
+                    <p className="text-text-primary font-semibold">{watch("venue_type")}</p>
                   </div>
                   <div>
                     <span className="font-bold text-text-muted">Location:</span>
-                    <p className="text-white font-semibold">{watch("address")}, {watch("state")}, {watch("country")}</p>
+                    <p className="text-text-primary font-semibold">{watch("address")}, {watch("state")}, {watch("country")}</p>
                   </div>
                   <div>
                     <span className="font-bold text-text-muted">Capacity Range:</span>
-                    <p className="text-white font-semibold">{watch("min_capacity")} to {watch("max_capacity")} guests</p>
+                    <p className="text-text-primary font-semibold">{watch("min_capacity")} to {watch("max_capacity")} guests</p>
                   </div>
                   <div>
                     <span className="font-bold text-text-muted">Daily Rent:</span>
-                    <p className="text-white font-semibold">INR {watch("base_price")}</p>
+                    <p className="text-text-primary font-semibold">INR {watch("base_price")}</p>
                   </div>
                   <div>
                     <span className="font-bold text-text-muted">Hourly Rate:</span>
-                    <p className="text-white font-semibold">INR {watch("hourly_price")}</p>
+                    <p className="text-text-primary font-semibold">INR {watch("hourly_price")}</p>
                   </div>
                 </div>
               </div>
 
               <div className="bg-bg-elevated/10 border border-border/80 p-5 rounded-2xl space-y-4 text-xs text-text-secondary leading-relaxed">
-                <h4 className="font-extrabold text-white">Terms of Platform Listing</h4>
+                <h4 className="font-extrabold text-text-primary">Terms of Platform Listing</h4>
                 <p>
                   1. Venue owners must declare authentic pricing details, capacity restrictions and coordinate metrics. Overcharging is strictly prohibited.
                 </p>
@@ -1250,7 +1250,7 @@ export function VenueRegisterForm() {
                   {...register("acceptTerms")}
                   className="rounded border-border text-primary h-5 w-5 cursor-pointer focus:ring-primary focus:ring-offset-0 bg-transparent"
                 />
-                <Label htmlFor="reg_terms" className="cursor-pointer text-xs font-bold text-white selection:bg-transparent">
+                <Label htmlFor="reg_terms" className="cursor-pointer text-xs font-bold text-text-primary selection:bg-transparent">
                   I accept the Terms of Service, Privacy Policy & Commission policies.
                 </Label>
               </div>

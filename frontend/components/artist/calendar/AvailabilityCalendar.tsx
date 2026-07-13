@@ -91,7 +91,7 @@ export function AvailabilityCalendar({ availability, onSave }: AvailabilityCalen
     <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 shadow-xl">
       <CardHeader className="pb-3 border-b border-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <CardTitle className="text-sm font-bold uppercase tracking-wider text-white">
+          <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary">
             On-Demand Calendar View
           </CardTitle>
           <span className="text-[10px] text-text-muted block">
@@ -104,7 +104,7 @@ export function AvailabilityCalendar({ availability, onSave }: AvailabilityCalen
           <Button variant="outline" size="icon" onClick={handlePrevMonth} className="h-8 w-8">
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <span className="text-xs font-bold text-white min-w-[80px] text-center uppercase tracking-wider">
+          <span className="text-xs font-bold text-text-primary min-w-[80px] text-center uppercase tracking-wider">
             {format(currentMonth, "MMMM yyyy")}
           </span>
           <Button variant="outline" size="icon" onClick={handleNextMonth} className="h-8 w-8">
@@ -166,7 +166,7 @@ export function AvailabilityCalendar({ availability, onSave }: AvailabilityCalen
             const isPastDay = isPast(day) && !isToday(day);
 
             // Determine status styling colors
-            let styleClass = "bg-bg-elevated/20 text-white hover:border-white/20";
+            let styleClass = "bg-bg-elevated/20 text-text-primary hover:border-primary/20";
             if (isGig && filterGigs) {
               styleClass = "bg-blue-500 border-blue-600 text-white shadow-md shadow-blue-500/20";
             } else if (isBlocked && filterBlocked) {

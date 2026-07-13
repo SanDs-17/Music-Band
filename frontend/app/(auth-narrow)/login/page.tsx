@@ -81,7 +81,7 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col space-y-6">
       <div className="flex flex-col space-y-2 text-center">
-        <h1 className="text-2xl font-bold tracking-tight text-white font-heading">
+        <h1 className="text-2xl font-bold tracking-tight text-text-primary font-heading">
           Welcome back
         </h1>
         <p className="text-sm text-text-secondary">

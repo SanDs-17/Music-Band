@@ -1,6 +1,5 @@
-import Link from "next/link";
-import { Music } from "lucide-react";
 import { GuestRoute } from "@/components/shared/GuestRoute";
+import { BrandLogo } from "@/components/shared/BrandLogo";
 
 export default function AuthLayout({
   children,
@@ -13,14 +12,7 @@ export default function AuthLayout({
         <div className="absolute inset-0 glow-overlay pointer-events-none" />
         <div className="relative z-10 w-full max-w-md">
           <div className="flex flex-col items-center mb-8">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="p-2 bg-primary rounded-lg">
-                <Music className="h-6 w-6 text-white" />
-              </div>
-              <span className="font-extrabold text-2xl tracking-tighter text-white">
-                Band<span className="text-primary">Connect</span>
-              </span>
-            </Link>
+            <BrandLogo iconSize="lg" textSize="2xl" />
           </div>
           <div className="glass-card rounded-2xl p-8 shadow-xl">
             {children}
@@ -30,3 +22,4 @@ export default function AuthLayout({
     </GuestRoute>
   );
 }
+

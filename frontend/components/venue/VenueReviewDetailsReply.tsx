@@ -73,10 +73,10 @@ export function VenueReviewDetailsReply({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md bg-bg-card border border-border/85 rounded-3xl p-6 shadow-2xl overflow-y-auto max-h-[85vh] text-white">
+      <DialogContent className="max-w-md bg-bg-card border border-border/85 rounded-3xl p-6 shadow-2xl overflow-y-auto max-h-[85vh] text-text-primary">
         
         <DialogHeader className="border-b border-border/40 pb-4">
-          <DialogTitle className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+          <DialogTitle className="text-lg font-bold text-text-primary tracking-tight flex items-center gap-2">
             <MessageSquare className="h-5 w-5 text-primary" />
             Review Details & Reply
           </DialogTitle>
@@ -93,7 +93,7 @@ export function VenueReviewDetailsReply({
                   <User className="h-3.5 w-3.5" />
                 </span>
                 <div>
-                  <p className="text-xs font-bold text-white">{review.client.name}</p>
+                  <p className="text-xs font-bold text-text-primary">{review.client.name}</p>
                   <p className="text-[9px] text-text-muted">
                     {format(new Date(review.created_at), "MMM d, yyyy")}
                   </p>
@@ -134,7 +134,7 @@ export function VenueReviewDetailsReply({
 
           {/* Reply Textarea Form */}
           <div className="space-y-2">
-            <Label htmlFor="reply_area" className="text-xs font-bold text-white">Your Professional Reply</Label>
+            <Label htmlFor="reply_area" className="text-xs font-bold text-text-primary">Your Professional Reply</Label>
             <Textarea
               id="reply_area"
               placeholder="e.g. Thank you for hosting your wedding at our Grand Hall! We were thrilled to assist in making your day memorable."
@@ -152,7 +152,7 @@ export function VenueReviewDetailsReply({
           <Button
             variant="ghost"
             onClick={onClose}
-            className="text-text-muted hover:text-white h-9.5 text-xs font-semibold w-full sm:w-auto"
+            className="text-text-muted hover:text-text-primary h-9.5 text-xs font-semibold w-full sm:w-auto"
           >
             Cancel
           </Button>

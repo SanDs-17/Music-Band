@@ -11,6 +11,7 @@ import { useTheme } from "@/providers/theme-provider";
 import { AdminBreadcrumb } from "@/components/layout/admin/AdminBreadcrumb";
 import { AdminProfileMenu } from "@/components/layout/admin/AdminProfileMenu";
 import { AdminNotifications } from "@/components/layout/admin/AdminNotifications";
+import { BrandLogo } from "@/components/shared/BrandLogo";
 
 export function AdminHeader() {
   const { toggleSidebar } = useUIStore();
@@ -18,22 +19,19 @@ export function AdminHeader() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-30 glass-panel h-16 flex items-center justify-between px-6">
-      {/* Brand logo & Hamburger sidebar trigger */}
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
           size="icon"
-          className="text-text-secondary hover:text-white"
+          className="text-text-secondary hover:text-text-primary"
           onClick={toggleSidebar}
         >
           <Menu className="h-5 w-5" />
         </Button>
         <Link href="/admin/dashboard" className="hidden sm:flex items-center gap-2">
-          <span className="font-extrabold text-lg tracking-tighter text-white">
-            Band<span className="text-primary">Connect</span>
-            <span className="ml-1 text-[10px] bg-primary/20 text-primary border border-primary/30 px-1.5 py-0.5 rounded-full font-bold">
-              Admin
-            </span>
+          <BrandLogo withLink={false} iconSize="sm" textSize="lg" />
+          <span className="ml-1 text-[10px] bg-primary/20 text-primary border border-primary/30 px-1.5 py-0.5 rounded-full font-bold">
+            Admin
           </span>
         </Link>
         <div className="hidden lg:block border-l border-border/60 pl-4">
@@ -57,7 +55,7 @@ export function AdminHeader() {
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 text-text-secondary hover:text-white"
+          className="h-8 w-8 text-text-secondary hover:text-text-primary"
           onClick={toggleTheme}
         >
           {theme === "dark" ? <Sun className="h-4.5 w-4.5" /> : <Moon className="h-4.5 w-4.5" />}

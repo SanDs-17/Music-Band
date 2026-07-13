@@ -3488,4 +3488,11 @@ BandConnect uses one centralized theme provider (`frontend/providers/theme-provi
 - Local development may use the clearly identified development-only fallback (`bandconnect-local-development-secret-not-for-production`) when `ENVIRONMENT=development` and `SECRET_KEY` is empty. Real JWT authentication still works with this key.
 - The development fallback must never be accepted in production.
 - Production must fail fast (via `effective_secret_key` property in `config.py`) when `SECRET_KEY` is missing, empty, or equal to the known development fallback.
-- A `backend/.env.example` file must document all required environment variables with safe placeholder values only.
+- A `backend/.env.example` file must document all required environment variables with safe placeholder values only.
+
+### 27.6 Onboarding Layout Policy
+
+- Complex Artist and Venue onboarding workflows must use the approved responsive onboarding workspace and must not be constrained by narrow authentication-card layouts.
+- Multi-step progress components must remain within their content boundary on desktop and adapt to a compact progress representation on smaller screens.
+- Related short fields may use responsive multi-column grids. Complex fields, media, calendars, and review sections must receive appropriate full-width layouts.
+- All onboarding steps must be verified in both Light and Dark themes at supported desktop, tablet, and mobile viewport sizes.

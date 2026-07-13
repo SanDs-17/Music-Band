@@ -58,7 +58,7 @@ export function DialogContent({ className, children, onClose, ...props }: Dialog
         <Button
           variant="ghost"
           size="icon"
-          className="absolute right-4 top-4 rounded-full h-8 w-8 text-text-secondary hover:text-white"
+          className="absolute right-4 top-4 rounded-full h-8 w-8 text-text-secondary hover:text-text-primary"
           onClick={onClose}
         >
           <X className="h-4 w-4" />
@@ -88,7 +88,7 @@ export function DialogTitle({
 }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={cn("text-lg font-semibold leading-none tracking-tight text-white", className)}
+      className={cn("text-lg font-semibold leading-none tracking-tight text-text-primary", className)}
       {...props}
     />
   );

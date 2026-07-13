@@ -33,7 +33,7 @@ export function AdminStatCard({
         <Icon className="h-4 w-4 text-text-muted" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-black text-white font-heading">{value}</div>
+        <div className="text-2xl font-black text-text-primary font-heading">{value}</div>
         {(trend || description) && (
           <div className="flex items-center gap-2 mt-2">
             {trend && (
@@ -92,7 +92,7 @@ export function AdminRecentActivitiesWidget({ activities }: RecentActivitiesProp
             activities.map((act) => (
               <div key={act.id} className="flex items-center justify-between p-3.5 text-xs">
                 <div className="min-w-0 pr-4">
-                  <p className="font-bold text-white truncate">{act.action}</p>
+                  <p className="font-bold text-text-primary truncate">{act.action}</p>
                   <p className="text-[10px] text-text-muted mt-0.5">By user: {act.user}</p>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
@@ -149,7 +149,7 @@ export function AdminHealthCheckWidget({ statuses }: { statuses: ServiceHealthSt
                     : "bg-destructive"
                 )}
               />
-              <span className="text-[10px] font-bold uppercase text-white">{s.status}</span>
+              <span className="text-[10px] font-bold uppercase text-text-primary">{s.status}</span>
             </div>
           </div>
         ))}

@@ -16,12 +16,17 @@
   --color-text-muted: #555570;
 }
 
+html {
+  color-scheme: dark;
+}
+
 /* ── Light theme overrides ───────────────────────────────────────────────────
    Applied when ThemeProvider sets data-theme="light" on <html>.
    Only override background, border, and text tokens.
    Brand colours (primary, secondary, accent) remain constant.
 */
 [data-theme="light"] {
+  color-scheme: light;
   --color-bg-primary: #F5F5F7;
   --color-bg-card: #FFFFFF;
   --color-bg-elevated: #EBEBEF;

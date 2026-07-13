@@ -38,9 +38,9 @@ function CustomAreaChart() {
           </linearGradient>
         </defs>
         {/* Grid lines */}
-        <line x1="0" y1="50" x2="500" y2="50" stroke="#2a2a3a" strokeWidth="0.5" strokeDasharray="4" />
-        <line x1="0" y1="100" x2="500" y2="100" stroke="#2a2a3a" strokeWidth="0.5" strokeDasharray="4" />
-        <line x1="0" y1="150" x2="500" y2="150" stroke="#2a2a3a" strokeWidth="0.5" strokeDasharray="4" />
+        <line x1="0" y1="50" x2="500" y2="50" stroke="var(--color-border)" strokeWidth="0.5" strokeDasharray="4" />
+        <line x1="0" y1="100" x2="500" y2="100" stroke="var(--color-border)" strokeWidth="0.5" strokeDasharray="4" />
+        <line x1="0" y1="150" x2="500" y2="150" stroke="var(--color-border)" strokeWidth="0.5" strokeDasharray="4" />
 
         {/* Shaded Area */}
         <path
@@ -239,7 +239,7 @@ export default function AdminDashboardPage() {
                   <div key={app.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 text-xs">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-white text-sm">{app.name}</span>
+                        <span className="font-bold text-text-primary text-sm">{app.name}</span>
                         <Badge variant="secondary">{app.type}</Badge>
                       </div>
                       <p className="text-text-secondary mt-1">{app.email} • {app.time}</p>
@@ -291,7 +291,7 @@ export default function AdminDashboardPage() {
                     <AvatarFallback className="text-[10px] font-bold">{usr.initials}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-white truncate">{usr.name}</p>
+                    <p className="font-bold text-text-primary truncate">{usr.name}</p>
                     <p className="text-[10px] text-text-muted mt-0.5 uppercase font-bold">{usr.role}</p>
                   </div>
                 </div>

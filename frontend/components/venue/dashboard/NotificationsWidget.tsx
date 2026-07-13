@@ -20,7 +20,7 @@ export function NotificationsWidget({ notifications }: NotificationsWidgetProps)
   return (
     <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 shadow-xl h-full">
       <CardHeader className="pb-3 border-b border-border/50 flex items-center justify-between">
-        <CardTitle className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+        <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
           <BellRing className="h-4 w-4 text-primary" />
           <span>System & Booking Alerts</span>
         </CardTitle>
@@ -46,7 +46,7 @@ export function NotificationsWidget({ notifications }: NotificationsWidgetProps)
               </div>
               <div className="space-y-0.5 flex-1">
                 <div className="flex justify-between items-start gap-2">
-                  <span className={`text-xs font-bold text-white block ${!notif.is_read ? "text-primary" : ""}`}>
+                  <span className={`text-xs font-bold text-text-primary block ${!notif.is_read ? "text-primary" : ""}`}>
                     {notif.title}
                   </span>
                   <span className="text-[9px] text-text-muted shrink-0">

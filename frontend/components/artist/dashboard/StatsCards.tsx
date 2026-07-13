@@ -106,7 +106,7 @@ export function StatsCards({ stats }: StatsCardsProps) {
                 <span className="text-xs font-semibold text-text-secondary block">
                   {card.title}
                 </span>
-                <span className="text-xl font-extrabold text-white block">
+                <span className="text-xl font-extrabold text-text-primary block">
                   {card.value}
                 </span>
                 <span className="text-[10px] text-text-muted block">

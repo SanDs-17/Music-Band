@@ -14,7 +14,7 @@ export function UpcomingEventsWidget({ events }: UpcomingEventsWidgetProps) {
   return (
     <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 shadow-xl h-full">
       <CardHeader className="pb-3 border-b border-border/50">
-        <CardTitle className="text-sm font-bold uppercase tracking-wider text-white">
+        <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary">
           Upcoming Events
         </CardTitle>
       </CardHeader>
@@ -25,7 +25,7 @@ export function UpcomingEventsWidget({ events }: UpcomingEventsWidgetProps) {
             className="p-3.5 rounded-xl border border-border/60 bg-bg-elevated/10 space-y-2 hover:border-primary/40 transition-colors"
           >
             <div className="flex justify-between items-start gap-2">
-              <span className="text-xs font-bold text-white block">{event.event_name}</span>
+              <span className="text-xs font-bold text-text-primary block">{event.event_name}</span>
               <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
                 {event.status}
               </span>
@@ -48,7 +48,7 @@ export function UpcomingEventsWidget({ events }: UpcomingEventsWidgetProps) {
 
             <div className="flex justify-between items-center border-t border-border/40 pt-2 text-xs">
               <span className="text-text-muted">Payout amount:</span>
-              <span className="font-bold text-white">{formatCurrency(event.amount)}</span>
+              <span className="font-bold text-text-primary">{formatCurrency(event.amount)}</span>
             </div>
           </div>
         ))}

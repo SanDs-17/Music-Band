@@ -35,13 +35,13 @@ export function VenueReviewsSummary({
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6 border border-border/80 bg-bg-card/45 backdrop-blur-md rounded-2xl shadow-lg text-white">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6 border border-border/80 bg-bg-card/45 backdrop-blur-md rounded-2xl shadow-lg text-text-primary">
       
       {/* Average rating card */}
       <div className="flex flex-col items-center justify-center text-center space-y-2 md:border-r border-border/40 pb-6 md:pb-0">
         <span className="text-[10px] uppercase font-bold text-text-muted tracking-wider">Overall Rating</span>
         <div className="flex items-baseline gap-1 pt-1">
-          <span className="text-5xl font-black text-white leading-none">{averageRating.toFixed(1)}</span>
+          <span className="text-5xl font-black text-text-primary leading-none">{averageRating.toFixed(1)}</span>
           <span className="text-xs text-text-muted">/ 5.0</span>
         </div>
         <div className="flex items-center gap-1 justify-center">

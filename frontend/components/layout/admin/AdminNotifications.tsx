@@ -66,7 +66,7 @@ export function AdminNotifications() {
       {/* Bell Trigger */}
       <button
         onClick={() => setOpen(!open)}
-        className="relative p-2 rounded-full border border-border/80 text-text-secondary hover:text-white hover:border-primary/50 transition-colors focus:outline-none focus:ring-1 focus:ring-primary/45 cursor-pointer"
+        className="relative p-2 rounded-full border border-border/80 text-text-secondary hover:text-text-primary hover:border-primary/50 transition-colors focus:outline-none focus:ring-1 focus:ring-primary/45 cursor-pointer"
         type="button"
       >
         <Bell className="h-4 w-4" />
@@ -82,7 +82,7 @@ export function AdminNotifications() {
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div className="absolute right-0 mt-2 w-80 rounded-md border border-border bg-bg-elevated text-text-primary shadow-lg z-50 animate-in fade-in zoom-in-95 duration-100 p-1">
             <div className="flex items-center justify-between px-3 py-2 border-b border-border/50">
-              <span className="text-xs font-bold text-white">System Notifications</span>
+              <span className="text-xs font-bold text-text-primary">System Notifications</span>
               {unreadCount > 0 && (
                 <button
                   onClick={markAllRead}
@@ -106,7 +106,7 @@ export function AdminNotifications() {
                   >
                     <div className="mt-0.5 shrink-0">{getIcon(n.type)}</div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold text-white truncate">{n.title}</p>
+                      <p className="text-xs font-bold text-text-primary truncate">{n.title}</p>
                       <p className="text-[11px] text-text-secondary mt-0.5 leading-normal">{n.message}</p>
                       <div className="flex items-center gap-1 text-[9px] text-text-muted mt-1.5 font-semibold">
                         <Clock className="h-3 w-3" />

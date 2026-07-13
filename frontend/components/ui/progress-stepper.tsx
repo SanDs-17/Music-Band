@@ -12,16 +12,16 @@ interface ProgressStepperProps {
 export function ProgressStepper({ steps, currentStep }: ProgressStepperProps) {
   return (
     <div className="w-full py-4">
-      {/* Mobile progress indicator */}
-      <div className="md:hidden flex items-center justify-between mb-4 px-2">
+      {/* Mobile/Tablet progress indicator */}
+      <div className="lg:hidden flex items-center justify-between mb-4 px-2">
         <span className="text-xs font-semibold text-primary uppercase tracking-wider">
           Step {currentStep} of {steps.length}
         </span>
-        <span className="text-sm font-bold text-white">
+        <span className="text-sm font-bold text-text-primary">
           {steps[currentStep - 1]}
         </span>
       </div>
-      <div className="md:hidden w-full h-1.5 bg-border rounded-full overflow-hidden">
+      <div className="lg:hidden w-full h-1.5 bg-border rounded-full overflow-hidden">
         <div 
           className="h-full bg-primary transition-all duration-300 ease-out" 
           style={{ width: `${(currentStep / steps.length) * 100}%` }}
@@ -29,7 +29,7 @@ export function ProgressStepper({ steps, currentStep }: ProgressStepperProps) {
       </div>
 
       {/* Desktop horizontal stepper */}
-      <div className="hidden md:flex items-center justify-between relative">
+      <div className="hidden lg:flex items-center justify-between relative">
         <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-border -translate-y-1/2 -z-10" />
         <div 
           className="absolute top-1/2 left-0 right-0 h-0.5 bg-primary -translate-y-1/2 -z-10 transition-all duration-500 ease-in-out" 
@@ -45,14 +45,14 @@ export function ProgressStepper({ steps, currentStep }: ProgressStepperProps) {
           const isActive = currentStep === stepNum;
 
           return (
-            <div key={idx} className="flex flex-col items-center gap-2 px-1 relative bg-bg-card md:px-3">
+            <div key={idx} className="flex flex-col items-center gap-2 px-1 relative bg-bg-card lg:px-3">
               <div
                 className={cn(
                   "w-9 h-9 rounded-full border-2 flex items-center justify-center font-bold text-sm transition-all duration-300",
                   isCompleted
                     ? "bg-primary border-primary text-white shadow-md shadow-primary/20 scale-105"
                     : isActive
-                    ? "bg-white border-white text-black ring-4 ring-primary/20 scale-110"
+                    ? "bg-text-primary border-text-primary text-bg-card ring-4 ring-primary/20 scale-110"
                     : "bg-bg-elevated border-border text-text-muted"
                 )}
               >
@@ -65,7 +65,7 @@ export function ProgressStepper({ steps, currentStep }: ProgressStepperProps) {
               <span
                 className={cn(
                   "text-xs font-medium max-w-[80px] text-center truncate transition-colors duration-300",
-                  isActive ? "text-white font-bold" : isCompleted ? "text-primary font-medium" : "text-text-secondary"
+                  isActive ? "text-text-primary font-bold" : isCompleted ? "text-primary font-medium" : "text-text-secondary"
                 )}
               >
                 {step}

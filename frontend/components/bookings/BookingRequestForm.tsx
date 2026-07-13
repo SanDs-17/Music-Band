@@ -83,13 +83,37 @@ export function BookingRequestForm({
 
   const onSubmit = async (data: BookingRequestFormData) => {
     try {
-      const submissionData = {
-        ...data,
+      // Compose a human-readable location string from address parts
+      const locationParts = [
+        data.location?.trim(),
+        data.address?.trim(),
+        data.city?.trim(),
+        data.state?.trim(),
+        data.country?.trim(),
+      ].filter(Boolean);
+      const composedLocation = locationParts.join(", ") || "Location not specified";
+
+      // Map frontend field names to backend API contract
+      const apiPayload: Record<string, unknown> = {
         artist_profile_id: artistProfileId || null,
         venue_id: venueId || null,
+        // Backend expects event_name, not event_title
+        event_name: data.event_title,
+        event_date: data.event_date,
+        start_time: data.start_time,
+        end_time: data.end_time,
+        location: composedLocation,
+        // Ensure numeric types — valueAsNumber already guarantees this at RHF layer
+        proposed_price: Number(data.proposed_price),
+        notes: [
+          data.special_requests?.trim() ? `Special requests: ${data.special_requests.trim()}` : "",
+          data.notes?.trim() || "",
+        ]
+          .filter(Boolean)
+          .join("\n") || null,
       };
 
-      const res = await bookingService.createBooking(submissionData);
+      const res = await bookingService.createBooking(apiPayload);
       toast.success("Booking request submitted successfully!");
       if (onSuccess) onSuccess(res.id);
     } catch (err) {
@@ -223,7 +247,7 @@ export function BookingRequestForm({
                   type="number"
                   placeholder="50"
                   className="text-white text-xs bg-bg-card border-border/80"
-                  {...register("guest_count")}
+                  {...register("guest_count", { valueAsNumber: true })}
                 />
                 {errors.guest_count && (
                   <p className="text-xs text-error font-medium">{errors.guest_count.message}</p>
@@ -240,12 +264,13 @@ export function BookingRequestForm({
                   type="number"
                   placeholder="15000"
                   className="text-white text-xs bg-bg-card border-border/80"
-                  {...register("proposed_price")}
+                  {...register("proposed_price", { valueAsNumber: true })}
                 />
                 {errors.proposed_price && (
                   <p className="text-xs text-error font-medium">{errors.proposed_price.message}</p>
                 )}
               </div>
+
             </div>
           </div>
 

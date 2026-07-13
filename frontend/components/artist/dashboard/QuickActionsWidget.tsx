@@ -62,7 +62,7 @@ export function QuickActionsWidget() {
   return (
     <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 shadow-xl">
       <CardHeader className="pb-3 border-b border-border/50">
-        <CardTitle className="text-sm font-bold uppercase tracking-wider text-white">
+        <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary">
           Quick Actions
         </CardTitle>
       </CardHeader>
@@ -73,13 +73,13 @@ export function QuickActionsWidget() {
             <Link
               key={idx}
               href={act.href}
-              className={`flex items-start gap-3 p-3.5 rounded-xl border border-border/50 bg-bg-elevated/20 transition-all duration-300 hover:scale-[1.01] hover:border-white/20 group ${act.color}`}
+              className={`flex items-start gap-3 p-3.5 rounded-xl border border-border/50 bg-bg-elevated/20 transition-all duration-300 hover:scale-[1.01] hover:border-primary/20 group ${act.color}`}
             >
               <div className="p-2 rounded-lg bg-bg-elevated border border-border/80">
                 <Icon className="h-4 w-4" />
               </div>
               <div className="space-y-0.5 flex-1">
-                <span className="text-xs font-bold text-white group-hover:text-primary transition-colors block">
+                <span className="text-xs font-bold text-text-primary group-hover:text-primary transition-colors block">
                   {act.label}
                 </span>
                 <span className="text-[10px] text-text-muted block">

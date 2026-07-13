@@ -17,7 +17,7 @@ export function BookingRequestsWidget({ requests }: BookingRequestsWidgetProps) 
   return (
     <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 shadow-xl h-full">
       <CardHeader className="pb-3 border-b border-border/50">
-        <CardTitle className="text-sm font-bold uppercase tracking-wider text-white">
+        <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary">
           Recent Gigs Requested
         </CardTitle>
       </CardHeader>
@@ -29,7 +29,7 @@ export function BookingRequestsWidget({ requests }: BookingRequestsWidgetProps) 
           >
             <div className="flex justify-between items-start gap-2">
               <div className="space-y-0.5">
-                <span className="text-xs font-bold text-white block">{req.event_name}</span>
+                <span className="text-xs font-bold text-text-primary block">{req.event_name}</span>
                 <span className="text-[10px] text-text-secondary flex items-center gap-1">
                   <User className="h-3.5 w-3.5 text-text-muted" />
                   {req.client_name}
@@ -45,7 +45,7 @@ export function BookingRequestsWidget({ requests }: BookingRequestsWidgetProps) 
                 <Calendar className="h-3.5 w-3.5" />
                 {req.date}
               </span>
-              <span className="font-bold text-white">{formatCurrency(req.amount)}</span>
+              <span className="font-bold text-text-primary">{formatCurrency(req.amount)}</span>
             </div>
 
             <div className="flex gap-2 pt-2 border-t border-border/40">

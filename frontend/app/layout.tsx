@@ -4,6 +4,7 @@ import "@/styles/globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { AuthProvider } from "@/providers/auth-provider";
 import { PermissionProvider } from "@/providers/permission-provider";
+import { DeveloperPreviewProvider } from "@/providers/developer-preview-provider";
 import { QueryProvider } from "@/providers/query-provider";
 import { ToastProvider } from "@/providers/toast-provider";
 
@@ -48,8 +49,10 @@ export default function RootLayout({
           <ThemeProvider>
             <AuthProvider>
               <PermissionProvider>
-                {children}
-                <ToastProvider />
+                <DeveloperPreviewProvider>
+                  {children}
+                  <ToastProvider />
+                </DeveloperPreviewProvider>
               </PermissionProvider>
             </AuthProvider>
           </ThemeProvider>

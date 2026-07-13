@@ -26,16 +26,16 @@ export function AdminBreadcrumb() {
 
   return (
     <nav className="flex items-center gap-2 text-xs font-semibold text-text-secondary select-none">
-      <Link href="/admin/dashboard" className="flex items-center hover:text-white transition-colors">
+      <Link href="/admin/dashboard" className="flex items-center hover:text-text-primary transition-colors">
         <Home className="h-3.5 w-3.5" />
       </Link>
       {breadcrumbs.map((crumb) => (
         <React.Fragment key={crumb.href}>
           <ChevronRight className="h-3.5 w-3.5 text-text-muted shrink-0" />
           {crumb.isLast ? (
-            <span className="text-white font-bold">{crumb.label}</span>
+            <span className="text-text-primary font-bold">{crumb.label}</span>
           ) : (
-            <Link href={crumb.href} className="hover:text-white transition-colors">
+            <Link href={crumb.href} className="hover:text-text-primary transition-colors">
               {crumb.label}
             </Link>
           )}

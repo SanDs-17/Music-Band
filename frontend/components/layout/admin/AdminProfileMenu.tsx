@@ -32,7 +32,7 @@ export function AdminProfileMenu() {
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div className="absolute right-0 mt-2 w-56 rounded-md border border-border bg-bg-elevated text-text-primary shadow-lg z-50 animate-in fade-in zoom-in-95 duration-100 p-1">
             <div className="px-3 py-2 border-b border-border/50">
-              <p className="text-sm font-bold text-white truncate">{user.name}</p>
+              <p className="text-sm font-bold text-text-primary truncate">{user.name}</p>
               <p className="text-xs text-text-secondary truncate">{user.email}</p>
             </div>
             <div className="py-1">

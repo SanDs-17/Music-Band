@@ -50,7 +50,7 @@ export function ConflictChecker() {
   return (
     <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 shadow-xl">
       <CardHeader className="pb-3 border-b border-border/50">
-        <CardTitle className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+        <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
           <CalendarCheck className="h-4.5 w-4.5 text-primary" />
           Event Conflict Checker
         </CardTitle>
@@ -64,7 +64,6 @@ export function ConflictChecker() {
               type="date"
               value={date}
               onChange={e => setDate(e.target.value)}
-              className="text-white"
             />
           </div>
 
@@ -115,7 +114,7 @@ export function ConflictChecker() {
               )}
             </div>
             <div className="space-y-1">
-              <span className="text-xs font-bold text-white block">
+              <span className="text-xs font-bold text-text-primary block">
                 {result.hasConflict ? "Slot Blocked / Conflicting" : "Slot is Open"}
               </span>
               <p className="text-[11px] leading-relaxed">

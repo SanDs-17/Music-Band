@@ -3,6 +3,10 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("access_token")?.value;
+  const isDevMode = 
+    process.env.NODE_ENV === "development" &&
+    process.env.NEXT_PUBLIC_DEV_MODE === "true";
+  const isPreview = isDevMode && request.cookies.get("dev_preview_enabled")?.value === "true";
   const { pathname } = request.nextUrl;
 
   // Protect dashboard routes
@@ -12,7 +16,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/venue") ||
     pathname.startsWith("/admin");
 
-  if (isDashboardRoute && !token) {
+  if (isDashboardRoute && !token && !isPreview) {
     // Redirect to login page if unauthorized
     const loginUrl = new URL("/login", request.url);
     return NextResponse.redirect(loginUrl);

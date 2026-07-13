@@ -55,6 +55,48 @@ class ArtistRegisterRequest(BaseSchema):
     availability: Dict[str, Any] = Field(default_factory=dict)
 
 
+class ArtistProfileCreateRequest(BaseSchema):
+    """
+    Used by an already-authenticated artist user (registered via /auth/register)
+    to create their initial Artist/Band profile. No email/password needed — 
+    the user account already exists. user_id is taken from JWT claims.
+    """
+    # Identity
+    display_name: str = Field(..., min_length=2, max_length=150)
+    mobile_number: str = Field(..., min_length=10, max_length=20)
+    bio: Optional[str] = Field(None, max_length=2000)
+    years_of_experience: int = Field(0, ge=0)
+    profile_image: Optional[str] = None
+    cover_image: Optional[str] = None
+
+    # Band composition
+    band_type: str = Field("Solo", description="Solo, Duo, Trio, 4 Members, 5+ Members")
+    total_members: int = Field(1, ge=1)
+
+    # Performance categories (names resolved to categories on backend)
+    languages: List[str] = Field(default_factory=list)
+    genres: List[str] = Field(default_factory=list)
+
+    # Pricing
+    base_rate: float = Field(0.0, ge=0.0)
+    currency: str = Field("INR", max_length=10)
+    travel_radius: float = Field(0.0, ge=0.0)
+    travel_charges: float = Field(0.0, ge=0.0)
+    min_booking_hours: float = Field(0.0, ge=0.0)
+    max_booking_hours: float = Field(0.0, ge=0.0)
+
+    # Equipment
+    equipment: Dict[str, bool] = Field(default_factory=dict)
+
+    # Media
+    gallery: List[str] = Field(default_factory=list)
+    videos: List[str] = Field(default_factory=list)
+    youtube_links: List[str] = Field(default_factory=list)
+
+    # Availability
+    availability: Dict[str, Any] = Field(default_factory=dict)
+
+
 class ArtistProfileResponse(BaseSchema):
     id: UUID
     user_id: UUID

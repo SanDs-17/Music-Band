@@ -119,13 +119,13 @@ export function StatsCards({ stats }: StatsCardsProps) {
       {cardData.map((card, idx) => {
         const Icon = card.icon;
         const CardElement = (
-          <Card className={`bg-bg-card/45 backdrop-blur-md border ${card.bg} transition-all duration-300 hover:scale-[1.02] shadow-lg h-full ${card.href ? "cursor-pointer hover:border-white/30" : ""}`}>
+          <Card className={`bg-bg-card/45 backdrop-blur-md border ${card.bg} transition-all duration-300 hover:scale-[1.02] shadow-lg h-full ${card.href ? "cursor-pointer hover:border-primary/30" : ""}`}>
             <CardContent className="p-4 flex items-center justify-between h-full">
               <div className="space-y-1">
                 <span className="text-xs font-semibold text-text-secondary block">
                   {card.title}
                 </span>
-                <span className="text-xl font-extrabold text-white block">
+                <span className="text-xl font-extrabold text-text-primary block">
                   {card.value}
                 </span>
                 <span className="text-[10px] text-text-muted block">

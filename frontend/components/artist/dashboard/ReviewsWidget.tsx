@@ -13,7 +13,7 @@ export function ReviewsWidget({ reviews }: ReviewsWidgetProps) {
   return (
     <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 shadow-xl h-full">
       <CardHeader className="pb-3 border-b border-border/50">
-        <CardTitle className="text-sm font-bold uppercase tracking-wider text-white">
+        <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary">
           Recent Client Reviews
         </CardTitle>
       </CardHeader>
@@ -24,10 +24,10 @@ export function ReviewsWidget({ reviews }: ReviewsWidgetProps) {
             className="p-3.5 rounded-xl border border-border/60 bg-bg-elevated/10 space-y-2 hover:border-primary/40 transition-colors"
           >
             <div className="flex justify-between items-center">
-              <span className="text-xs font-bold text-white block">{rev.client_name}</span>
+              <span className="text-xs font-bold text-text-primary block">{rev.client_name}</span>
               <div className="flex items-center gap-0.5 text-yellow-400">
                 <Star className="h-3 w-3 fill-current" />
-                <span className="text-xs font-bold text-white">{rev.rating}</span>
+                <span className="text-xs font-bold text-text-primary">{rev.rating}</span>
               </div>
             </div>
 

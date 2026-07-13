@@ -19,7 +19,7 @@ export function RevenueChartWidget({ data }: RevenueChartWidgetProps) {
   return (
     <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 shadow-xl h-full">
       <CardHeader className="pb-3 border-b border-border/50 flex flex-row items-center justify-between">
-        <CardTitle className="text-sm font-bold uppercase tracking-wider text-white">
+        <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary">
           Monthly Revenue Performance
         </CardTitle>
         <span className="text-[10px] text-text-muted bg-bg-elevated border border-border px-2 py-0.5 rounded-full">
@@ -31,11 +31,11 @@ export function RevenueChartWidget({ data }: RevenueChartWidgetProps) {
         <div className="h-56 flex items-end gap-3 sm:gap-6 pt-6 px-2 relative border-b border-border/60">
           
           {/* Grid lines helper */}
-          <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-10">
-            <div className="w-full border-t border-white" />
-            <div className="w-full border-t border-white" />
-            <div className="w-full border-t border-white" />
-            <div className="w-full border-t border-white" />
+          <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-40">
+            <div className="w-full border-t border-border/40" />
+            <div className="w-full border-t border-border/40" />
+            <div className="w-full border-t border-border/40" />
+            <div className="w-full border-t border-border/40" />
           </div>
 
           {data.map((item, idx) => {
@@ -51,7 +51,7 @@ export function RevenueChartWidget({ data }: RevenueChartWidgetProps) {
               >
                 {/* Tooltip on hover */}
                 {isActive && (
-                  <div className="absolute -top-12 bg-white text-black text-[10px] font-bold py-1 px-2 rounded-lg shadow-lg z-10 before:content-[''] before:absolute before:top-full before:left-1/2 before:-translate-x-1/2 before:border-4 before:border-transparent before:border-t-white w-28 text-center">
+                  <div className="absolute -top-12 bg-bg-elevated text-text-primary border border-border text-[10px] font-bold py-1 px-2 rounded-lg shadow-lg z-10 before:content-[''] before:absolute before:top-full before:left-1/2 before:-translate-x-1/2 before:border-4 before:border-transparent before:border-t-border w-28 text-center">
                     <p className="truncate">{formatCurrency(item.revenue)}</p>
                     <p className="text-[8px] text-text-secondary">{item.bookings} slots booked</p>
                   </div>
@@ -78,13 +78,13 @@ export function RevenueChartWidget({ data }: RevenueChartWidgetProps) {
         <div className="grid grid-cols-2 gap-4 text-center">
           <div className="p-3 bg-bg-elevated/20 border border-border/50 rounded-xl space-y-1">
             <span className="text-[10px] text-text-secondary uppercase font-bold tracking-wider block">Peak Month</span>
-            <span className="text-sm font-extrabold text-white block">
+            <span className="text-sm font-extrabold text-text-primary block">
               {data.find(d => d.revenue === maxRevenue)?.month || "N/A"}
             </span>
           </div>
           <div className="p-3 bg-bg-elevated/20 border border-border/50 rounded-xl space-y-1">
             <span className="text-[10px] text-text-secondary uppercase font-bold tracking-wider block">Avg Revenue</span>
-            <span className="text-sm font-extrabold text-white block">
+            <span className="text-sm font-extrabold text-text-primary block">
               {formatCurrency(data.reduce((acc, d) => acc + d.revenue, 0) / data.length)}
             </span>
           </div>

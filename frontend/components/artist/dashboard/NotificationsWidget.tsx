@@ -13,7 +13,7 @@ export function NotificationsWidget({ notifications }: NotificationsWidgetProps)
   return (
     <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 shadow-xl h-full">
       <CardHeader className="pb-3 border-b border-border/50">
-        <CardTitle className="text-sm font-bold uppercase tracking-wider text-white">
+        <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary">
           Inbox Alert logs
         </CardTitle>
       </CardHeader>
@@ -34,7 +34,7 @@ export function NotificationsWidget({ notifications }: NotificationsWidgetProps)
               </div>
               <div className="space-y-1 flex-1">
                 <div className="flex justify-between items-start gap-2">
-                  <span className={`text-xs font-bold text-white block ${!notif.is_read ? "text-primary" : ""}`}>{notif.title}</span>
+                  <span className={`text-xs font-bold text-text-primary block ${!notif.is_read ? "text-primary" : ""}`}>{notif.title}</span>
                   <span className="text-[9px] text-text-muted shrink-0">{notif.created_at}</span>
                 </div>
                 <p className="text-xs text-text-secondary leading-relaxed">

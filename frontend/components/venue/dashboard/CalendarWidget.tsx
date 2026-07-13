@@ -53,7 +53,7 @@ export function CalendarWidget({ overview }: CalendarWidgetProps) {
   return (
     <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 shadow-xl h-full flex flex-col justify-between">
       <CardHeader className="pb-3 border-b border-border/50">
-        <CardTitle className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+        <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
           <Calendar className="h-4 w-4 text-primary" />
           <span>Calendar Summary</span>
         </CardTitle>
@@ -70,7 +70,7 @@ export function CalendarWidget({ overview }: CalendarWidgetProps) {
               >
                 <div className="space-y-0.5">
                   <span className="text-[10px] text-text-secondary block font-semibold">{item.label}</span>
-                  <span className="text-lg font-black text-white block">{item.value}</span>
+                  <span className="text-lg font-black text-text-primary block">{item.value}</span>
                   <span className="text-[8px] text-text-muted block">{item.description}</span>
                 </div>
                 <div className={`p-1.5 rounded-lg bg-bg-elevated ${item.color}`}>
@@ -84,7 +84,7 @@ export function CalendarWidget({ overview }: CalendarWidgetProps) {
         <div className="mt-4 p-3 bg-bg-elevated/20 border border-border/50 rounded-xl flex items-center justify-between">
           <div className="space-y-0.5">
             <span className="text-[9px] text-text-secondary uppercase font-bold block">Status Rules</span>
-            <span className="text-xs text-white font-semibold">{overview.availability_summary}</span>
+            <span className="text-xs text-text-primary font-semibold">{overview.availability_summary}</span>
           </div>
           <div className="flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1 rounded-full text-emerald-400 text-[10px] font-bold">
             <CheckCircle2 className="h-3 w-3" />

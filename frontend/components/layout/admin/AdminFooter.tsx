@@ -8,10 +8,10 @@ export function AdminFooter() {
         &copy; {new Date().getFullYear()} BandConnect. Admin Control Console. Confidential.
       </p>
       <div className="flex gap-4 text-[10px] text-text-muted">
-        <Link href="/admin/system/logs" className="hover:text-white transition-colors">
+        <Link href="/admin/system/logs" className="hover:text-text-primary transition-colors">
           System Logs
         </Link>
-        <Link href="/admin/system/health" className="hover:text-white transition-colors">
+        <Link href="/admin/system/health" className="hover:text-text-primary transition-colors">
           Health Status
         </Link>
         <span>v1.0.0</span>

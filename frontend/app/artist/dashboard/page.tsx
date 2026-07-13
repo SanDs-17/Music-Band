@@ -45,7 +45,7 @@ export default function ArtistDashboardPage() {
       {/* Header Panel */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-2xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">
             Performer Console
           </h1>
           <p className="text-xs text-text-secondary">
@@ -78,7 +78,7 @@ export default function ArtistDashboardPage() {
               <span className="text-xs font-bold text-text-secondary uppercase tracking-wider block">
                 Profile Completion Status
               </span>
-              <h3 className="text-lg font-extrabold text-white">
+              <h3 className="text-lg font-extrabold text-text-primary">
                 Complete your setup to receive gigs!
               </h3>
               <p className="text-xs text-text-secondary leading-relaxed">
@@ -109,7 +109,7 @@ export default function ArtistDashboardPage() {
                   strokeLinecap="round"
                 />
               </svg>
-              <span className="absolute text-xl font-extrabold text-white">
+              <span className="absolute text-xl font-extrabold text-text-primary">
                 {data.profile_completion}%
               </span>
             </div>

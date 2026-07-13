@@ -213,15 +213,15 @@ export function ArtistRegisterForm() {
         <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-full text-emerald-400">
           <CheckCircle2 className="h-16 w-16" />
         </div>
-        <h1 className="text-3xl font-extrabold text-white tracking-tight">Onboarding Request Received!</h1>
+        <h1 className="text-3xl font-extrabold text-text-primary tracking-tight">Onboarding Request Received!</h1>
         <p className="text-text-secondary text-base leading-relaxed">
           Thank you for registering your profile on BandConnect. Your request is currently under review by our admin team.
         </p>
         <div className="bg-bg-elevated/40 border border-border/80 w-full p-4 rounded-xl text-left space-y-2">
-          <h4 className="text-sm font-bold text-white uppercase tracking-wider">What happens next?</h4>
+          <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider">What happens next?</h4>
           <ul className="text-xs text-text-secondary space-y-1 list-disc pl-5">
             <li>Our moderation team will verify your details, photos, and links.</li>
-          <li>We&apos;ll contact you at <span className="text-white font-medium">{watch("email")}</span> if we need additional info.</li>
+          <li>We&apos;ll contact you at <span className="text-text-primary font-medium">{watch("email")}</span> if we need additional info.</li>
           <li>Once approved, you&apos;ll receive login credentials to access your Band Dashboard!</li>
           </ul>
         </div>
@@ -236,7 +236,7 @@ export function ArtistRegisterForm() {
     <div className="max-w-4xl mx-auto bg-bg-card/25 backdrop-blur-lg border border-border/80 p-6 md:p-8 rounded-3xl shadow-2xl space-y-8">
       {/* Title */}
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-extrabold text-white tracking-tight font-heading bg-gradient-to-r from-white via-text-secondary to-primary bg-clip-text text-transparent">
+        <h1 className="text-3xl font-extrabold text-text-primary tracking-tight font-heading bg-gradient-to-r from-text-primary via-text-secondary to-primary bg-clip-text text-transparent">
           Band & Performer Registration
         </h1>
         <p className="text-sm text-text-secondary">
@@ -253,7 +253,7 @@ export function ArtistRegisterForm() {
         {/* STEP 1: ACCOUNT DETAILS */}
         {currentStep === 1 && (
           <div className="space-y-4 transition-all duration-300">
-            <h2 className="text-xl font-bold text-white">Step 1: Account Information</h2>
+            <h2 className="text-xl font-bold text-text-primary">Step 1: Account Information</h2>
             <p className="text-xs text-text-secondary">Setup your account credentials to log in.</p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -287,7 +287,7 @@ export function ArtistRegisterForm() {
         {/* STEP 2: BASIC INFO */}
         {currentStep === 2 && (
           <div className="space-y-4 transition-all duration-300">
-            <h2 className="text-xl font-bold text-white">Step 2: Basic Profile Information</h2>
+            <h2 className="text-xl font-bold text-text-primary">Step 2: Basic Profile Information</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
@@ -354,14 +354,14 @@ export function ArtistRegisterForm() {
         {/* STEP 3: BAND DETAILS */}
         {currentStep === 3 && (
           <div className="space-y-6 transition-all duration-300">
-            <h2 className="text-xl font-bold text-white">Step 3: Performance Details</h2>
+            <h2 className="text-xl font-bold text-text-primary">Step 3: Performance Details</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="band_type">Band / Performer Type</Label>
                 <select 
                   id="band_type"
-                  className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-white text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-text-primary text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                   {...register("band_type")}
                   onChange={(e) => {
                     setValue("band_type", e.target.value as ArtistRegisterFormData["band_type"]);
@@ -398,7 +398,7 @@ export function ArtistRegisterForm() {
                       className={`h-9 px-4 rounded-full text-xs font-semibold border transition-all ${
                         isSelected 
                           ? "bg-primary border-primary text-white shadow-md shadow-primary/25 scale-105" 
-                          : "bg-bg-elevated/40 border-border text-text-secondary hover:text-white"
+                          : "bg-bg-elevated/40 border-border text-text-secondary hover:text-text-primary"
                       }`}
                     >
                       {lang}
@@ -423,7 +423,7 @@ export function ArtistRegisterForm() {
                       className={`h-9 px-4 rounded-full text-xs font-semibold border transition-all ${
                         isSelected 
                           ? "bg-primary border-primary text-white shadow-md shadow-primary/25 scale-105" 
-                          : "bg-bg-elevated/40 border-border text-text-secondary hover:text-white"
+                          : "bg-bg-elevated/40 border-border text-text-secondary hover:text-text-primary"
                       }`}
                     >
                       {genre}
@@ -439,7 +439,7 @@ export function ArtistRegisterForm() {
         {/* STEP 4: PRICING */}
         {currentStep === 4 && (
           <div className="space-y-4 transition-all duration-300">
-            <h2 className="text-xl font-bold text-white">Step 4: Pricing & Travel Charges</h2>
+            <h2 className="text-xl font-bold text-text-primary">Step 4: Pricing & Travel Charges</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
@@ -481,7 +481,7 @@ export function ArtistRegisterForm() {
         {/* STEP 5: EQUIPMENT */}
         {currentStep === 5 && (
           <div className="space-y-4 transition-all duration-300">
-            <h2 className="text-xl font-bold text-white">Step 5: Sound & Instruments Equipment</h2>
+            <h2 className="text-xl font-bold text-text-primary">Step 5: Sound & Instruments Equipment</h2>
             <p className="text-xs text-text-secondary">Indicate what hardware you bring to gigs by default.</p>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
@@ -496,7 +496,7 @@ export function ArtistRegisterForm() {
                     className={`h-20 flex flex-col items-center justify-center gap-1.5 rounded-xl border text-sm font-semibold transition-all ${
                       isSelected
                         ? "bg-primary/10 border-primary text-primary shadow-sm"
-                        : "bg-bg-elevated/20 border-border text-text-secondary hover:text-white"
+                        : "bg-bg-elevated/20 border-border text-text-secondary hover:text-text-primary"
                     }`}
                   >
                     <span className="capitalize">{label}</span>
@@ -513,7 +513,7 @@ export function ArtistRegisterForm() {
         {/* STEP 6: MEDIA */}
         {currentStep === 6 && (
           <div className="space-y-6 transition-all duration-300">
-            <h2 className="text-xl font-bold text-white">Step 6: Media Gallery & Demo Links</h2>
+            <h2 className="text-xl font-bold text-text-primary">Step 6: Media Gallery & Demo Links</h2>
 
             {/* Gallery Section */}
             <div className="space-y-3">
@@ -590,7 +590,7 @@ export function ArtistRegisterForm() {
         {/* STEP 7: AVAILABILITY */}
         {currentStep === 7 && (
           <div className="space-y-4 transition-all duration-300">
-            <h2 className="text-xl font-bold text-white">Step 7: Weekly Performance Schedule</h2>
+            <h2 className="text-xl font-bold text-text-primary">Step 7: Weekly Performance Schedule</h2>
             <p className="text-xs text-text-secondary">Toggle days and set standard hours you&apos;re open for bookings.</p>
 
             <div className="border border-border rounded-2xl divide-y divide-border overflow-hidden bg-bg-card/45">
@@ -606,7 +606,7 @@ export function ArtistRegisterForm() {
                         onChange={() => handleDayAvailabilityToggle(day)}
                         className="w-4.5 h-4.5 accent-primary rounded bg-bg-card border-border"
                       />
-                      <label htmlFor={`check-${day}`} className={`text-sm font-semibold ${dayConfig.available ? "text-white" : "text-text-muted"}`}>
+                      <label htmlFor={`check-${day}`} className={`text-sm font-semibold ${dayConfig.available ? "text-text-primary" : "text-text-muted"}`}>
                         {day}
                       </label>
                     </div>
@@ -618,14 +618,14 @@ export function ArtistRegisterForm() {
                           type="time"
                           value={dayConfig.start}
                           onChange={(e) => handleDayTimeChange(day, "start", e.target.value)}
-                          className="h-8 px-2 text-xs rounded border border-border bg-bg-elevated text-white focus:outline-none"
+                          className="h-8 px-2 text-xs rounded border border-border bg-bg-elevated text-text-primary focus:outline-none"
                         />
                         <span className="text-xs text-text-muted">to</span>
                         <input
                           type="time"
                           value={dayConfig.end}
                           onChange={(e) => handleDayTimeChange(day, "end", e.target.value)}
-                          className="h-8 px-2 text-xs rounded border border-border bg-bg-elevated text-white focus:outline-none"
+                          className="h-8 px-2 text-xs rounded border border-border bg-bg-elevated text-text-primary focus:outline-none"
                         />
                       </div>
                     )}
@@ -639,12 +639,12 @@ export function ArtistRegisterForm() {
         {/* STEP 8: TERMS */}
         {currentStep === 8 && (
           <div className="space-y-6 transition-all duration-300">
-            <h2 className="text-xl font-bold text-white">Step 8: Accept Terms & Submit Application</h2>
+            <h2 className="text-xl font-bold text-text-primary">Step 8: Accept Terms & Submit Application</h2>
 
             <div className="p-4 bg-bg-elevated/30 border border-border rounded-2xl space-y-3">
               <div className="flex items-center gap-2 text-primary">
                 <ShieldCheck className="h-5 w-5" />
-                <h4 className="text-sm font-bold text-white uppercase tracking-wider">Performer Platform Policy</h4>
+                <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider">Performer Platform Policy</h4>
               </div>
               <div className="text-xs text-text-secondary leading-relaxed max-h-56 overflow-y-auto pr-1 space-y-2">
                 <p>By registering on BandConnect, you agree to the following marketplace covenants:</p>

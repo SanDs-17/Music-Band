@@ -8,6 +8,7 @@ from app.core.dependencies import get_db, get_current_user
 from app.core.exceptions import NotFoundException
 from app.features.artists.schemas import (
     ArtistRegisterRequest,
+    ArtistProfileCreateRequest,
     ArtistProfileResponse,
     ArtistDashboardResponse,
     ArtistProfileUpdate,
@@ -45,6 +46,33 @@ async def register_artist(
         data=_format_artist_profile(artist),
         message="Artist profile successfully registered."
     )
+
+
+@router.post(
+    "/me",
+    response_model=SuccessResponse[ArtistProfileResponse],
+    status_code=status.HTTP_201_CREATED,
+    summary="Create artist profile for an already-authenticated artist user"
+)
+async def create_artist_profile(
+    data: ArtistProfileCreateRequest,
+    current_user_claims: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Creates the Artist/Band domain profile for a user who was registered via the standard
+    /auth/register endpoint with role=artist. The user account already exists.
+    This endpoint creates the missing ArtistProfile record.
+    Returns 409 Conflict if a profile already exists for this user.
+    """
+    from app.core.exceptions import ConflictException
+    artist = service.create_artist_profile_for_user(db, current_user_claims["sub"], data)
+    return SuccessResponse(
+        success=True,
+        data=_format_artist_profile(artist),
+        message="Artist profile created successfully."
+    )
+
 
 @router.get(
     "/me/dashboard",

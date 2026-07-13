@@ -1,34 +1,27 @@
 import Link from "next/link";
-import { Music } from "lucide-react";
+import { BrandLogo } from "@/components/shared/BrandLogo";
 
 export function Footer() {
   return (
     <footer className="border-t border-border bg-bg-card/50 py-12 px-6">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
         <div className="flex flex-col items-center md:items-start gap-2">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="p-1.5 bg-primary rounded-lg">
-              <Music className="h-5 w-5 text-white" />
-            </div>
-            <span className="font-extrabold text-lg tracking-tighter text-white">
-              Band<span className="text-primary">Connect</span>
-            </span>
-          </Link>
+          <BrandLogo iconSize="md" textSize="lg" />
           <p className="text-xs text-text-muted mt-2">
             Direct live entertainment bookings, automated schedules, secure payouts.
           </p>
         </div>
         <div className="flex gap-6 text-sm">
-          <Link href="/artists" className="text-text-secondary hover:text-white transition-colors">
+          <Link href="/artists" className="text-text-secondary hover:text-text-primary transition-colors">
             Artists
           </Link>
-          <Link href="/venues" className="text-text-secondary hover:text-white transition-colors">
+          <Link href="/venues" className="text-text-secondary hover:text-text-primary transition-colors">
             Venues
           </Link>
-          <Link href="/terms" className="text-text-secondary hover:text-white transition-colors">
+          <Link href="/terms" className="text-text-secondary hover:text-text-primary transition-colors">
             Terms of Service
           </Link>
-          <Link href="/privacy" className="text-text-secondary hover:text-white transition-colors">
+          <Link href="/privacy" className="text-text-secondary hover:text-text-primary transition-colors">
             Privacy Policy
           </Link>
         </div>
@@ -41,3 +34,4 @@ export function Footer() {
     </footer>
   );
 }
+

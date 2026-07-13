@@ -51,13 +51,13 @@ export function Drawer({
         <div className="flex-1 flex flex-col min-h-0">
           <div className="flex items-center justify-between pb-4 border-b border-border/50">
             <div>
-              {title && <h3 className="text-base font-bold text-white font-heading">{title}</h3>}
+              {title && <h3 className="text-base font-bold text-text-primary font-heading">{title}</h3>}
               {description && <p className="text-xs text-text-secondary mt-1">{description}</p>}
             </div>
             <Button
               variant="ghost"
               size="icon"
-              className="text-text-secondary hover:text-white"
+              className="text-text-secondary hover:text-text-primary"
               onClick={onClose}
             >
               <X className="h-4 w-4" />

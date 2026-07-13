@@ -49,12 +49,12 @@ export function VenueRevenueChart({ data }: VenueRevenueChartProps) {
     : "";
 
   return (
-    <div className="p-5 border border-border/80 bg-bg-card/45 backdrop-blur-md rounded-2xl shadow-lg text-white space-y-4">
+    <div className="p-5 border border-border/80 bg-bg-card/45 backdrop-blur-md rounded-2xl shadow-lg text-text-primary space-y-4">
       
       <div className="flex justify-between items-center border-b border-border/30 pb-2.5">
         <div className="space-y-0.5">
           <span className="text-[10px] uppercase font-bold text-text-muted tracking-wider">Revenue Trend</span>
-          <h4 className="text-xs font-bold text-white">Last 6 Months Performance</h4>
+          <h4 className="text-xs font-bold text-text-primary">Last 6 Months Performance</h4>
         </div>
       </div>
 
@@ -78,7 +78,7 @@ export function VenueRevenueChart({ data }: VenueRevenueChartProps) {
                   y1={y} 
                   x2={width - paddingRight} 
                   y2={y} 
-                  stroke="#2a2e35" 
+                  stroke="var(--color-border)" 
                   strokeWidth="0.8" 
                   strokeDasharray="4 4" 
                 />
@@ -146,7 +146,7 @@ export function VenueRevenueChart({ data }: VenueRevenueChartProps) {
                   cy={p.y} 
                   r="4" 
                   fill="#10b981" 
-                  stroke="#ffffff" 
+                  stroke="var(--color-bg-card)" 
                   strokeWidth="1.5" 
                 />
               )}
@@ -157,7 +157,7 @@ export function VenueRevenueChart({ data }: VenueRevenueChartProps) {
         {/* Hover Tooltip Overlay */}
         {hoveredIdx !== null && points[hoveredIdx] && (
           <div 
-            className="absolute bg-bg-card border border-border p-2.5 rounded-xl shadow-2xl text-white text-[10px] pointer-events-none transition-all duration-75"
+            className="absolute bg-bg-elevated border border-border p-2.5 rounded-xl shadow-2xl text-text-primary text-[10px] pointer-events-none transition-all duration-75"
             style={{
               left: `${(points[hoveredIdx].x / width) * 100}%`,
               top: `${(points[hoveredIdx].y / height) * 100 - 25}%`,

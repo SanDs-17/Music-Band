@@ -83,13 +83,13 @@ export function Sidebar({ role }: SidebarProps) {
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all group",
                   isActive
                     ? "bg-primary text-white font-semibold"
-                    : "text-text-secondary hover:bg-bg-elevated hover:text-white"
+                    : "text-text-secondary hover:bg-bg-elevated hover:text-text-primary"
                 )}
               >
                 <Icon
                   className={cn(
                     "h-4 w-4 shrink-0 transition-transform group-hover:scale-110",
-                    isActive ? "text-white" : "text-text-secondary group-hover:text-white"
+                    isActive ? "text-white" : "text-text-secondary group-hover:text-text-primary"
                   )}
                 />
                 <span>{item.name}</span>

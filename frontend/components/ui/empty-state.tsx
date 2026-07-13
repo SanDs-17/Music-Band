@@ -27,7 +27,7 @@ export function EmptyState({
       <div className="p-4 bg-bg-elevated rounded-full text-text-secondary border border-border/50 mb-4 animate-pulse">
         {icon}
       </div>
-      <h3 className="text-lg font-bold text-white mb-2">{title}</h3>
+      <h3 className="text-lg font-bold text-text-primary mb-2">{title}</h3>
       <p className="text-sm text-text-secondary mb-6 leading-relaxed max-w-sm">
         {description}
       </p>

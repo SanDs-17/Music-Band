@@ -4,6 +4,7 @@ Supports dropdown listings options and administrator management controls.
 """
 
 from typing import Optional, List
+from uuid import UUID
 from fastapi import APIRouter, Depends, status, Query
 from sqlalchemy.orm import Session
 from app.core.dependencies import get_db, get_current_admin
@@ -41,7 +42,7 @@ area_crud = AreaCRUD()
     summary="Get all countries"
 )
 async def list_countries(db: Session = Depends(get_db)):
-    countries = country_crud.get_multi(db, limit=100)
+    countries, _ = country_crud.get_multi(db, limit=100)
     return SuccessResponse(success=True, data=countries, message="Countries retrieved.")
 
 
@@ -52,7 +53,7 @@ async def list_countries(db: Session = Depends(get_db)):
     summary="Get states by country"
 )
 async def list_states(
-    country_id: str = Query(..., description="Country UUID filter parameter"),
+    country_id: UUID = Query(..., description="Country UUID filter parameter"),
     db: Session = Depends(get_db)
 ):
     states = state_crud.get_states_by_country(db, country_id)
@@ -66,7 +67,7 @@ async def list_states(
     summary="Get cities by state"
 )
 async def list_cities(
-    state_id: str = Query(..., description="State UUID filter parameter"),
+    state_id: UUID = Query(..., description="State UUID filter parameter"),
     db: Session = Depends(get_db)
 ):
     cities = city_crud.get_cities_by_state(db, state_id)

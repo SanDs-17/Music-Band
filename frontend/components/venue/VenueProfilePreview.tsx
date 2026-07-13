@@ -72,7 +72,7 @@ export function VenueProfilePreview({ profile }: VenueProfilePreviewProps) {
 
           <div className="text-center sm:text-left space-y-1.5 flex-1 pb-2">
             <div className="flex flex-wrap justify-center sm:justify-start items-center gap-2">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-heading">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-text-primary tracking-tight font-heading">
                 {profile.name}
               </h2>
               <Badge variant="outline" className="text-[9px] py-0.5 px-2 bg-emerald-500/10 border-emerald-500/20 text-emerald-400 capitalize">
@@ -91,7 +91,7 @@ export function VenueProfilePreview({ profile }: VenueProfilePreviewProps) {
           {/* Capacity settings indicator */}
           <div className="bg-bg-elevated border border-border/80 px-5 py-3 rounded-2xl text-center self-stretch sm:self-auto flex flex-col justify-center shadow-md">
             <span className="text-[10px] text-text-secondary uppercase font-bold tracking-wider block">Max Guests</span>
-            <span className="text-lg font-black text-white block">
+            <span className="text-lg font-black text-text-primary block">
               {profile.capacity} pax
             </span>
           </div>
@@ -107,7 +107,7 @@ export function VenueProfilePreview({ profile }: VenueProfilePreviewProps) {
           {/* About Space */}
           <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow-xl">
             <CardContent className="p-5 space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-primary" />
                 About The Event Space
               </h3>
@@ -120,7 +120,7 @@ export function VenueProfilePreview({ profile }: VenueProfilePreviewProps) {
           {/* Operational Hours */}
           <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow-xl">
             <CardContent className="p-5 space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
                 <Clock className="h-4 w-4 text-primary" />
                 Operating Schedule
               </h3>
@@ -130,7 +130,7 @@ export function VenueProfilePreview({ profile }: VenueProfilePreviewProps) {
                   const item = weeklySchedule[day];
                   return (
                     <div key={day} className="flex justify-between items-center p-2.5 rounded-xl border border-border/40 bg-bg-elevated/10">
-                      <span className="text-xs font-bold text-white">{day}</span>
+                      <span className="text-xs font-bold text-text-primary">{day}</span>
                       {item.available ? (
                         <span className="text-xs text-text-secondary font-medium">
                           {item.start} - {item.end}
@@ -151,7 +151,7 @@ export function VenueProfilePreview({ profile }: VenueProfilePreviewProps) {
               {blockedDates.length > 0 && (
                 <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow-xl">
                   <CardContent className="p-5 space-y-3">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-red-400" />
                       Blocked Dates
                     </h3>
@@ -169,7 +169,7 @@ export function VenueProfilePreview({ profile }: VenueProfilePreviewProps) {
               {maintenanceDays.length > 0 && (
                 <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow-xl">
                   <CardContent className="p-5 space-y-3">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-amber-400" />
                       Maintenance Days
                     </h3>
@@ -190,7 +190,7 @@ export function VenueProfilePreview({ profile }: VenueProfilePreviewProps) {
           {youtubeLinks.length > 0 && (
             <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow-xl">
               <CardContent className="p-5 space-y-3">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
                   <Video className="h-4 w-4 text-primary" />
                   YouTube Walkthrough Media
                 </h3>
@@ -200,7 +200,7 @@ export function VenueProfilePreview({ profile }: VenueProfilePreviewProps) {
                       <span className="p-1.5 bg-primary/10 border border-primary/20 text-primary rounded-md shrink-0">
                         <Video className="h-3.5 w-3.5" />
                       </span>
-                      <a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-text-secondary truncate hover:text-white hover:underline">
+                      <a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-text-secondary truncate hover:text-text-primary hover:underline">
                         {url}
                       </a>
                     </div>
@@ -218,12 +218,12 @@ export function VenueProfilePreview({ profile }: VenueProfilePreviewProps) {
           {/* Location & Map details */}
           <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow-xl">
             <CardContent className="p-5 space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
                 <MapPin className="h-4.5 w-4.5 text-primary" />
                 Location Address
               </h3>
               <div className="space-y-2.5 text-xs text-text-secondary">
-                <p className="leading-relaxed font-medium text-white">{profile.address}</p>
+                <p className="leading-relaxed font-medium text-text-primary">{profile.address}</p>
                 {profile.metadata_fields?.landmark && <p>Landmark: {profile.metadata_fields.landmark}</p>}
                 <p>City / Area: {profile.city.name}, {profile.metadata_fields?.area || "N/A"}</p>
                 <p>State / Pin: {profile.state}, {profile.pincode}</p>
@@ -245,22 +245,22 @@ export function VenueProfilePreview({ profile }: VenueProfilePreviewProps) {
           {/* Capacities card */}
           <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow-xl">
             <CardContent className="p-5 space-y-3">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
                 <Users className="h-4.5 w-4.5 text-primary" />
                 Guest Capacity Rules
               </h3>
               <div className="space-y-3 pt-2">
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-text-secondary">Min capacity</span>
-                  <span className="font-black text-white">{profile.min_capacity} guests</span>
+                  <span className="font-black text-text-primary">{profile.min_capacity} guests</span>
                 </div>
                 <div className="flex justify-between items-center text-xs pt-1">
                   <span className="text-text-secondary">Max capacity</span>
-                  <span className="font-black text-white">{profile.capacity} guests</span>
+                  <span className="font-black text-text-primary">{profile.capacity} guests</span>
                 </div>
                 <div className="flex justify-between items-center text-xs pt-1">
                   <span className="text-text-secondary">Buffer time</span>
-                  <span className="font-black text-white">{profile.availability_rules?.booking_buffer_time || 0} Hours</span>
+                  <span className="font-black text-text-primary">{profile.availability_rules?.booking_buffer_time || 0} Hours</span>
                 </div>
               </div>
             </CardContent>
@@ -278,7 +278,7 @@ export function VenueProfilePreview({ profile }: VenueProfilePreviewProps) {
                   const hasFacility = profile.facilities?.includes(opt.id);
                   if (!hasFacility) return null;
                   return (
-                    <Badge key={opt.id} variant="secondary" className="text-[10px] py-1 font-semibold text-white">
+                    <Badge key={opt.id} variant="secondary" className="text-[10px] py-1 font-semibold text-text-primary">
                       {opt.label}
                     </Badge>
                   );
@@ -293,14 +293,14 @@ export function VenueProfilePreview({ profile }: VenueProfilePreviewProps) {
           {/* Contact Representative info */}
           <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow-xl">
             <CardContent className="p-5 space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
                 <FileCheck className="h-4.5 w-4.5 text-primary" />
                 Contact Representative
               </h3>
               <div className="space-y-3 text-xs text-text-secondary">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                  <span className="font-bold text-white">{profile.user.name}</span>
+                  <span className="font-bold text-text-primary">{profile.user.name}</span>
                 </div>
                 {profile.business_name && <p className="pl-6">Business Name: {profile.business_name}</p>}
                 {profile.metadata_fields?.contact_person && (

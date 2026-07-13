@@ -43,7 +43,7 @@ export default function RegisterPage() {
   return (
     <div className="flex flex-col space-y-6">
       <div className="flex flex-col space-y-2 text-center">
-        <h1 className="text-2xl font-bold tracking-tight text-white font-heading">Create an account</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-text-primary font-heading">Create an account</h1>
         <p className="text-sm text-text-secondary">
           Enter your details below to create your platform profile
         </p>
@@ -83,7 +83,18 @@ export default function RegisterPage() {
             control={control}
             name="role_name"
             render={({ field }) => (
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select
+                onValueChange={(val) => {
+                  if (val === "artist") {
+                    router.push("/register/artist");
+                  } else if (val === "venue_owner") {
+                    router.push("/register/venue");
+                  } else {
+                    field.onChange(val);
+                  }
+                }}
+                value={field.value}
+              >
                 <SelectTrigger id="role_name" className="w-full">
                   <SelectValue placeholder="Select account role type" />
                 </SelectTrigger>

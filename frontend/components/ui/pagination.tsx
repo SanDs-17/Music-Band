@@ -22,8 +22,8 @@ export function Pagination({
   return (
     <div className="flex items-center justify-between gap-4 py-4 border-t border-border mt-6">
       <div className="text-sm text-text-secondary">
-        Page <span className="font-semibold text-white">{currentPage}</span> of{" "}
-        <span className="font-semibold text-white">{totalPages}</span>
+        Page <span className="font-semibold text-text-primary">{currentPage}</span> of{" "}
+        <span className="font-semibold text-text-primary">{totalPages}</span>
       </div>
       <div className="flex items-center gap-2">
         <Button

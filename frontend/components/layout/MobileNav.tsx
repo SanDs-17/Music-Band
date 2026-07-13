@@ -3,9 +3,10 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X, Music } from "lucide-react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils/cn";
+import { BrandLogo } from "@/components/shared/BrandLogo";
 import {
   LayoutDashboard,
   Calendar,
@@ -82,18 +83,11 @@ export function MobileNav({ open, onOpenChange, role }: MobileNavProps) {
       {/* Drawer */}
       <div className="fixed bottom-0 left-0 top-0 z-50 w-72 bg-bg-card p-6 border-r border-border flex flex-col gap-4 animate-in slide-in-from-left duration-250">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2" onClick={() => onOpenChange(false)}>
-            <div className="p-1.5 bg-primary rounded-lg">
-              <Music className="h-5 w-5 text-white" />
-            </div>
-            <span className="font-extrabold text-lg tracking-tighter text-white">
-              Band<span className="text-primary">Connect</span>
-            </span>
-          </Link>
+          <BrandLogo onClick={() => onOpenChange(false)} iconSize="sm" textSize="lg" />
           <Button
             variant="ghost"
             size="icon"
-            className="text-text-secondary hover:text-white"
+            className="text-text-secondary hover:text-text-primary"
             onClick={() => onOpenChange(false)}
           >
             <X className="h-5 w-5" />
@@ -112,7 +106,7 @@ export function MobileNav({ open, onOpenChange, role }: MobileNavProps) {
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all group",
                   isActive
                     ? "bg-primary text-white font-semibold"
-                    : "text-text-secondary hover:bg-bg-elevated hover:text-white"
+                    : "text-text-secondary hover:bg-bg-elevated hover:text-text-primary"
                 )}
                 onClick={() => onOpenChange(false)}
               >
