@@ -342,7 +342,7 @@ async def list_marketplace_artists(
         .join(ArtistProfile.user)
         .filter(
             ArtistProfile.verification_status == "approved",
-            User.is_active == True,
+            User.is_active.is_(True),
             ArtistProfile.deleted_at.is_(None)
         )
     )
@@ -410,7 +410,7 @@ async def get_public_artist_profile(
         .filter(
             ArtistProfile.id == artist_id,
             ArtistProfile.verification_status == "approved",
-            User.is_active == True,
+            User.is_active.is_(True),
             ArtistProfile.deleted_at.is_(None)
         )
         .first()

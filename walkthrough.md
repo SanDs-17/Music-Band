@@ -963,4 +963,32 @@ Critical Bugs         : 0 remaining
 - [docs/MODULE8_LOCATION_CERTIFICATION.md](file:///a:/Music-band/docs/MODULE8_LOCATION_CERTIFICATION.md)
 - [docs/MODULE_CERTIFICATION_SPRINT.md](file:///a:/Music-band/docs/MODULE_CERTIFICATION_SPRINT.md) — Final Go/No-Go Sprint Summary
 
+---
+
+## SPRINT 10 — Ruff & CI Pipeline Stabilization
+
+**Date**: 2026-07-17
+**Status**: ✅ COMPLETE — CI green
+**Scope**: Fix all Ruff violations across backend public routers and `gen_dict.py`, verify regression tests, and ensure full build success.
+
+### Audit & Fixes
+1. **Router Booleans (E712)**:
+   - Replaced `User.is_active == True` with `User.is_active.is_(True)` in `backend/app/features/artists/public_router.py` and `backend/app/features/venues/public_router.py`.
+2. **`gen_dict.py` Production Cleanups**:
+   - **E401**: Split `import sys, os` into individual import statements.
+   - **E741**: Renamed ambiguous variable parameters `l` and `r` in the `brd()` function to `lft` and `rgt` respectively.
+   - **E701 / E722**: Expanded inline `try/except` with bare `except` blocks to standard multiline statements using `except Exception:`.
+   - **E702**: Eliminated multiple statements on a single line joined with semicolons (e.g. `ws.merge_cells(...); ws.row_dimensions[...] = ...`).
+   - **F601**: Removed duplicate dictionary key literal `('permission_groups','permissions')` in the `REL_PURPOSE` map.
+   - **F541**: Removed extraneous `f` prefixes from strings containing no formatting variables (e.g. `f'A1:J1'`).
+   - **E701 / E712**: Reformatted inline `if/elif/else` blocks and replaced `col['nullable'] == False` with `not col['nullable']`.
+
+### Verification & Validation
+- **Ruff Lint**: `ruff check .` outputted **All checks passed!**
+- **Data Dictionary Integrity**: Running `gen_dict.py` completes successfully and generates `BandConnect_Data_Dictionary.xlsx` (24 tables, 37 sheets, 210 columns).
+- **Spreadsheet Validation**: Running the sheet schema verification script returns **SUCCESS: All worksheets matched the requested structures and headers exactly!**
+- **Test Suite**: Running `pytest` runs and passes **74/74 tests**.
+- **Frontend Build**: Succeeded with no errors compiling 41 routes.
+
+
 

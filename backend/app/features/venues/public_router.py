@@ -468,7 +468,7 @@ async def list_marketplace_venues(
         .join(Venue.city)
         .filter(
             Venue.verification_status == "approved",
-            User.is_active == True,
+            User.is_active.is_(True),
             Venue.deleted_at.is_(None)
         )
     )

@@ -13,7 +13,8 @@ Sheets:
   01_README .. 13_GLOSSARY  +  one sheet per table (24 tables = 37 sheets total)
   Includes 59 column fields for every database column.
 """
-import sys, os
+import sys
+import os
 sys.path.insert(0, '.')
 
 from sqlalchemy import create_engine, inspect, text
@@ -113,8 +114,8 @@ def aln(h='left', v='center', wrap=True):
 _thin  = Side(style='thin',   color='CCCCCC')
 _thick = Side(style='medium', color='999999')
 
-def brd(t=_thin, b=_thin, l=_thin, r=_thin):
-    return Border(left=l, right=r, top=t, bottom=b)
+def brd(t=_thin, b=_thin, lft=_thin, rgt=_thin):
+    return Border(left=lft, right=rgt, top=t, bottom=b)
 
 def set_widths(ws, widths):
     for i, w in enumerate(widths, 1):
@@ -642,41 +643,61 @@ def pg_exact(col):
     name = type(t).__name__.upper()
     ts = str(t).upper()
     if 'VARCHAR' in ts or 'STRING' in name:
-        try: return f'VARCHAR({t.length})' if t.length else 'VARCHAR'
-        except: return ts
+        try:
+            return f'VARCHAR({t.length})' if t.length else 'VARCHAR'
+        except Exception:
+            return ts
     if 'NUMERIC' in ts:
-        try: return f'NUMERIC({t.precision},{t.scale})' if t.precision else 'NUMERIC'
-        except: return ts
-    if 'UUID' in name: return 'UUID'
-    if 'BOOLEAN' in name: return 'BOOLEAN'
-    if 'INTEGER' in name or ts == 'INT': return 'INTEGER'
-    if 'BIGINT' in ts: return 'BIGINT'
+        try:
+            return f'NUMERIC({t.precision},{t.scale})' if t.precision else 'NUMERIC'
+        except Exception:
+            return ts
+    if 'UUID' in name:
+        return 'UUID'
+    if 'BOOLEAN' in name:
+        return 'BOOLEAN'
+    if 'INTEGER' in name or ts == 'INT':
+        return 'INTEGER'
+    if 'BIGINT' in ts:
+        return 'BIGINT'
     if 'DATETIME' in name or 'TIMESTAMP' in ts:
-        try: return 'TIMESTAMP WITH TIME ZONE' if t.timezone else 'TIMESTAMP'
-        except: return 'TIMESTAMP'
-    if 'DATE' in ts and 'TIME' not in ts: return 'DATE'
-    if 'TIME' in ts and 'STAMP' not in ts and 'DATE' not in ts: return 'TIME'
-    if 'JSON' in ts: return 'JSONB'
-    if 'TEXT' in ts: return 'TEXT'
+        try:
+            return 'TIMESTAMP WITH TIME ZONE' if t.timezone else 'TIMESTAMP'
+        except Exception:
+            return 'TIMESTAMP'
+    if 'DATE' in ts and 'TIME' not in ts:
+        return 'DATE'
+    if 'TIME' in ts and 'STAMP' not in ts and 'DATE' not in ts:
+        return 'TIME'
+    if 'JSON' in ts:
+        return 'JSONB'
+    if 'TEXT' in ts:
+        return 'TEXT'
     return ts
 
 def get_len(col):
-    try: return col['type'].length or ''
-    except: return ''
+    try:
+        return col['type'].length or ''
+    except Exception:
+        return ''
 
 def get_prec(col):
-    try: return col['type'].precision or ''
-    except: return ''
+    try:
+        return col['type'].precision or ''
+    except Exception:
+        return ''
 
 def get_scale(col):
     try:
         s = col['type'].scale
         return s if s is not None else ''
-    except: return ''
+    except Exception:
+        return ''
 
 def pg_simple(col):
     ex = pg_exact(col)
-    if '(' in ex: return ex.split('(')[0]
+    if '(' in ex:
+        return ex.split('(')[0]
     return ex
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -693,14 +714,21 @@ ws.column_dimensions['B'].width = 72
 
 def kv(ws, r, k, v, bold_v=False):
     a = ws.cell(row=r, column=1, value=k)
-    a.fill = fill(C['LGREY']); a.font = fnt(bold=True, size=10); a.alignment = aln(); a.border = brd()
+    a.fill = fill(C['LGREY'])
+    a.font = fnt(bold=True, size=10)
+    a.alignment = aln()
+    a.border = brd()
     b = ws.cell(row=r, column=2, value=v)
-    b.fill = fill(C['WHITE']); b.font = fnt(bold=bold_v, size=10); b.alignment = aln(); b.border = brd()
+    b.fill = fill(C['WHITE'])
+    b.font = fnt(bold=bold_v, size=10)
+    b.alignment = aln()
+    b.border = brd()
 
 title = ws.cell(row=1, column=1, value='BandConnect — Official Enterprise Database Data Dictionary v3.0')
 title.font = Font(bold=True, size=16, color=C['NAVY'], name='Calibri')
 title.fill = fill(C['LIGHT_BG'])
-ws.merge_cells('A1:B1'); ws.row_dimensions[1].height = 28
+ws.merge_cells('A1:B1')
+ws.row_dimensions[1].height = 28
 
 meta = [
     ('Document Classification', 'OFFICIAL — Enterprise Database Reference'),
@@ -745,8 +773,10 @@ desc = ws.cell(row=17, column=1, value=(
     '  [table_name]           One sheet per database table (24 sheets)'
 ))
 desc.alignment = Alignment(wrap_text=True, vertical='top')
-desc.font = fnt(size=10); desc.fill = fill(C['LGREY'])
-ws.merge_cells('A17:B17'); ws.row_dimensions[17].height = 300
+desc.font = fnt(size=10)
+desc.fill = fill(C['LGREY'])
+ws.merge_cells('A17:B17')
+ws.row_dimensions[17].height = 300
 
 # ── 02_VERSION_HISTORY ───────────────────────────────────────────────────────
 ws = wb.create_sheet('02_VERSION_HISTORY')
@@ -841,7 +871,6 @@ REL_PURPOSE = {
     ('countries','states'):'Geographic hierarchy: country → state.',
     ('states','cities'):'Geographic hierarchy: state → city.',
     ('cities','areas'):'Geographic hierarchy: city → area (sub-locality for radius search).',
-    ('permission_groups','permissions'):'Groups permissions for admin categorisation display.',
 }
 
 all_rels = []
@@ -872,7 +901,8 @@ set_widths(ws, [4,24,22,14,14,32,60,60,60])
 
 for i, tbl in enumerate(TABLES, 2):
     m = META[tbl]
-    pk = m['pk']; pk_cols = pk.get('constrained_columns', [])
+    pk = m['pk']
+    pk_cols = pk.get('constrained_columns', [])
     pk_type = ('Composite' if len(pk_cols)>1
                else 'String' if tbl=='system_settings'
                else 'VARCHAR' if tbl=='alembic_version' else 'UUID')
@@ -1425,7 +1455,7 @@ for tbl in TABLES:
     banner.font   = Font(bold=True, size=12, color=C['WHITE'], name='Calibri')
     banner.fill   = fill(C['HEADER_BG'])
     banner.alignment = Alignment(horizontal='left', vertical='center')
-    ws.merge_cells(f'A1:J1')
+    ws.merge_cells('A1:J1')
     ws.row_dimensions[1].height = 24
 
     # Row 2: Section Header
@@ -1504,11 +1534,16 @@ for tbl in TABLES:
         biz = COL_META.get((tbl, cname)) or JUNCTION_META.get((tbl, cname))
         bdesc = biz[1] if biz else f'{cname} field in {tbl}.'
         
-        if   is_pk=='Yes':              bg = C['PK_GREEN']
-        elif is_fk=='Yes':              bg = C['FK_YELLOW']
-        elif is_uq=='Yes':              bg = C['UQ_PURPLE']
-        elif col['nullable'] == False:  bg = C['NN_RED']
-        else:                           bg = C['LGREY'] if sno%2==1 else C['WHITE']
+        if is_pk == 'Yes':
+            bg = C['PK_GREEN']
+        elif is_fk == 'Yes':
+            bg = C['FK_YELLOW']
+        elif is_uq == 'Yes':
+            bg = C['UQ_PURPLE']
+        elif not col['nullable']:
+            bg = C['NN_RED']
+        else:
+            bg = C['LGREY'] if sno % 2 == 1 else C['WHITE']
         
         row_vals = [cname, pg_simp, ln, nullable, default, is_pk, is_fk, is_uq, is_idx, bdesc]
         for col_idx, val in enumerate(row_vals, 1):
