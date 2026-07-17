@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Sun, Moon } from "lucide-react";
+import { Menu, Sun, Moon, User, Music, Building2, ShieldCheck, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/providers/theme-provider";
@@ -23,10 +23,28 @@ export function Header({ onMenuClick }: HeaderProps) {
 
   // Component mount state to prevent Next.js hydration mismatches
   const [mounted, setMounted] = React.useState(false);
+  const [loginOpen, setLoginOpen] = React.useState(false);
+  const [registerOpen, setRegisterOpen] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Keyboard accessibility helper for dropdown close
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setLoginOpen(false);
+        setRegisterOpen(false);
+      }
+    };
+    if (loginOpen || registerOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [loginOpen, registerOpen]);
 
   const isPortalRoute =
     pathname.startsWith("/client") ||
@@ -77,17 +95,173 @@ export function Header({ onMenuClick }: HeaderProps) {
     }
 
     return (
-      <div className="flex items-center gap-2">
-        <Link href="/login">
-          <Button variant="ghost" size="sm" className="font-semibold">
-            Login
+      <div className="flex items-center gap-2 relative">
+        {/* LOGIN DROPDOWN */}
+        <div className="relative">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="font-semibold flex items-center gap-1 hover:bg-bg-elevated hover:text-text-primary px-2 sm:px-3 text-xs sm:text-sm h-9"
+            onClick={() => {
+              setLoginOpen(!loginOpen);
+              setRegisterOpen(false);
+            }}
+          >
+            <span>Login</span>
+            <ChevronDown className={`h-3 w-3 opacity-70 transition-transform ${loginOpen ? "rotate-180" : ""}`} />
           </Button>
-        </Link>
-        <Link href="/register">
-          <Button size="sm" className="font-bold">
-            Get Started
+
+          {loginOpen && (
+            <>
+              <div className="fixed inset-0 z-40 cursor-default" onClick={() => setLoginOpen(false)} />
+              <div className="absolute right-0 sm:right-auto sm:left-0 top-[calc(100%+8px)] z-50 w-72 sm:w-80 rounded-2xl border border-border bg-bg-card/95 backdrop-blur-md p-4 shadow-2xl animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="text-[10px] font-black uppercase tracking-wider text-text-muted pb-2 border-b border-border/30 mb-2">
+                  Login
+                </div>
+                <div className="space-y-1">
+                  <Link
+                    href="/login?role=client"
+                    onClick={() => setLoginOpen(false)}
+                    className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-primary/10 transition-colors group text-left"
+                  >
+                    <User className="h-5 w-5 text-text-secondary group-hover:text-primary transition-colors mt-0.5 shrink-0" />
+                    <div>
+                      <div className="text-xs font-bold text-text-primary group-hover:text-primary transition-colors">
+                        As Client
+                      </div>
+                      <div className="text-[10px] text-text-secondary mt-0.5 leading-relaxed">
+                        Find and book live performers.
+                      </div>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/login?role=artist"
+                    onClick={() => setLoginOpen(false)}
+                    className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-primary/10 transition-colors group text-left"
+                  >
+                    <Music className="h-5 w-5 text-text-secondary group-hover:text-primary transition-colors mt-0.5 shrink-0" />
+                    <div>
+                      <div className="text-xs font-bold text-text-primary group-hover:text-primary transition-colors">
+                        As Artist / Band
+                      </div>
+                      <div className="text-[10px] text-text-secondary mt-0.5 leading-relaxed">
+                        Manage gigs, profile, and earnings.
+                      </div>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/login?role=venue_owner"
+                    onClick={() => setLoginOpen(false)}
+                    className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-primary/10 transition-colors group text-left"
+                  >
+                    <Building2 className="h-5 w-5 text-text-secondary group-hover:text-primary transition-colors mt-0.5 shrink-0" />
+                    <div>
+                      <div className="text-xs font-bold text-text-primary group-hover:text-primary transition-colors">
+                        As Venue Owner
+                      </div>
+                      <div className="text-[10px] text-text-secondary mt-0.5 leading-relaxed">
+                        Manage venues and bookings.
+                      </div>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/login?role=admin"
+                    onClick={() => setLoginOpen(false)}
+                    className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-primary/10 transition-colors group text-left border-t border-border/30 pt-3 mt-2"
+                  >
+                    <ShieldCheck className="h-5 w-5 text-text-secondary group-hover:text-primary transition-colors mt-0.5 shrink-0" />
+                    <div>
+                      <div className="text-xs font-bold text-text-primary group-hover:text-primary transition-colors">
+                        As Admin
+                      </div>
+                      <div className="text-[10px] text-text-secondary mt-0.5 leading-relaxed">
+                        Verify artists and venues.
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* REGISTER DROPDOWN */}
+        <div className="relative">
+          <Button 
+            size="sm" 
+            className="font-bold flex items-center gap-1 bg-primary hover:bg-primary-hover text-white px-2.5 sm:px-4 text-xs sm:text-sm h-9"
+            onClick={() => {
+              setRegisterOpen(!registerOpen);
+              setLoginOpen(false);
+            }}
+          >
+            <span>Register</span>
+            <ChevronDown className={`h-3 w-3 opacity-80 transition-transform ${registerOpen ? "rotate-180" : ""}`} />
           </Button>
-        </Link>
+
+          {registerOpen && (
+            <>
+              <div className="fixed inset-0 z-40 cursor-default" onClick={() => setRegisterOpen(false)} />
+              <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-72 sm:w-80 rounded-2xl border border-border bg-bg-card/95 backdrop-blur-md p-4 shadow-2xl animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="text-[10px] font-black uppercase tracking-wider text-text-muted pb-2 border-b border-border/30 mb-2">
+                  Register
+                </div>
+                <div className="space-y-1">
+                  <Link
+                    href="/register?role=client"
+                    onClick={() => setRegisterOpen(false)}
+                    className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-primary/10 transition-colors group text-left"
+                  >
+                    <User className="h-5 w-5 text-text-secondary group-hover:text-primary transition-colors mt-0.5 shrink-0" />
+                    <div>
+                      <div className="text-xs font-bold text-text-primary group-hover:text-primary transition-colors">
+                        Join as Client
+                      </div>
+                      <div className="text-[10px] text-text-secondary mt-0.5 leading-relaxed">
+                        Discover and book artists and venues.
+                      </div>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/register?role=artist"
+                    onClick={() => setRegisterOpen(false)}
+                    className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-primary/10 transition-colors group text-left"
+                  >
+                    <Music className="h-5 w-5 text-text-secondary group-hover:text-primary transition-colors mt-0.5 shrink-0" />
+                    <div>
+                      <div className="text-xs font-bold text-text-primary group-hover:text-primary transition-colors">
+                        Join as Artist / Band
+                      </div>
+                      <div className="text-[10px] text-text-secondary mt-0.5 leading-relaxed">
+                        Create a performer profile and receive gigs.
+                      </div>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/register?role=venue_owner"
+                    onClick={() => setRegisterOpen(false)}
+                    className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-primary/10 transition-colors group text-left"
+                  >
+                    <Building2 className="h-5 w-5 text-text-secondary group-hover:text-primary transition-colors mt-0.5 shrink-0" />
+                    <div>
+                      <div className="text-xs font-bold text-text-primary group-hover:text-primary transition-colors">
+                        Join as Venue Owner
+                      </div>
+                      <div className="text-[10px] text-text-secondary mt-0.5 leading-relaxed">
+                        List and manage venue spaces.
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     );
   };
@@ -108,7 +282,9 @@ export function Header({ onMenuClick }: HeaderProps) {
         <BrandLogo />
         {mounted && isPreviewMode && previewRole && (
           <div className="px-2.5 py-1 text-[9px] font-black tracking-wider uppercase bg-amber-500/10 border border-amber-500/30 text-amber-500 rounded-full select-none whitespace-nowrap">
-            Preview &mdash; {previewRole === "venue_owner" ? "Venue Owner" : previewRole === "artist" ? "Artist / Band" : previewRole === "admin" ? "Admin" : "Client"}
+            {previewRole === "venue_owner" 
+              ? "PREVIEW — VENUE OWNER" 
+              : `PREVIEW — ${previewRole.toUpperCase()}`}
           </div>
         )}
 
@@ -138,3 +314,4 @@ export function Header({ onMenuClick }: HeaderProps) {
     </header>
   );
 }
+

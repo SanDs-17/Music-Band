@@ -1,8 +1,29 @@
 from uuid import UUID
-from fastapi import APIRouter, Depends, status, File, UploadFile
+from typing import Optional
+from fastapi import APIRouter, Depends, status, File, UploadFile, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.features.venues.schemas import VenueRegisterRequest, VenueResponse, VenueDashboardResponse, VenueProfileUpdateRequest, VenueMediaResponse, VenueMediaUpdateRequest, VenueAvailabilityResponse, VenueAvailabilityUpdateRequest, CheckConflictRequest, CheckConflictResponse, VenueFacilitiesResponse, VenueFacilitiesUpdateRequest, VenuePricingResponse, VenuePricingUpdateRequest, VenueAnalyticsResponse, VenueDocumentsResubmitRequest, VenueSettingsUpdateRequest
+from app.features.venues.schemas import (
+    VenueRegisterRequest,
+    VenueResponse,
+    VenueDashboardResponse,
+    VenueProfileUpdateRequest,
+    VenueMediaResponse,
+    VenueMediaUpdateRequest,
+    VenueAvailabilityResponse,
+    VenueAvailabilityUpdateRequest,
+    CheckConflictRequest,
+    CheckConflictResponse,
+    VenueFacilitiesResponse,
+    VenueFacilitiesUpdateRequest,
+    VenuePricingResponse,
+    VenuePricingUpdateRequest,
+    VenueAnalyticsResponse,
+    VenueDocumentsResubmitRequest,
+    VenueSettingsUpdateRequest,
+    VenueProfileCreateRequest,
+    PaginatedVenueList
+)
 from app.features.venues.service import VenueService
 from app.common.schemas.base import SuccessResponse
 from app.features.venues.router import _format_venue_profile
@@ -210,6 +231,31 @@ async def update_current_venue_pricing(
     )
 
 
+@router.post(
+    "/me",
+    response_model=SuccessResponse[VenueResponse],
+    status_code=status.HTTP_201_CREATED,
+    summary="Create venue profile for an already-authenticated venue owner"
+)
+async def create_venue_profile(
+    data: VenueProfileCreateRequest,
+    current_user_claims: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Creates the Venue domain profile for a user who was registered via the standard
+    /auth/register endpoint with role=venue_owner. The user account already exists.
+    This endpoint creates the missing Venue record.
+    Returns 409 Conflict if a venue profile already exists for this user.
+    """
+    venue = service.create_venue_profile_for_user(db, current_user_claims["sub"], data)
+    return SuccessResponse(
+        success=True,
+        data=_format_venue_profile(venue),
+        message="Venue profile created successfully."
+    )
+
+
 @router.get(
     "/me",
     response_model=SuccessResponse[VenueResponse],
@@ -386,6 +432,82 @@ async def update_venue_configuration_settings(
     )
 
 
+def _format_public_venue_profile(venue) -> VenueResponse:
+    profile = _format_venue_profile(venue)
+    # Ensure sensitive verification details are never leaked in public profile endpoints
+    profile.documents = {}
+    return profile
+
+
+@router.get(
+    "",
+    response_model=SuccessResponse[PaginatedVenueList],
+    status_code=status.HTTP_200_OK,
+    summary="Public marketplace search and filter for approved venues"
+)
+async def list_marketplace_venues(
+    search: Optional[str] = Query(None, description="Search venue name, address, or description"),
+    venue_type: Optional[str] = Query(None, description="E.g. Banquet Hall, Concert Arena"),
+    city: Optional[str] = Query(None, description="Filter by city name"),
+    city_id: Optional[UUID] = Query(None, description="Filter by city ID"),
+    capacity: Optional[int] = Query(None, description="Minimum capacity required"),
+    min_price: Optional[float] = Query(None, description="Minimum base price"),
+    max_price: Optional[float] = Query(None, description="Maximum base price"),
+    limit: int = Query(10, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    db: Session = Depends(get_db)
+):
+    from app.features.venues.models import Venue
+    from app.features.locations.models import City
+    from app.features.auth.models import User
+
+    # Only approved and active venues should be visible in the marketplace
+    query = (
+        db.query(Venue)
+        .join(Venue.user)
+        .join(Venue.city)
+        .filter(
+            Venue.verification_status == "approved",
+            User.is_active == True,
+            Venue.deleted_at.is_(None)
+        )
+    )
+
+    if search:
+        query = query.filter(
+            (Venue.name.ilike(f"%{search}%")) |
+            (Venue.address.ilike(f"%{search}%")) |
+            (Venue.description.ilike(f"%{search}%"))
+        )
+
+    if venue_type:
+        query = query.filter(Venue.venue_type == venue_type)
+
+    if city_id:
+        query = query.filter(Venue.city_id == city_id)
+    elif city:
+        query = query.filter(City.name.ilike(f"%{city}%"))
+
+    if capacity is not None:
+        query = query.filter(Venue.capacity >= capacity)
+
+    if min_price is not None:
+        query = query.filter(Venue.base_price >= min_price)
+
+    if max_price is not None:
+        query = query.filter(Venue.base_price <= max_price)
+
+    total = query.count()
+    venues = query.offset(offset).limit(limit).all()
+
+    formatted = [_format_public_venue_profile(v) for v in venues]
+    return SuccessResponse(
+        success=True,
+        data=PaginatedVenueList(items=formatted, total=total),
+        message="Marketplace venues retrieved successfully."
+    )
+
+
 @router.get(
     "/{venue_id}",
     response_model=SuccessResponse[VenueResponse],
@@ -404,6 +526,6 @@ async def get_public_venue_detail(
         raise NotFoundException("Venue listing not found.")
     return SuccessResponse(
         success=True,
-        data=_format_venue_profile(venue),
+        data=_format_public_venue_profile(venue),
         message="Venue profile retrieved successfully."
     )

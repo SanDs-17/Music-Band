@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginFormData } from "@/utils/validation";
@@ -12,10 +12,15 @@ import { useAuth } from "@/hooks/use-auth";
 import { api } from "@/services/api";
 import toast from "react-hot-toast";
 import { getRoleDashboard } from "@/utils/role-routes";
+import * as React from "react";
+import { Loader2 } from "lucide-react";
 
-export default function LoginPage() {
+function LoginContent() {
   const { setAuth } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  const roleParam = searchParams.get("role");
 
   const {
     register,
@@ -25,6 +30,21 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
+
+  const getSubtitle = () => {
+    switch (roleParam) {
+      case "client":
+        return "Enter your credentials to access your client account";
+      case "artist":
+        return "Enter your credentials to access your artist portal";
+      case "venue_owner":
+        return "Enter your credentials to access your venue dashboard";
+      case "admin":
+        return "Enter your credentials to access your admin workspace";
+      default:
+        return "Enter your credentials to access your dashboard";
+    }
+  };
 
   const onSubmit = async (data: LoginFormData) => {
     try {
@@ -64,7 +84,14 @@ export default function LoginPage() {
       //    Use the first role from the backend response (canonical source).
       const primaryRole =
         userData.roles?.[0]?.name ?? userData.role ?? "client";
-      const destination = getRoleDashboard(primaryRole);
+      let destination = getRoleDashboard(primaryRole);
+
+      const pendingBookingIntent = sessionStorage.getItem("pending_booking_intent");
+      if (pendingBookingIntent && primaryRole === "client") {
+        sessionStorage.setItem("active_booking_intent", pendingBookingIntent);
+        sessionStorage.removeItem("pending_booking_intent");
+        destination = "/client/bookings";
+      }
 
       // router.replace so the login page is not in browser history
       router.replace(destination);
@@ -85,7 +112,7 @@ export default function LoginPage() {
           Welcome back
         </h1>
         <p className="text-sm text-text-secondary">
-          Enter your credentials to access your dashboard
+          {getSubtitle()}
         </p>
       </div>
 
@@ -148,3 +175,16 @@ export default function LoginPage() {
     </div>
   );
 }
+
+export default function LoginPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="flex flex-col items-center justify-center text-center space-y-6 py-6">
+        <Loader2 className="h-12 w-12 text-primary animate-spin" />
+      </div>
+    }>
+      <LoginContent />
+    </React.Suspense>
+  );
+}
+

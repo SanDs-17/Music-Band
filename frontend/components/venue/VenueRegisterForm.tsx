@@ -14,7 +14,6 @@ import {
   Image as ImageIcon,
   Clock,
   AlertCircle,
-  Sparkles,
   FileText,
   Plus,
   Trash2
@@ -33,7 +32,6 @@ import { api } from "@/services/api";
 import toast from "react-hot-toast";
 
 const STEPS = [
-  "Account",
   "Owner Info",
   "Venue Details",
   "Address",
@@ -117,10 +115,7 @@ export function VenueRegisterForm() {
     resolver: zodResolver(venueRegisterSchema),
     mode: "onChange",
     defaultValues: {
-      email: "",
       mobile: "",
-      password: "",
-      confirmPassword: "",
       owner_name: "",
       business_name: "",
       contact_person: "",
@@ -279,23 +274,23 @@ export function VenueRegisterForm() {
   const handleNext = async () => {
     let fieldsToValidate: Path<VenueRegisterFormData>[] = [];
     if (currentStep === 1) {
-      fieldsToValidate = ["email", "mobile", "password", "confirmPassword"];
+      fieldsToValidate = ["mobile", "owner_name", "business_name", "contact_person", "gst_number", "pan_number"];
     } else if (currentStep === 2) {
-      fieldsToValidate = ["owner_name", "business_name", "contact_person", "gst_number", "pan_number"];
-    } else if (currentStep === 3) {
       fieldsToValidate = ["venue_name", "venue_type", "description", "established_year", "min_capacity", "max_capacity", "indoor_outdoor"];
-    } else if (currentStep === 4) {
+    } else if (currentStep === 3) {
       fieldsToValidate = ["country", "state", "district", "city_id", "area", "address", "landmark", "pincode", "latitude", "longitude", "google_map_location"];
-    } else if (currentStep === 5) {
+    } else if (currentStep === 4) {
       fieldsToValidate = ["facilities"];
-    } else if (currentStep === 6) {
+    } else if (currentStep === 5) {
       fieldsToValidate = ["base_price", "hourly_price", "weekend_price", "holiday_price", "security_deposit", "cancellation_charges", "extra_hour_charges"];
-    } else if (currentStep === 7) {
+    } else if (currentStep === 6) {
       fieldsToValidate = ["cover_image", "images", "videos", "youtube_links", "virtual_tour"];
-    } else if (currentStep === 8) {
+    } else if (currentStep === 7) {
       fieldsToValidate = ["weekly_schedule", "blocked_dates", "maintenance_days", "public_holidays", "booking_buffer_time"];
-    } else if (currentStep === 9) {
+    } else if (currentStep === 8) {
       fieldsToValidate = ["doc_pan", "doc_gst", "doc_ownership_proof", "doc_government_id", "doc_business_license"];
+    } else if (currentStep === 9) {
+      fieldsToValidate = ["acceptTerms"];
     }
 
     const isValid = await trigger(fieldsToValidate);
@@ -303,7 +298,27 @@ export function VenueRegisterForm() {
       setCurrentStep(prev => Math.min(prev + 1, STEPS.length));
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-      toast.error("Please verify all required wizard step entries are formatted correctly.");
+      const stepErrors: string[] = [];
+      fieldsToValidate.forEach((field) => {
+        const parts = (field as string).split(".");
+        let currentError: any = errors;
+        for (const part of parts) {
+          if (currentError && typeof currentError === "object") {
+            currentError = currentError[part];
+          } else {
+            currentError = undefined;
+            break;
+          }
+        }
+        if (currentError && currentError.message) {
+          stepErrors.push(`${field}: ${currentError.message}`);
+        }
+      });
+      if (stepErrors.length > 0) {
+        toast.error(`Please correct the following errors:\n${stepErrors.join("\n")}`);
+      } else {
+        toast.error("Please verify all required wizard step entries are formatted correctly.");
+      }
     }
   };
 
@@ -315,13 +330,69 @@ export function VenueRegisterForm() {
   // Submit Handler
   const onSubmit = async (values: VenueRegisterFormData) => {
     try {
-      await venueService.register(values);
+      const payload = {
+        owner_name: values.owner_name,
+        business_name: values.business_name,
+        contact_person: values.contact_person || null,
+        gst_number: values.gst_number || null,
+        pan_number: values.pan_number || null,
+        venue_name: values.venue_name,
+        venue_type: values.venue_type,
+        description: values.description || null,
+        established_year: values.established_year ? Number(values.established_year) : null,
+        indoor_outdoor: values.indoor_outdoor,
+        country: values.country,
+        state: values.state,
+        district: values.district || null,
+        city_id: values.city_id,
+        area: values.area || null,
+        address: values.address,
+        landmark: values.landmark || null,
+        pincode: values.pincode,
+        latitude: values.latitude ? Number(values.latitude) : null,
+        longitude: values.longitude ? Number(values.longitude) : null,
+        google_map_location: values.google_map_location || null,
+        facilities: values.facilities,
+        min_capacity: Number(values.min_capacity) || 1,
+        max_capacity: Number(values.max_capacity) || 1,
+        base_price: Number(values.base_price) || 0.0,
+        hourly_price: Number(values.hourly_price) || 0.0,
+        weekend_price: Number(values.weekend_price) || 0.0,
+        holiday_price: Number(values.holiday_price) || 0.0,
+        security_deposit: Number(values.security_deposit) || 0.0,
+        cancellation_charges: Number(values.cancellation_charges) || 0.0,
+        extra_hour_charges: Number(values.extra_hour_charges) || 0.0,
+        cover_image: values.cover_image || null,
+        images: values.images,
+        videos: values.videos,
+        youtube_links: values.youtube_links,
+        virtual_tour: values.virtual_tour || null,
+        weekly_schedule: values.weekly_schedule,
+        blocked_dates: values.blocked_dates,
+        maintenance_days: values.maintenance_days,
+        public_holidays: values.public_holidays,
+        booking_buffer_time: Number(values.booking_buffer_time) || 0,
+        doc_pan: values.doc_pan,
+        doc_gst: values.doc_gst || null,
+        doc_ownership_proof: values.doc_ownership_proof,
+        doc_government_id: values.doc_government_id,
+        doc_business_license: values.doc_business_license || null
+      };
+
+      await venueService.createProfile(payload);
       setIsSuccess(true);
-      toast.success("Venue onboarding request submitted successfully!");
-    } catch (err) {
-      const error = err as { response?: { data?: { error?: { message?: string } } } };
-      const msg = error.response?.data?.error?.message || "Failed to onboard venue. Please check details.";
-      toast.error(msg);
+      toast.success("Venue profile onboarding completed successfully!");
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.error?.message || "Failed to onboard venue.";
+      const details = err.response?.data?.error?.details;
+      if (details && typeof details === "object") {
+        const detailsMsg = Object.entries(details)
+          .map(([key, val]) => `${key}: ${val}`)
+          .join("\n");
+        toast.error(`Onboarding failed: ${errorMsg}\n\nDetails:\n${detailsMsg}`);
+      } else {
+        toast.error(errorMsg);
+      }
     }
   };
 
@@ -389,13 +460,13 @@ export function VenueRegisterForm() {
             <CheckCircle2 className="h-10 w-10 text-emerald-400" />
           </div>
         </div>
-        <h2 className="text-2xl font-black text-text-primary">Registration Application Submitted!</h2>
+        <h2 className="text-2xl font-black text-text-primary">Onboarding Profile Completed!</h2>
         <p className="text-sm text-text-secondary leading-relaxed max-w-md mx-auto">
-          Thank you for registering your venue. Our administrative audit team is reviewing your profile specs, facilities, and location. You will receive an email activation note once your profile verification changes status to Approved.
+          Thank you for setting up your venue space details. Your profile verification is currently under review by our administrative team.
         </p>
         <div className="pt-4">
-          <Button onClick={() => window.location.href = "/"} className="bg-primary hover:bg-primary-dark text-white font-bold px-8 h-11">
-            Back to Home
+          <Button onClick={() => window.location.href = "/venue/dashboard"} className="bg-primary hover:bg-primary-dark text-white font-bold px-8 h-11">
+            Go to Dashboard
           </Button>
         </div>
       </Card>
@@ -413,43 +484,8 @@ export function VenueRegisterForm() {
       <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-6 sm:p-8 rounded-3xl shadow-2xl">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           
-          {/* STEP 1: ACCOUNT DETAILS */}
+          {/* STEP 1: OWNER INFO */}
           {currentStep === 1 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary" /> Setup Owner Credentials
-              </h3>
-              <p className="text-xs text-text-secondary">Please configure your admin login email credentials.</p>
-              
-              <div className="space-y-1.5">
-                <Label htmlFor="reg_email">Email address</Label>
-                <Input id="reg_email" type="email" placeholder="owner@venue.com" {...register("email")} />
-                {errors.email && <span className="text-xs text-error flex items-center gap-1"><AlertCircle className="h-3.5 w-3.5" /> {errors.email.message}</span>}
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="reg_mobile">Contact Mobile Number</Label>
-                <Input id="reg_mobile" placeholder="E.g. +919876543210" {...register("mobile")} />
-                {errors.mobile && <span className="text-xs text-error flex items-center gap-1"><AlertCircle className="h-3.5 w-3.5" /> {errors.mobile.message}</span>}
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="reg_password">Password</Label>
-                  <Input id="reg_password" type="password" placeholder="Min 8 characters..." {...register("password")} />
-                  {errors.password && <span className="text-xs text-error flex items-center gap-1"><AlertCircle className="h-3.5 w-3.5" /> {errors.password.message}</span>}
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="reg_confirmPassword">Confirm Password</Label>
-                  <Input id="reg_confirmPassword" type="password" placeholder="Confirm password..." {...register("confirmPassword")} />
-                  {errors.confirmPassword && <span className="text-xs text-error flex items-center gap-1"><AlertCircle className="h-3.5 w-3.5" /> {errors.confirmPassword.message}</span>}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 2: OWNER INFO */}
-          {currentStep === 2 && (
             <div className="space-y-4">
               <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
                 <FileText className="h-5 w-5 text-primary" /> Owner Information
@@ -470,10 +506,18 @@ export function VenueRegisterForm() {
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="reg_contact_person">Contact Person (Representing Business)</Label>
-                <Input id="reg_contact_person" placeholder="Manager Name or Coordinator Name" {...register("contact_person")} />
-                {errors.contact_person && <span className="text-xs text-error flex items-center gap-1"><AlertCircle className="h-3.5 w-3.5" /> {errors.contact_person.message}</span>}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="reg_mobile">Contact Mobile Number</Label>
+                  <Input id="reg_mobile" placeholder="E.g. +919876543210" {...register("mobile")} />
+                  {errors.mobile && <span className="text-xs text-error flex items-center gap-1"><AlertCircle className="h-3.5 w-3.5" /> {errors.mobile.message}</span>}
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="reg_contact_person">Contact Person (Representing Business)</Label>
+                  <Input id="reg_contact_person" placeholder="Manager or Coordinator Name" {...register("contact_person")} />
+                  {errors.contact_person && <span className="text-xs text-error flex items-center gap-1"><AlertCircle className="h-3.5 w-3.5" /> {errors.contact_person.message}</span>}
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -489,8 +533,8 @@ export function VenueRegisterForm() {
             </div>
           )}
 
-          {/* STEP 3: VENUE DETAILS */}
-          {currentStep === 3 && (
+          {/* STEP 2: VENUE DETAILS */}
+          {currentStep === 2 && (
             <div className="space-y-4">
               <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
                 <Building2 className="h-5 w-5 text-primary" /> Venue Information
@@ -575,8 +619,8 @@ export function VenueRegisterForm() {
             </div>
           )}
 
-          {/* STEP 4: ADDRESS & LOCATION */}
-          {currentStep === 4 && (
+          {/* STEP 3: ADDRESS & LOCATION */}
+          {currentStep === 3 && (
             <div className="space-y-4">
               <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-primary" /> Address & Location
@@ -679,8 +723,8 @@ export function VenueRegisterForm() {
             </div>
           )}
 
-          {/* STEP 5: FACILITIES */}
-          {currentStep === 5 && (
+          {/* STEP 4: FACILITIES */}
+          {currentStep === 4 && (
             <div className="space-y-4">
               <h3 className="text-lg font-black text-text-primary">Included Facilities</h3>
               <p className="text-xs text-text-secondary">Mark checkbox flags for all amenities available at the venue space.</p>
@@ -708,8 +752,8 @@ export function VenueRegisterForm() {
             </div>
           )}
 
-          {/* STEP 6: PRICING */}
-          {currentStep === 6 && (
+          {/* STEP 5: PRICING */}
+          {currentStep === 5 && (
             <div className="space-y-4">
               <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
                 <DollarSign className="h-5 w-5 text-primary" /> Pricing & Deposit Settings
@@ -792,8 +836,8 @@ export function VenueRegisterForm() {
             </div>
           )}
 
-          {/* STEP 7: GALLERY & MEDIA */}
-          {currentStep === 7 && (
+          {/* STEP 6: GALLERY & MEDIA */}
+          {currentStep === 6 && (
             <div className="space-y-4">
               <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
                 <ImageIcon className="h-5 w-5 text-primary" /> Gallery Showcase Uploads
@@ -887,8 +931,8 @@ export function VenueRegisterForm() {
             </div>
           )}
 
-          {/* STEP 8: AVAILABILITY SCHEDULER */}
-          {currentStep === 8 && (
+          {/* STEP 7: AVAILABILITY SCHEDULER */}
+          {currentStep === 7 && (
             <div className="space-y-4">
               <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
                 <Clock className="h-5 w-5 text-primary" /> Availability Settings
@@ -1013,8 +1057,8 @@ export function VenueRegisterForm() {
             </div>
           )}
 
-          {/* STEP 9: DOCUMENTS */}
-          {currentStep === 9 && (
+          {/* STEP 8: DOCUMENTS */}
+          {currentStep === 8 && (
             <div className="space-y-4">
               <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
                 <FileText className="h-5 w-5 text-primary" /> Verification Documents Upload
@@ -1175,8 +1219,8 @@ export function VenueRegisterForm() {
             </div>
           )}
 
-          {/* STEP 10: TERMS & REVIEW */}
-          {currentStep === 10 && (
+          {/* STEP 9: TERMS & REVIEW */}
+          {currentStep === 9 && (
             <div className="space-y-6">
               <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
                 <ShieldCheck className="h-5 w-5 text-primary" /> Review Application Details
@@ -1187,10 +1231,6 @@ export function VenueRegisterForm() {
                 <h4 className="font-extrabold text-text-primary text-sm border-b border-border/50 pb-2">Application Properties Summary</h4>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-3.5 text-xs">
-                  <div>
-                    <span className="font-bold text-text-muted">Contact Email:</span>
-                    <p className="text-text-primary font-semibold">{watch("email")}</p>
-                  </div>
                   <div>
                     <span className="font-bold text-text-muted">Contact Mobile:</span>
                     <p className="text-text-primary font-semibold">{watch("mobile")}</p>

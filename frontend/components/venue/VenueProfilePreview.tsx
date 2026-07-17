@@ -269,7 +269,7 @@ export function VenueProfilePreview({ profile }: VenueProfilePreviewProps) {
           {/* Facilities lists */}
           <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow-xl">
             <CardContent className="p-5 space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
                 <Grid className="h-4.5 w-4.5 text-primary" />
                 Amenties Checklist
               </h3>

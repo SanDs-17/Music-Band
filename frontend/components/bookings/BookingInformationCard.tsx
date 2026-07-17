@@ -26,7 +26,7 @@ export function BookingInformationCard({ booking, className }: BookingInformatio
                 <Heart className="h-5 w-5 text-primary shrink-0" />
                 <div>
                   <p className="text-[10px] text-text-muted">Performer ID</p>
-                  <p className="text-xs font-bold text-white truncate max-w-45">
+                  <p className="text-xs font-bold text-text-primary truncate max-w-45">
                     {booking.artist_profile_id}
                   </p>
                 </div>
@@ -38,7 +38,7 @@ export function BookingInformationCard({ booking, className }: BookingInformatio
                 <Building2 className="h-5 w-5 text-primary shrink-0" />
                 <div>
                   <p className="text-[10px] text-text-muted">Venue Space ID</p>
-                  <p className="text-xs font-bold text-white truncate max-w-45">
+                  <p className="text-xs font-bold text-text-primary truncate max-w-45">
                     {booking.venue_id}
                   </p>
                 </div>
@@ -57,7 +57,7 @@ export function BookingInformationCard({ booking, className }: BookingInformatio
             <Users className="h-4.5 w-4.5 text-text-secondary mt-0.5 shrink-0" />
             <div>
               <p className="text-[10px] text-text-muted">Guest Attendance</p>
-              <p className="text-xs font-bold text-white">{booking.guest_count} guests expected</p>
+              <p className="text-xs font-bold text-text-primary">{booking.guest_count} guests expected</p>
             </div>
           </div>
 
@@ -65,7 +65,7 @@ export function BookingInformationCard({ booking, className }: BookingInformatio
             <MapPin className="h-4.5 w-4.5 text-text-secondary mt-0.5 shrink-0" />
             <div>
               <p className="text-[10px] text-text-muted">Event Venue</p>
-              <p className="text-xs font-bold text-white">{booking.location}</p>
+              <p className="text-xs font-bold text-text-primary">{booking.location}</p>
               <p className="text-[10px] text-text-secondary leading-normal mt-0.5">
                 {booking.address}, {booking.city}, {booking.state}, {booking.country}
               </p>

@@ -24,7 +24,7 @@ export default function LandingPage() {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-md mb-16">
-          <Link href="/login" className="w-full sm:w-auto">
+          <Link href="/artists" className="w-full sm:w-auto">
             <Button size="lg" className="w-full text-base font-bold h-12 px-8">
               Explore Live Bands
             </Button>
@@ -40,7 +40,7 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-10">
           <div className="glass-card p-8 rounded-2xl text-left hover:border-primary/20 transition-all duration-300 group">
             <div className="p-3 bg-primary/10 rounded-xl w-12 h-12 flex items-center justify-center border border-primary/20 mb-6 group-hover:bg-primary group-hover:text-white transition-colors">
-              <Music className="h-6 w-6 text-primary group-hover:text-white" />
+              <Music className="h-6 w-6 text-primary group-hover:text-text-primary" />
             </div>
             <h3 className="text-xl font-bold mb-3">Diverse Performers</h3>
             <p className="text-text-secondary leading-relaxed">
@@ -50,7 +50,7 @@ export default function LandingPage() {
 
           <div className="glass-card p-8 rounded-2xl text-left hover:border-primary/20 transition-all duration-300 group">
             <div className="p-3 bg-primary/10 rounded-xl w-12 h-12 flex items-center justify-center border border-primary/20 mb-6 group-hover:bg-primary group-hover:text-white transition-colors">
-              <ShieldCheck className="h-6 w-6 text-primary group-hover:text-white" />
+              <ShieldCheck className="h-6 w-6 text-primary group-hover:text-text-primary" />
             </div>
             <h3 className="text-xl font-bold mb-3">Secure Escrow Payouts</h3>
             <p className="text-text-secondary leading-relaxed">
@@ -60,7 +60,7 @@ export default function LandingPage() {
 
           <div className="glass-card p-8 rounded-2xl text-left hover:border-primary/20 transition-all duration-300 group">
             <div className="p-3 bg-primary/10 rounded-xl w-12 h-12 flex items-center justify-center border border-primary/20 mb-6 group-hover:bg-primary group-hover:text-white transition-colors">
-              <Star className="h-6 w-6 text-primary group-hover:text-white" />
+              <Star className="h-6 w-6 text-primary group-hover:text-text-primary" />
             </div>
             <h3 className="text-xl font-bold mb-3">Verified Ratings</h3>
             <p className="text-text-secondary leading-relaxed">

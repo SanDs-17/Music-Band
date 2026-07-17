@@ -83,7 +83,7 @@ export function ImageUpload({ value, onChange, onRemove, subfolder: _subfolder =
           ) : (
             <>
               <div className="p-3 bg-bg-elevated rounded-full border border-border group-hover:bg-primary group-hover:text-white transition-colors">
-                <Upload className="h-5 w-5 text-text-secondary group-hover:text-white" />
+                <Upload className="h-5 w-5 text-text-secondary group-hover:text-text-primary" />
               </div>
               <p className="text-sm font-semibold text-text-primary">Click to upload image</p>
               <p className="text-xs text-text-muted">Supports JPG, PNG, WEBP (Max 5MB)</p>

@@ -38,6 +38,7 @@ def _format_venue_profile(venue) -> VenueResponse:
             is_active=venue.user.is_active
         ),
         name=venue.name,
+        venue_number=venue.venue_number,
         description=venue.description,
         address=venue.address,
         city_id=venue.city_id,
@@ -45,6 +46,14 @@ def _format_venue_profile(venue) -> VenueResponse:
             id=venue.city.id,
             name=venue.city.name
         ),
+        venue_type=venue.venue_type,
+        business_name=venue.business_name,
+        contact_details=venue.contact_details,
+        min_capacity=venue.min_capacity or 0,
+        pincode=venue.pincode,
+        state=venue.state,
+        country=venue.country,
+        google_map_location=venue.google_map_location,
         base_price=float(venue.base_price),
         capacity=venue.capacity,
         verification_status=venue.verification_status,

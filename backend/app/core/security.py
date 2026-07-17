@@ -6,7 +6,6 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Union
 import bcrypt
 import jwt
-from fastapi import HTTPException, status
 
 from app.core.config import settings
 
@@ -56,7 +55,8 @@ def create_refresh_token(
     subject: Union[str, Any],
     expires_delta: Union[timedelta, None] = None
 ) -> str:
-    """Generate JWT refresh token."""
+    """Generate JWT refresh token with unique JTI to prevent collision."""
+    import uuid as _uuid
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
@@ -66,6 +66,7 @@ def create_refresh_token(
         "exp": expire,
         "sub": str(subject),
         "iat": datetime.now(timezone.utc),
+        "jti": _uuid.uuid4().hex,
         "type": "refresh"
     }
     
@@ -73,11 +74,14 @@ def create_refresh_token(
     return encoded_jwt
 
 
+
 def decode_token(token: str) -> dict:
     """
     Decode and validate a JWT token.
-    Raises HTTPException 401 if invalid or expired.
+    Raises UnauthorizedException (mapped to 401) if invalid or expired,
+    returning the standard AppException shape the frontend expects.
     """
+    from app.core.exceptions import UnauthorizedException
     try:
         payload = jwt.decode(
             token,
@@ -86,14 +90,6 @@ def decode_token(token: str) -> dict:
         )
         return payload
     except jwt.ExpiredSignatureError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token has expired",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise UnauthorizedException("Token has expired. Please log in again.")
     except jwt.InvalidTokenError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise UnauthorizedException("Invalid or malformed token. Please log in again.")

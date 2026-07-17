@@ -114,7 +114,7 @@ export function ArtistProfileEdit({ profile, onSuccess }: ArtistProfileEditProps
       className="space-y-8 bg-bg-card/45 backdrop-blur-md border border-border/80 p-6 md:p-8 rounded-3xl shadow-xl"
     >
       <div className="border-b border-border/50 pb-4">
-        <h2 className="text-xl font-bold text-white">Edit Band Profile Details</h2>
+        <h2 className="text-xl font-bold text-text-primary">Edit Band Profile Details</h2>
         <p className="text-xs text-text-secondary">Update how your band looks on the public search listings.</p>
       </div>
 
@@ -222,14 +222,14 @@ export function ArtistProfileEdit({ profile, onSuccess }: ArtistProfileEditProps
 
       {/* Performance & Pricing */}
       <div className="space-y-4">
-        <h4 className="text-sm font-bold text-white uppercase tracking-wider">Performance & Pricing settings</h4>
+        <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider">Performance & Pricing settings</h4>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="space-y-1.5">
             <Label htmlFor="band_type">Performer Type</Label>
             <select 
               id="band_type"
-              className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-white text-xs"
+              className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-text-primary text-xs"
               {...register("band_type")}
             >
               <option value="Solo">Solo</option>
@@ -298,7 +298,7 @@ export function ArtistProfileEdit({ profile, onSuccess }: ArtistProfileEditProps
 
       {/* Social Links */}
       <div className="space-y-4">
-        <h4 className="text-sm font-bold text-white uppercase tracking-wider">Social Handles</h4>
+        <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider">Social Handles</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <Label className="flex items-center gap-1.5"><Instagram className="h-4 w-4 text-pink-400" /> Instagram URL</Label>
@@ -336,7 +336,7 @@ export function ArtistProfileEdit({ profile, onSuccess }: ArtistProfileEditProps
         <div className="space-y-2">
           {watchedAchievements.map((ach, idx) => (
             <div key={idx} className="flex items-center justify-between p-2.5 rounded-lg border border-border bg-bg-elevated/20">
-              <span className="text-xs text-white">{ach}</span>
+              <span className="text-xs text-text-primary">{ach}</span>
               <button type="button" onClick={() => removeAchievement(idx)} className="text-error hover:text-red-400">
                 <Trash2 className="h-4 w-4" />
               </button>

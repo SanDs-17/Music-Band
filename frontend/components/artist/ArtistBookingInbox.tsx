@@ -170,7 +170,7 @@ export function ArtistBookingInbox() {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="h-9 text-xs text-white"
+              className="h-9 text-xs text-text-primary"
             />
           </div>
           
@@ -182,7 +182,7 @@ export function ArtistBookingInbox() {
                 setStatus(e.target.value);
                 setPage(1);
               }}
-              className="h-9 px-3 rounded-lg border border-border bg-bg-card text-white text-xs"
+              className="h-9 px-3 rounded-lg border border-border bg-bg-card text-text-primary text-xs"
             >
               <option value="">All Statuses</option>
               <option value="pending">Pending</option>
@@ -225,16 +225,16 @@ export function ArtistBookingInbox() {
                       className={`hover:bg-bg-elevated/10 cursor-pointer transition-colors ${selectedBooking?.id === b.id ? "bg-primary/5 border-l-2 border-l-primary" : ""}`}
                     >
                       <td className="p-4">
-                        <div className="font-extrabold text-white">{b.event_name}</div>
+                        <div className="font-extrabold text-text-primary">{b.event_name}</div>
                         <div className="text-[10px] text-text-secondary flex items-center gap-1 mt-0.5">
                           <User className="h-3 w-3" /> {b.client.name}
                         </div>
                       </td>
-                      <td className="p-4 font-semibold text-white">
+                      <td className="p-4 font-semibold text-text-primary">
                         <div>{format(new Date(b.event_date), "dd MMM yyyy")}</div>
                         <div className="text-[10px] text-text-muted mt-0.5">{b.start_time} - {b.end_time}</div>
                       </td>
-                      <td className="p-4 font-black text-white">
+                      <td className="p-4 font-black text-text-primary">
                         {b.counter_price ? (
                           <div className="space-y-0.5">
                             <span className="text-primary">{formatCurrency(b.counter_price)}</span>
@@ -291,12 +291,12 @@ export function ArtistBookingInbox() {
         {selectedBooking ? (
           <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow-xl overflow-hidden sticky top-6">
             <CardHeader className="pb-3 border-b border-border/50 flex flex-row justify-between items-center bg-bg-elevated/10">
-              <CardTitle className="text-sm font-bold uppercase tracking-wider text-white">
+              <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary">
                 Request Console
               </CardTitle>
               <button 
                 onClick={() => setSelectedBooking(null)}
-                className="text-text-muted hover:text-white"
+                className="text-text-muted hover:text-text-primary"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -307,7 +307,7 @@ export function ArtistBookingInbox() {
               {/* Event detail cards */}
               <div className="space-y-3">
                 <div className="flex justify-between items-start">
-                  <h4 className="text-base font-black text-white">{selectedBooking.event_name}</h4>
+                  <h4 className="text-base font-black text-text-primary">{selectedBooking.event_name}</h4>
                   {getStatusBadge(selectedBooking.status)}
                 </div>
                 <div className="space-y-2 text-xs text-text-secondary">
@@ -329,7 +329,7 @@ export function ArtistBookingInbox() {
               {/* Client Card info */}
               <div className="p-3.5 border border-border/60 bg-bg-elevated/10 rounded-xl space-y-2 text-xs">
                 <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider block">Host Information</span>
-                <div className="flex items-center gap-2 font-bold text-white">
+                <div className="flex items-center gap-2 font-bold text-text-primary">
                   <User className="h-4 w-4 text-primary" />
                   <span>{selectedBooking.client.name}</span>
                 </div>
@@ -343,7 +343,7 @@ export function ArtistBookingInbox() {
               <div className="flex items-center justify-between border-y border-border/40 py-3.5 text-xs">
                 <div>
                   <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider block">Proposed rate</span>
-                  <span className="text-lg font-black text-white">{formatCurrency(selectedBooking.proposed_price)}</span>
+                  <span className="text-lg font-black text-text-primary">{formatCurrency(selectedBooking.proposed_price)}</span>
                 </div>
                 {selectedBooking.counter_price && (
                   <div className="text-right">
@@ -395,8 +395,8 @@ export function ArtistBookingInbox() {
               {showCounterBox && (
                 <form onSubmit={(e) => handleCounter(e, selectedBooking.id)} className="space-y-3 p-3.5 border border-primary/20 bg-primary/5 rounded-xl">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs font-bold text-white flex items-center gap-1.5"><TrendingUp className="h-4 w-4 text-primary" /> Counter Price negotiation</span>
-                    <button type="button" onClick={() => setShowCounterBox(false)} className="text-text-muted hover:text-white">
+                    <span className="text-xs font-bold text-text-primary flex items-center gap-1.5"><TrendingUp className="h-4 w-4 text-primary" /> Counter Price negotiation</span>
+                    <button type="button" onClick={() => setShowCounterBox(false)} className="text-text-muted hover:text-text-primary">
                       <X className="h-4 w-4" />
                     </button>
                   </div>
@@ -451,7 +451,7 @@ export function ArtistBookingInbox() {
                       {/* Timeline dot */}
                       <span className="absolute -left-[17px] top-1 w-2.5 h-2.5 rounded-full bg-primary border-2 border-bg-card" />
                       <div className="flex justify-between items-center text-[10px] text-text-muted">
-                        <span className="font-bold capitalize text-white">By {evt.by}</span>
+                        <span className="font-bold capitalize text-text-primary">By {evt.by}</span>
                         <span>{format(new Date(evt.timestamp), "dd MMM HH:mm")}</span>
                       </div>
                       <p className="text-text-secondary mt-0.5">{evt.message}</p>

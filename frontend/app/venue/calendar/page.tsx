@@ -244,12 +244,12 @@ export default function VenueCalendarPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="space-y-1">
-          <h1 className="text-2xl font-extrabold text-white tracking-tight">Availability Calendar</h1>
+          <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">Availability Calendar</h1>
           <p className="text-xs text-text-secondary">Configure daily operating hours, buffer thresholds, maintenance sessions, and check booking slots conflicts.</p>
         </div>
 
         {/* Timezone and Setup */}
-        <div className="flex items-center gap-3 bg-bg-elevated/45 border border-border/80 p-2 rounded-xl text-xs text-white shrink-0 shadow">
+        <div className="flex items-center gap-3 bg-bg-elevated/45 border border-border/80 p-2 rounded-xl text-xs text-text-primary shrink-0 shadow">
           <Globe className="h-4 w-4 text-primary" />
           <span className="font-semibold">Timezone:</span>
           <select 
@@ -273,7 +273,7 @@ export default function VenueCalendarPage() {
             
             {/* Calendar Controls */}
             <div className="p-4 md:p-6 border-b border-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-bg-elevated/10">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-primary" />
                 <span>{MONTHS[month]} {year}</span>
               </h2>
@@ -349,7 +349,7 @@ export default function VenueCalendarPage() {
           {/* Calendar filters */}
           <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow-xl">
             <CardContent className="p-5 space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
                 <Filter className="h-4.5 w-4.5 text-primary" />
                 Calendar Filters
               </h3>
@@ -414,7 +414,7 @@ export default function VenueCalendarPage() {
           <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow-xl">
             <CardContent className="p-5 space-y-4">
               <div className="flex justify-between items-center">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
                   <Settings2 className="h-4.5 w-4.5 text-primary" />
                   Space Rules
                 </h3>
@@ -442,14 +442,14 @@ export default function VenueCalendarPage() {
                 <div className="space-y-2 text-xs text-text-secondary pt-1">
                   <div className="flex justify-between items-center">
                     <span>Booking Setup Buffer:</span>
-                    <span className="font-bold text-white">{data.booking_buffer_time} Hours</span>
+                    <span className="font-bold text-text-primary">{data.booking_buffer_time} Hours</span>
                   </div>
                   <div className="border-t border-border/30 pt-2 space-y-1.5 max-h-36 overflow-y-auto pr-1">
                     {Object.keys(data.weekly_schedule).map(day => {
                       const item = data.weekly_schedule[day];
                       return (
                         <div key={day} className="flex justify-between items-center text-[11px]">
-                          <span className="font-semibold text-white">{day}</span>
+                          <span className="font-semibold text-text-primary">{day}</span>
                           <span>{item.available ? `${item.start} - ${item.end}` : "Closed"}</span>
                         </div>
                       );
@@ -474,7 +474,7 @@ export default function VenueCalendarPage() {
                       return (
                         <div key={day} className="flex flex-col gap-1 text-[11px] pb-2 border-b border-border/20 last:border-b-0">
                           <div className="flex justify-between items-center">
-                            <span className="font-bold text-white">{day}</span>
+                            <span className="font-bold text-text-primary">{day}</span>
                             <label className="flex items-center gap-1 cursor-pointer">
                               <input 
                                 type="checkbox"
@@ -523,7 +523,7 @@ export default function VenueCalendarPage() {
           {/* Interactive booking slot conflict checks */}
           <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow-xl">
             <CardContent className="p-5 space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
                 <ShieldAlert className="h-4.5 w-4.5 text-primary" />
                 Slot Conflict Evaluator
               </h3>
@@ -612,7 +612,7 @@ export default function VenueCalendarPage() {
           {/* Manage Blocked Dates / Maintenance / Holidays lists */}
           <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow-xl">
             <CardContent className="p-5 space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-white">Blocked & Maintenance Days</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-text-primary">Blocked & Maintenance Days</h3>
 
               {/* Block dates input */}
               <div className="space-y-2 border-b border-border/25 pb-3">

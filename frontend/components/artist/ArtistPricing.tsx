@@ -18,9 +18,10 @@ interface ArtistPricingProps {
 export function ArtistPricing({ pricing, onSave }: ArtistPricingProps) {
   const [baseRate, setBaseRate] = React.useState(pricing.base_rate || 0);
   const [currency, setCurrency] = React.useState(pricing.currency || "INR");
-  const [travelCharges, setTravelCharges] = React.useState(pricing.travel_charges || 0);
-  const [minHours, setMinHours] = React.useState(pricing.min_booking_hours || 0);
-  const [maxHours] = React.useState(pricing.max_booking_hours || 0);
+  const [travelRadius, setTravelRadius] = React.useState(pricing.travel_radius || 0);
+  const travelCharges = pricing.travel_charges || 0;
+  const minHours = pricing.min_booking_hours || 0;
+  const maxHours = pricing.max_booking_hours || 0;
   
   const [weekendSurcharge, setWeekendSurcharge] = React.useState(pricing.weekend_surcharge || 0);
   const [holidaySurcharge, setHolidaySurcharge] = React.useState(pricing.holiday_surcharge || 0);
@@ -47,6 +48,7 @@ export function ArtistPricing({ pricing, onSave }: ArtistPricingProps) {
       await onSave({
         base_rate: baseRate,
         currency,
+        travel_radius: travelRadius,
         travel_charges: travelCharges,
         min_booking_hours: minHours,
         max_booking_hours: maxHours,
@@ -121,20 +123,20 @@ export function ArtistPricing({ pricing, onSave }: ArtistPricingProps) {
       {/* Basic limits row */}
       <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 shadow-xl">
         <CardHeader className="pb-3 border-b border-border/50">
-          <CardTitle className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+          <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
             <DollarSign className="h-4.5 w-4.5 text-primary" />
-            Standard Performer Hourly Rates
+            Standard Performer Rates
           </CardTitle>
         </CardHeader>
         <CardContent className="p-5 space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-1.5">
               <Label htmlFor="currency">Currency Code</Label>
               <select
                 id="currency"
                 value={currency}
                 onChange={e => setCurrency(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-white text-xs"
+                className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-text-primary text-xs"
               >
                 <option value="INR">INR (₹)</option>
                 <option value="USD">USD ($)</option>
@@ -143,7 +145,7 @@ export function ArtistPricing({ pricing, onSave }: ArtistPricingProps) {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="base_rate">Starting Rate (Hourly)</Label>
+              <Label htmlFor="base_rate">Performance Rate (INR)</Label>
               <Input
                 id="base_rate"
                 type="number"
@@ -153,22 +155,12 @@ export function ArtistPricing({ pricing, onSave }: ArtistPricingProps) {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="travel_charges">Travel Surcharge / km</Label>
+              <Label htmlFor="travel_radius">Travel Radius (km)</Label>
               <Input
-                id="travel_charges"
+                id="travel_radius"
                 type="number"
-                value={travelCharges}
-                onChange={e => setTravelCharges(Number(e.target.value))}
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="min_booking_hours">Min Booking Hours</Label>
-              <Input
-                id="min_booking_hours"
-                type="number"
-                value={minHours}
-                onChange={e => setMinHours(Number(e.target.value))}
+                value={travelRadius}
+                onChange={e => setTravelRadius(Number(e.target.value))}
               />
             </div>
           </div>
@@ -178,7 +170,7 @@ export function ArtistPricing({ pricing, onSave }: ArtistPricingProps) {
       {/* Surcharge Adjustments */}
       <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 shadow-xl">
         <CardHeader className="pb-3 border-b border-border/50">
-          <CardTitle className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+          <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
             <Percent className="h-4.5 w-4.5 text-primary" />
             Special Day Surcharges (%)
           </CardTitle>
@@ -215,7 +207,7 @@ export function ArtistPricing({ pricing, onSave }: ArtistPricingProps) {
       {/* Custom Packages list builder */}
       <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 shadow-xl">
         <CardHeader className="pb-3 border-b border-border/50">
-          <CardTitle className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+          <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
             <Briefcase className="h-4.5 w-4.5 text-primary" />
             Standard Gig Packages
           </CardTitle>
@@ -266,7 +258,7 @@ export function ArtistPricing({ pricing, onSave }: ArtistPricingProps) {
                   <Trash2 className="h-4 w-4" />
                 </button>
                 <div className="space-y-1">
-                  <span className="text-xs font-bold text-white block">{pkg.name}</span>
+                  <span className="text-xs font-bold text-text-primary block">{pkg.name}</span>
                   <span className="text-sm font-black text-primary block">
                     {currency} {pkg.price.toLocaleString()}
                   </span>
@@ -288,7 +280,7 @@ export function ArtistPricing({ pricing, onSave }: ArtistPricingProps) {
       {/* Special Offers (placeholder list builder) */}
       <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 shadow-xl">
         <CardHeader className="pb-3 border-b border-border/50">
-          <CardTitle className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+          <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
             <Gift className="h-4.5 w-4.5 text-primary" />
             Special Offers & Promos
           </CardTitle>
@@ -339,7 +331,7 @@ export function ArtistPricing({ pricing, onSave }: ArtistPricingProps) {
                   <Trash2 className="h-4 w-4" />
                 </button>
                 <div className="space-y-1">
-                  <span className="text-xs font-bold text-white block">{off.title}</span>
+                  <span className="text-xs font-bold text-text-primary block">{off.title}</span>
                   <span className="text-xs font-black text-amber-400 block">
                     {off.discount}% OFF Booking Rate
                   </span>

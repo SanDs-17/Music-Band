@@ -120,7 +120,7 @@ export function VenuePricing({ data, onSave }: VenuePricingProps) {
       {/* Title */}
       <div className="border-b border-border/50 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-0.5">
-          <h2 className="text-xl font-bold text-white">Rental Pricing Packages & Modifiers</h2>
+          <h2 className="text-xl font-bold text-text-primary">Rental Pricing Packages & Modifiers</h2>
           <p className="text-xs text-text-secondary">Configure base rental rates, multi-hour package discounts, security deposits, and taxes.</p>
         </div>
         <Button 
@@ -136,7 +136,7 @@ export function VenuePricing({ data, onSave }: VenuePricingProps) {
       {/* Currency Support Panel */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-4 border border-border/60 bg-bg-elevated/15 rounded-2xl">
         <div className="md:col-span-2 space-y-1">
-          <Label className="text-xs font-bold text-white flex items-center gap-2">
+          <Label className="text-xs font-bold text-text-primary flex items-center gap-2">
             <GlobeIcon className="h-4 w-4 text-primary" />
             Pricing Currency
           </Label>
@@ -145,7 +145,7 @@ export function VenuePricing({ data, onSave }: VenuePricingProps) {
         <select 
           value={currency} 
           onChange={e => setCurrency(e.target.value)}
-          className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-white text-xs font-bold"
+          className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-text-primary text-xs font-bold"
         >
           {CURRENCIES.map(curr => (
             <option key={curr.code} value={curr.code}>{curr.name}</option>
@@ -157,7 +157,7 @@ export function VenuePricing({ data, onSave }: VenuePricingProps) {
         
         {/* Left Column: Standard Core Packages */}
         <div className="space-y-4">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
             <Building className="h-4.5 w-4.5 text-primary" />
             Core Rates Packages
           </h3>
@@ -174,7 +174,7 @@ export function VenuePricing({ data, onSave }: VenuePricingProps) {
                     type="number"
                     value={basePrice}
                     onChange={e => setBasePrice(Number(e.target.value))}
-                    className="pl-9 h-9.5 text-xs font-bold text-white" 
+                    className="pl-9 h-9.5 text-xs font-bold text-text-primary" 
                   />
                 </div>
               </div>
@@ -188,7 +188,7 @@ export function VenuePricing({ data, onSave }: VenuePricingProps) {
                     type="number"
                     value={hourlyPrice}
                     onChange={e => setHourlyPrice(Number(e.target.value))}
-                    className="pl-9 h-9.5 text-xs font-bold text-white" 
+                    className="pl-9 h-9.5 text-xs font-bold text-text-primary" 
                   />
                 </div>
               </div>
@@ -202,7 +202,7 @@ export function VenuePricing({ data, onSave }: VenuePricingProps) {
                     type="number"
                     value={halfDayPrice}
                     onChange={e => setHalfDayPrice(Number(e.target.value))}
-                    className="pl-9 h-9.5 text-xs font-bold text-white" 
+                    className="pl-9 h-9.5 text-xs font-bold text-text-primary" 
                   />
                 </div>
               </div>
@@ -216,7 +216,7 @@ export function VenuePricing({ data, onSave }: VenuePricingProps) {
                     type="number"
                     value={fullDayPrice}
                     onChange={e => setFullDayPrice(Number(e.target.value))}
-                    className="pl-9 h-9.5 text-xs font-bold text-white" 
+                    className="pl-9 h-9.5 text-xs font-bold text-text-primary" 
                   />
                 </div>
               </div>
@@ -227,7 +227,7 @@ export function VenuePricing({ data, onSave }: VenuePricingProps) {
 
         {/* Right Column: Pricing Surcharges & Modifiers */}
         <div className="space-y-4">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
             <Scale className="h-4.5 w-4.5 text-primary" />
             Modifiers & Surcharges
           </h3>
@@ -245,7 +245,7 @@ export function VenuePricing({ data, onSave }: VenuePricingProps) {
                       type="number"
                       value={weekendPrice}
                       onChange={e => setWeekendPrice(Number(e.target.value))}
-                      className="pr-9 h-9.5 text-xs font-bold text-white" 
+                      className="pr-9 h-9.5 text-xs font-bold text-text-primary" 
                     />
                   </div>
                 </div>
@@ -259,7 +259,7 @@ export function VenuePricing({ data, onSave }: VenuePricingProps) {
                       type="number"
                       value={holidayPrice}
                       onChange={e => setHolidayPrice(Number(e.target.value))}
-                      className="pr-9 h-9.5 text-xs font-bold text-white" 
+                      className="pr-9 h-9.5 text-xs font-bold text-text-primary" 
                     />
                   </div>
                 </div>
@@ -274,7 +274,7 @@ export function VenuePricing({ data, onSave }: VenuePricingProps) {
                     type="number"
                     value={securityDeposit}
                     onChange={e => setSecurityDeposit(Number(e.target.value))}
-                    className="pl-9 h-9.5 text-xs font-bold text-white" 
+                    className="pl-9 h-9.5 text-xs font-bold text-text-primary" 
                   />
                 </div>
               </div>
@@ -289,7 +289,7 @@ export function VenuePricing({ data, onSave }: VenuePricingProps) {
                       type="number"
                       value={cleaningCharges}
                       onChange={e => setCleaningCharges(Number(e.target.value))}
-                      className="pl-9 h-9.5 text-xs font-bold text-white" 
+                      className="pl-9 h-9.5 text-xs font-bold text-text-primary" 
                     />
                   </div>
                 </div>
@@ -303,7 +303,7 @@ export function VenuePricing({ data, onSave }: VenuePricingProps) {
                       type="number"
                       value={cancellationCharges}
                       onChange={e => setCancellationCharges(Number(e.target.value))}
-                      className="pr-9 h-9.5 text-xs font-bold text-white" 
+                      className="pr-9 h-9.5 text-xs font-bold text-text-primary" 
                     />
                   </div>
                 </div>
@@ -318,7 +318,7 @@ export function VenuePricing({ data, onSave }: VenuePricingProps) {
                     type="number"
                     value={taxPercentage}
                     onChange={e => setTaxPercentage(Number(e.target.value))}
-                    className="pr-9 h-9.5 text-xs font-bold text-white" 
+                    className="pr-9 h-9.5 text-xs font-bold text-text-primary" 
                   />
                 </div>
               </div>
@@ -332,7 +332,7 @@ export function VenuePricing({ data, onSave }: VenuePricingProps) {
       {/* DISCOUNTS BUILDER SECTION */}
       <div className="pt-6 border-t border-border/50 space-y-4">
         <div className="space-y-1">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
             <Gift className="h-4.5 w-4.5 text-primary" />
             Promo Discounts Manager
           </h3>
@@ -356,7 +356,7 @@ export function VenuePricing({ data, onSave }: VenuePricingProps) {
             <select
               value={newDiscType}
               onChange={e => setNewDiscType(e.target.value)}
-              className="w-full h-9.5 px-3 rounded-lg border border-border bg-bg-card text-white text-xs"
+              className="w-full h-9.5 px-3 rounded-lg border border-border bg-bg-card text-text-primary text-xs"
             >
               <option value="percentage">Percentage (%)</option>
               <option value="flat">Flat Value ({symbol})</option>
@@ -391,8 +391,8 @@ export function VenuePricing({ data, onSave }: VenuePricingProps) {
                 <Badge className="bg-primary/10 text-primary border border-primary/20 text-[9px] py-0.5 uppercase font-bold">
                   Active Promo
                 </Badge>
-                <p className="text-xs font-bold text-white">{disc.name}</p>
-                <p className="text-sm font-black text-white pt-1">
+                <p className="text-xs font-bold text-text-primary">{disc.name}</p>
+                <p className="text-sm font-black text-text-primary pt-1">
                   {disc.type === "percentage" ? `-${disc.value}%` : `-${symbol}${disc.value}`}
                 </p>
               </div>

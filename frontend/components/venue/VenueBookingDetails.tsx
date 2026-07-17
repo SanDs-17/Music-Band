@@ -78,11 +78,11 @@ export function VenueBookingDetails({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-xl bg-bg-card border border-border/85 rounded-3xl p-6 shadow-2xl overflow-y-auto max-h-[85vh] text-white">
+      <DialogContent className="max-w-xl bg-bg-card border border-border/85 rounded-3xl p-6 shadow-2xl overflow-y-auto max-h-[85vh] text-text-primary">
         
         <DialogHeader className="border-b border-border/40 pb-4">
           <div className="flex items-center justify-between gap-4">
-            <DialogTitle className="text-lg font-bold text-white tracking-tight">
+            <DialogTitle className="text-lg font-bold text-text-primary tracking-tight">
               Reservation #{(booking.id || "").substring(0, 8).toUpperCase()}
             </DialogTitle>
             {getStatusBadge(booking.status)}
@@ -99,7 +99,7 @@ export function VenueBookingDetails({
               Event Information
             </h4>
             <div className="p-4 border border-border/60 bg-bg-elevated/10 rounded-2xl space-y-3">
-              <p className="text-sm font-bold text-white leading-snug">{booking.event_name}</p>
+              <p className="text-sm font-bold text-text-primary leading-snug">{booking.event_name}</p>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs text-text-secondary pt-1">
                 <div className="flex items-center gap-2">
@@ -118,7 +118,7 @@ export function VenueBookingDetails({
 
               {booking.notes && (
                 <div className="mt-3 pt-3 border-t border-border/30 text-xs text-text-secondary leading-relaxed bg-bg-card/40 p-2.5 rounded-lg border border-border/50">
-                  <span className="font-bold text-white block mb-0.5">Special Instructions:</span>
+                  <span className="font-bold text-text-primary block mb-0.5">Special Instructions:</span>
                   {booking.notes}
                 </div>
               )}
@@ -134,11 +134,11 @@ export function VenueBookingDetails({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 p-4 border border-border/60 bg-bg-elevated/10 rounded-2xl text-xs">
               <div className="space-y-1">
                 <span className="text-[10px] text-text-muted">Contact Name</span>
-                <p className="font-bold text-white">{booking.client.name}</p>
+                <p className="font-bold text-text-primary">{booking.client.name}</p>
               </div>
               <div className="space-y-1">
                 <span className="text-[10px] text-text-muted">Email Address</span>
-                <p className="font-bold text-white flex items-center gap-1">
+                <p className="font-bold text-text-primary flex items-center gap-1">
                   <Mail className="h-3.5 w-3.5 text-text-muted" />
                   {booking.client.email}
                 </p>
@@ -180,7 +180,7 @@ export function VenueBookingDetails({
                      <Clock className="h-2 w-2" />}
                   </span>
                   <div className="space-y-0.5">
-                    <p className="font-bold text-white capitalize leading-none">{step.status}</p>
+                    <p className="font-bold text-text-primary capitalize leading-none">{step.status}</p>
                     <p className="text-[10px] text-text-muted">
                       {format(new Date(step.timestamp), "MMM d, yyyy HH:mm")} — by {step.by}
                     </p>
@@ -238,7 +238,7 @@ export function VenueBookingDetails({
           <Button
             variant="ghost"
             onClick={onClose}
-            className="text-text-muted hover:text-white h-9.5 text-xs font-semibold w-full sm:w-auto"
+            className="text-text-muted hover:text-text-primary h-9.5 text-xs font-semibold w-full sm:w-auto"
           >
             Close Viewer
           </Button>

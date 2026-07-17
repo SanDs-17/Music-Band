@@ -82,7 +82,7 @@ export default function VenueVerificationPage() {
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-extrabold text-text-primary tracking-tight flex items-center gap-2">
             <ShieldCheck className="h-6.5 w-6.5 text-primary" />
             Verification Center
           </h1>
@@ -137,7 +137,7 @@ export default function VenueVerificationPage() {
 
               <div className="text-left sm:text-right">
                 <span className="text-[10px] text-text-muted block">Profile Owner</span>
-                <span className="text-sm font-bold text-white block">{profile.business_name || "Your Listing"}</span>
+                <span className="text-sm font-bold text-text-primary block">{profile.business_name || "Your Listing"}</span>
               </div>
             </div>
 
@@ -158,7 +158,7 @@ export default function VenueVerificationPage() {
 
           {/* Current Documents Grid */}
           <div className="space-y-4">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
               <FileText className="h-4.5 w-4.5 text-primary" />
               Document Vault
             </h3>
@@ -173,7 +173,7 @@ export default function VenueVerificationPage() {
               ].map((doc, idx) => (
                 <Card key={idx} className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl p-4 flex items-center justify-between">
                   <div className="space-y-1">
-                    <span className="text-xs font-bold text-white block">{doc.name}</span>
+                    <span className="text-xs font-bold text-text-primary block">{doc.name}</span>
                     <span className="text-[10px] text-text-secondary block">
                       {doc.url ? "File successfully uploaded" : "Missing / Not uploaded"}
                     </span>
@@ -201,7 +201,7 @@ export default function VenueVerificationPage() {
         {/* Audit Timeline / History History */}
         <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow p-5">
           <div className="border-b border-border/30 pb-3 mb-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-text-primary flex items-center gap-1.5">
               <History className="h-4.5 w-4.5 text-primary" />
               Verification History
             </h3>
@@ -219,7 +219,7 @@ export default function VenueVerificationPage() {
                     : "bg-amber-400 border-amber-500"
                 }`} />
                 <div className="flex items-center justify-between text-[10px]">
-                  <span className="font-bold text-white capitalize">{log.status}</span>
+                  <span className="font-bold text-text-primary capitalize">{log.status}</span>
                   <span className="text-text-muted font-mono">
                     {format(new Date(log.timestamp), "dd MMM yyyy HH:mm")}
                   </span>
@@ -240,7 +240,7 @@ export default function VenueVerificationPage() {
       {(status === "rejected" || status === "pending") && (
         <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow p-6 max-w-3xl">
           <div className="border-b border-border/30 pb-3.5 mb-5">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-white">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary">
               Resubmit Verification Files
             </h3>
             <p className="text-xs text-text-secondary">

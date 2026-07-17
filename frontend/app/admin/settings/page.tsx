@@ -258,7 +258,7 @@ export default function AdminSettingsPage() {
       {activeTab === "app_theme" && (
         <Card className="max-w-xl">
           <CardHeader>
-            <CardTitle className="text-sm font-bold flex items-center gap-2 text-white">
+            <CardTitle className="text-sm font-bold flex items-center gap-2 text-text-primary">
               <Globe className="h-4.5 w-4.5 text-primary" />
               <span>General site settings configurations</span>
             </CardTitle>
@@ -280,7 +280,7 @@ export default function AdminSettingsPage() {
             </div>
 
             <div className="space-y-3 pt-2">
-              <Label className="flex items-center gap-2.5 font-semibold text-white cursor-pointer select-none">
+              <Label className="flex items-center gap-2.5 font-semibold text-text-primary cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={maintenanceMode}
@@ -303,7 +303,7 @@ export default function AdminSettingsPage() {
       {activeTab === "templates" && (
         <Card className="max-w-2xl">
           <CardHeader>
-            <CardTitle className="text-sm font-bold flex items-center gap-2 text-white">
+            <CardTitle className="text-sm font-bold flex items-center gap-2 text-text-primary">
               <Mail className="h-4.5 w-4.5 text-secondary" />
               <span>System Email & SMS templates text formats</span>
             </CardTitle>
@@ -351,7 +351,7 @@ export default function AdminSettingsPage() {
       {activeTab === "preferences" && (
         <Card className="max-w-xl">
           <CardHeader>
-            <CardTitle className="text-sm font-bold flex items-center gap-2 text-white">
+            <CardTitle className="text-sm font-bold flex items-center gap-2 text-text-primary">
               <Sliders className="h-4.5 w-4.5 text-accent" />
               <span>Commission rates and file upload settings config</span>
             </CardTitle>
@@ -394,7 +394,7 @@ export default function AdminSettingsPage() {
             </div>
 
             <div className="space-y-3 pt-2">
-              <Label className="flex items-center gap-2.5 font-semibold text-white cursor-pointer select-none">
+              <Label className="flex items-center gap-2.5 font-semibold text-text-primary cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={emailDispatch}
@@ -403,7 +403,7 @@ export default function AdminSettingsPage() {
                 />
                 <span>Enable Automated Email Dispatches</span>
               </Label>
-              <Label className="flex items-center gap-2.5 font-semibold text-white cursor-pointer select-none">
+              <Label className="flex items-center gap-2.5 font-semibold text-text-primary cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={smsDispatch}
@@ -454,11 +454,11 @@ export default function AdminSettingsPage() {
                     logs.map((log) => (
                       <TableRow key={log.id}>
                         <TableCell>
-                          <Badge variant="outline" className="text-[10px] uppercase font-bold text-white border-white/20">
+                          <Badge variant="outline" className="text-[10px] uppercase font-bold text-text-primary border-white/20">
                             {log.action}
                           </Badge>
                         </TableCell>
-                        <TableCell className="font-bold text-white text-xs">
+                        <TableCell className="font-bold text-text-primary text-xs">
                           {log.user_name}
                         </TableCell>
                         <TableCell className="text-text-secondary text-xs font-mono text-[10px]">
@@ -472,7 +472,7 @@ export default function AdminSettingsPage() {
                             onClick={() => setSelectedLog(log)}
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7 text-text-secondary hover:text-white"
+                            className="h-7 w-7 text-text-secondary hover:text-text-primary"
                           >
                             <Eye className="h-3.5 w-3.5" />
                           </Button>
@@ -527,12 +527,12 @@ export default function AdminSettingsPage() {
           <div className="space-y-4 text-xs text-text-secondary">
             <div className="space-y-1">
               <span className="font-semibold text-text-muted">Operation Action</span>
-              <div className="font-bold text-white uppercase">{selectedLog.action}</div>
+              <div className="font-bold text-text-primary uppercase">{selectedLog.action}</div>
             </div>
 
             <div className="space-y-1">
               <span className="font-semibold text-text-muted">Administrator</span>
-              <div className="font-bold text-white">{selectedLog.user_name}</div>
+              <div className="font-bold text-text-primary">{selectedLog.user_name}</div>
             </div>
 
             <div className="space-y-1">

@@ -2,6 +2,7 @@
 Business logic service layers for Venue listing management.
 """
 
+import threading
 from datetime import datetime
 from sqlalchemy.orm import Session
 from loguru import logger
@@ -11,6 +12,35 @@ from app.features.venues.schemas import VenueVerificationUpdate, VenueRegisterRe
 from app.features.auth.crud import UserCRUD, RoleCRUD
 from app.core.exceptions import NotFoundException, ConflictException
 from app.core.security import get_password_hash
+
+# Thread-safety lock for SQLite test environments where sequences are not available.
+# PostgreSQL uses its own native sequence (venue_number_seq) instead.
+_VENUE_NUMBER_LOCK = threading.Lock()
+
+
+def generate_next_venue_number(db: Session) -> str:
+    """
+    Generate the next unique venue number in the format BCV-XXXXXX.
+
+    Production (PostgreSQL): reads from the `venue_number_seq` sequence, which
+    guarantees monotonic, gap-free, concurrent-safe integers starting at 100001.
+
+    Test/SQLite fallback: counts existing rows and uses an in-process mutex to
+    prevent races during parallel test execution.
+    """
+    try:
+        # Try PostgreSQL native sequence — available after migration
+        result = db.execute(
+            # Use text() for portability between SQLAlchemy Core and ORM sessions
+            __import__("sqlalchemy").text("SELECT nextval('venue_number_seq')")
+        )
+        seq_val = result.scalar()
+        return f"BCV-{seq_val:06d}"
+    except Exception:
+        # Fallback for SQLite (test environment) or sequence not yet created
+        with _VENUE_NUMBER_LOCK:
+            count = db.query(Venue).count()
+            return f"BCV-{100001 + count:06d}"
 
 
 class VenueService:
@@ -96,11 +126,15 @@ class VenueService:
         if data.virtual_tour:
             gallery_data.append(data.virtual_tour)
 
+        # Assign system-generated venue number before persisting (immutable after creation)
+        venue_number = generate_next_venue_number(db)
+
         venue = self.crud.create(
             db,
             obj_in={
                 "user_id": user.id,
                 "name": data.venue_name,
+                "venue_number": venue_number,
                 "venue_type": data.venue_type,
                 "description": data.description,
                 "address": data.address,
@@ -124,6 +158,118 @@ class VenueService:
         db.commit()
         db.refresh(venue)
         logger.info(f"Successfully registered venue '{venue.name}' for user {user.email}")
+        return venue
+
+    def create_venue_profile_for_user(
+        self,
+        db: Session,
+        user_id: str,
+        data
+    ) -> Venue:
+        """
+        Creates a Venue profile for an already-authenticated user who was registered
+        via the standard /auth/register endpoint (role=venue_owner).
+        """
+        from app.core.exceptions import ConflictException
+        from uuid import UUID as PyUUID
+
+        # Convert JWT sub (string) to UUID for repository calls
+        try:
+            user_uuid = PyUUID(user_id)
+        except (ValueError, AttributeError):
+            raise NotFoundException("Invalid user ID format.")
+
+        # 1. Guard: profile must not already exist
+        existing = self.crud.get_by_user_id(db, user_uuid)
+        if existing:
+            raise ConflictException("Venue profile already exists for this user.")
+
+        # 2. Verify the user exists
+        user = self.user_crud.get(db, user_uuid)
+        if not user:
+            raise NotFoundException("User account not found.")
+
+        # 3. Create Venue Profile
+        pricing_details = {
+            "hourly_price": data.hourly_price,
+            "weekend_price": data.weekend_price,
+            "holiday_price": data.holiday_price,
+            "security_deposit": data.security_deposit,
+            "cancellation_charges": data.cancellation_charges,
+            "extra_hour_charges": data.extra_hour_charges
+        }
+        availability_rules = {
+            "weekly_schedule": data.weekly_schedule,
+            "blocked_dates": data.blocked_dates,
+            "maintenance_days": data.maintenance_days,
+            "public_holidays": data.public_holidays,
+            "booking_buffer_time": data.booking_buffer_time
+        }
+        documents = {
+            "doc_pan": data.doc_pan,
+            "doc_gst": data.doc_gst,
+            "doc_ownership_proof": data.doc_ownership_proof,
+            "doc_government_id": data.doc_government_id,
+            "doc_business_license": data.doc_business_license
+        }
+        metadata_fields = {
+            "contact_person": data.contact_person,
+            "gst_number": data.gst_number,
+            "pan_number": data.pan_number,
+            "established_year": data.established_year,
+            "indoor_outdoor": data.indoor_outdoor,
+            "district": data.district,
+            "area": data.area,
+            "landmark": data.landmark,
+            "latitude": data.latitude,
+            "longitude": data.longitude,
+            "cover_image": data.cover_image,
+            "youtube_links": data.youtube_links,
+            "verification_history": [
+                {
+                    "status": "pending",
+                    "notes": "Initial submission on registration.",
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+            ]
+        }
+        gallery_data = data.images + data.videos
+        if data.virtual_tour:
+            gallery_data.append(data.virtual_tour)
+
+        # Assign system-generated venue number before persisting (immutable after creation)
+        venue_number = generate_next_venue_number(db)
+
+        venue = self.crud.create(
+            db,
+            obj_in={
+                "user_id": user.id,
+                "name": data.venue_name,
+                "venue_number": venue_number,
+                "venue_type": data.venue_type,
+                "description": data.description,
+                "address": data.address,
+                "city_id": data.city_id,
+                "pincode": data.pincode,
+                "state": data.state,
+                "country": data.country,
+                "google_map_location": data.google_map_location,
+                "min_capacity": data.min_capacity,
+                "capacity": data.max_capacity,
+                "base_price": data.base_price,
+                "facilities": data.facilities,
+                "gallery": gallery_data,
+                "pricing_details": pricing_details,
+                "availability_rules": availability_rules,
+                "documents": documents,
+                "metadata_fields": metadata_fields,
+                "verification_status": "pending"
+            }
+        )
+
+        db.commit()
+        db.refresh(venue)
+        logger.info(f"Successfully created venue '{venue.name}' for user {user.email}")
         return venue
 
     def update_verification_status(

@@ -34,6 +34,7 @@ from app.features.venues.models import (  # noqa: F401
 from app.features.bookings.models import Booking  # noqa: F401
 from app.features.reviews.models import Review  # noqa: F401
 from app.features.earnings.models import Transaction  # noqa: F401
+from app.features.notifications.models import Notification  # noqa: F401
 
 # ── Categories / Taxonomy ────────────────────────────────────────────────────
 from app.features.categories.models import Category  # noqa: F401

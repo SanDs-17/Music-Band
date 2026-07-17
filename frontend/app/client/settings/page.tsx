@@ -12,7 +12,7 @@ export default function ClientSettingsPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="space-y-1">
-        <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
+        <h1 className="text-2xl font-black text-text-primary tracking-tight flex items-center gap-2">
           <Settings className="h-6 w-6 text-primary" />
           Profile Settings
         </h1>
@@ -23,7 +23,7 @@ export default function ClientSettingsPage() {
 
       <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl overflow-hidden shadow-xl">
         <CardHeader className="border-b border-border/60 bg-bg-card/20 p-5">
-          <CardTitle className="text-sm font-bold text-white tracking-tight flex items-center gap-1.5">
+          <CardTitle className="text-sm font-bold text-text-primary tracking-tight flex items-center gap-1.5">
             <User className="h-4.5 w-4.5 text-primary" />
             Client Account Profile
           </CardTitle>
@@ -31,11 +31,11 @@ export default function ClientSettingsPage() {
         <CardContent className="p-6 space-y-4">
           <div className="space-y-1">
             <label className="text-[10px] text-text-muted font-bold uppercase">Name</label>
-            <p className="text-sm font-bold text-white">{user?.name || "N/A"}</p>
+            <p className="text-sm font-bold text-text-primary">{user?.name || "N/A"}</p>
           </div>
           <div className="space-y-1">
             <label className="text-[10px] text-text-muted font-bold uppercase">Email</label>
-            <p className="text-sm font-semibold text-white flex items-center gap-1.5">
+            <p className="text-sm font-semibold text-text-primary flex items-center gap-1.5">
               <Mail className="h-4 w-4 text-text-secondary" />
               {user?.email || "N/A"}
             </p>
@@ -51,7 +51,7 @@ export default function ClientSettingsPage() {
 
       <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl overflow-hidden shadow-xl">
         <CardHeader className="border-b border-border/60 bg-bg-card/20 p-5">
-          <CardTitle className="text-sm font-bold text-white tracking-tight flex items-center gap-1.5">
+          <CardTitle className="text-sm font-bold text-text-primary tracking-tight flex items-center gap-1.5">
             <ShieldAlert className="h-4.5 w-4.5 text-primary" />
             Security Credentials
           </CardTitle>

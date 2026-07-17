@@ -17,6 +17,7 @@ interface BookingRequestFormProps {
   venueId?: string;
   artistName?: string;
   venueName?: string;
+  proposedPrice?: number;
   onSuccess?: (bookingId: string) => void;
   onCancel?: () => void;
 }
@@ -26,6 +27,7 @@ export function BookingRequestForm({
   venueId,
   artistName,
   venueName,
+  proposedPrice,
   onSuccess,
   onCancel,
 }: BookingRequestFormProps) {
@@ -46,7 +48,7 @@ export function BookingRequestForm({
       start_time: "18:00",
       end_time: "22:00",
       guest_count: 50,
-      proposed_price: 15000,
+      proposed_price: proposedPrice || 15000,
       location: venueName || "",
       address: "",
       city: "",
@@ -126,7 +128,7 @@ export function BookingRequestForm({
   return (
     <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow-xl w-full max-w-2xl mx-auto overflow-hidden">
       <CardHeader className="border-b border-border/60 bg-bg-card/30 p-6">
-        <CardTitle className="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+        <CardTitle className="text-xl font-extrabold text-text-primary tracking-tight flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-primary" />
           Create Booking Request
         </CardTitle>
@@ -156,7 +158,7 @@ export function BookingRequestForm({
                   <Input
                     id="event_title"
                     placeholder="e.g. Annual Tech Summit Afterparty"
-                    className="text-white text-xs bg-bg-card border-border/80"
+                    className="text-text-primary text-xs bg-bg-card border-border/80"
                     {...register("event_title")}
                   />
                 </div>
@@ -169,7 +171,7 @@ export function BookingRequestForm({
                 <Label htmlFor="event_type">Event Type</Label>
                 <select
                   id="event_type"
-                  className="w-full h-9 rounded-lg border border-border/80 bg-bg-card text-white text-xs px-3 focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full h-9 rounded-lg border border-border/80 bg-bg-card text-text-primary text-xs px-3 focus:outline-none focus:ring-1 focus:ring-primary"
                   {...register("event_type")}
                 >
                   <option value="Wedding">Wedding Celebration</option>
@@ -195,7 +197,7 @@ export function BookingRequestForm({
                 <Input
                   id="event_date"
                   type="date"
-                  className="text-white text-xs bg-bg-card border-border/80"
+                  className="text-text-primary text-xs bg-bg-card border-border/80"
                   {...register("event_date")}
                 />
                 {errors.event_date && (
@@ -211,7 +213,7 @@ export function BookingRequestForm({
                 <Input
                   id="start_time"
                   type="time"
-                  className="text-white text-xs bg-bg-card border-border/80"
+                  className="text-text-primary text-xs bg-bg-card border-border/80"
                   {...register("start_time")}
                 />
                 {errors.start_time && (
@@ -227,7 +229,7 @@ export function BookingRequestForm({
                 <Input
                   id="end_time"
                   type="time"
-                  className="text-white text-xs bg-bg-card border-border/80"
+                  className="text-text-primary text-xs bg-bg-card border-border/80"
                   {...register("end_time")}
                 />
                 {errors.end_time && (
@@ -246,7 +248,7 @@ export function BookingRequestForm({
                   id="guest_count"
                   type="number"
                   placeholder="50"
-                  className="text-white text-xs bg-bg-card border-border/80"
+                  className="text-text-primary text-xs bg-bg-card border-border/80"
                   {...register("guest_count", { valueAsNumber: true })}
                 />
                 {errors.guest_count && (
@@ -263,7 +265,7 @@ export function BookingRequestForm({
                   id="proposed_price"
                   type="number"
                   placeholder="15000"
-                  className="text-white text-xs bg-bg-card border-border/80"
+                  className="text-text-primary text-xs bg-bg-card border-border/80"
                   {...register("proposed_price", { valueAsNumber: true })}
                 />
                 {errors.proposed_price && (
@@ -288,7 +290,7 @@ export function BookingRequestForm({
               <Input
                 id="location"
                 placeholder="e.g. Taj West End, Grand Ballroom"
-                className="text-white text-xs bg-bg-card border-border/80"
+                className="text-text-primary text-xs bg-bg-card border-border/80"
                 {...register("location")}
               />
               {errors.location && (
@@ -301,7 +303,7 @@ export function BookingRequestForm({
               <Input
                 id="address"
                 placeholder="e.g. 25 Race Course Road"
-                className="text-white text-xs bg-bg-card border-border/80"
+                className="text-text-primary text-xs bg-bg-card border-border/80"
                 {...register("address")}
               />
               {errors.address && (
@@ -315,7 +317,7 @@ export function BookingRequestForm({
                 <Input
                   id="city"
                   placeholder="Bangalore"
-                  className="text-white text-xs bg-bg-card border-border/80"
+                  className="text-text-primary text-xs bg-bg-card border-border/80"
                   {...register("city")}
                 />
                 {errors.city && (
@@ -328,7 +330,7 @@ export function BookingRequestForm({
                 <Input
                   id="state"
                   placeholder="Karnataka"
-                  className="text-white text-xs bg-bg-card border-border/80"
+                  className="text-text-primary text-xs bg-bg-card border-border/80"
                   {...register("state")}
                 />
                 {errors.state && (
@@ -340,7 +342,7 @@ export function BookingRequestForm({
                 <Label htmlFor="country">Country</Label>
                 <Input
                   id="country"
-                  className="text-white text-xs bg-bg-card border-border/80"
+                  className="text-text-primary text-xs bg-bg-card border-border/80"
                   {...register("country")}
                 />
                 {errors.country && (
@@ -354,7 +356,7 @@ export function BookingRequestForm({
               <Input
                 id="google_maps_coords"
                 placeholder="e.g. https://maps.google.com/?q=..."
-                className="text-white text-xs bg-bg-card border-border/80"
+                className="text-text-primary text-xs bg-bg-card border-border/80"
                 {...register("google_maps_coords")}
               />
             </div>
@@ -368,7 +370,7 @@ export function BookingRequestForm({
 
             <div className="rounded-xl border border-border/70 bg-bg-elevated/70 p-3">
               <p className="text-[11px] font-medium text-text-secondary">Request preview</p>
-              <p className="mt-1 text-sm text-white">{summary}</p>
+              <p className="mt-1 text-sm text-text-primary">{summary}</p>
             </div>
 
             <div className="space-y-1.5">
@@ -377,7 +379,7 @@ export function BookingRequestForm({
                 id="special_requests"
                 rows={2}
                 placeholder="e.g. Wireless microphones requested, custom sound check required, specific song choice etc."
-                className="w-full rounded-lg border border-border/80 bg-bg-card text-white text-xs p-3 focus:outline-none focus:ring-1 focus:ring-primary resize-y"
+                className="w-full rounded-lg border border-border/80 bg-bg-card text-text-primary text-xs p-3 focus:outline-none focus:ring-1 focus:ring-primary resize-y"
                 {...register("special_requests")}
               />
             </div>
@@ -388,7 +390,7 @@ export function BookingRequestForm({
                 id="notes"
                 rows={3}
                 placeholder="Share more context about the event crowd, musical preference, layout, or timeline scheduling."
-                className="w-full rounded-lg border border-border/80 bg-bg-card text-white text-xs p-3 focus:outline-none focus:ring-1 focus:ring-primary resize-y"
+                className="w-full rounded-lg border border-border/80 bg-bg-card text-text-primary text-xs p-3 focus:outline-none focus:ring-1 focus:ring-primary resize-y"
                 {...register("notes")}
               />
             </div>

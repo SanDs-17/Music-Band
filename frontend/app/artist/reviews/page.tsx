@@ -110,7 +110,7 @@ export default function ArtistReviewsPage() {
       {/* Header Panel */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-extrabold text-text-primary tracking-tight flex items-center gap-2">
             <MessageSquare className="h-6 w-6 text-primary" />
             Verified Customer Reviews
           </h1>
@@ -135,7 +135,7 @@ export default function ArtistReviewsPage() {
         {/* Total stats card */}
         <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-5 rounded-2xl shadow-xl flex flex-col justify-center items-center text-center">
           <span className="text-[10px] text-text-secondary uppercase font-bold tracking-wider mb-2">Average performer Rating</span>
-          <span className="text-5xl font-black text-white tracking-tight block">
+          <span className="text-5xl font-black text-text-primary tracking-tight block">
             {averageRating.toFixed(1)}
           </span>
           <div className="mt-3">
@@ -153,7 +153,7 @@ export default function ArtistReviewsPage() {
             const percent = totalReviews > 0 ? (count / totalReviews) * 100 : 0;
             return (
               <div key={stars} className="flex items-center gap-3 text-xs">
-                <span className="w-10 text-white font-bold text-right flex items-center justify-end gap-1">
+                <span className="w-10 text-text-primary font-bold text-right flex items-center justify-end gap-1">
                   {stars} <Star className="h-3.5 w-3.5 text-yellow-400 fill-current" />
                 </span>
                 <div className="flex-1 h-2 rounded-full bg-border/40 overflow-hidden">
@@ -183,7 +183,7 @@ export default function ArtistReviewsPage() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="h-9 text-xs text-white"
+            className="h-9 text-xs text-text-primary"
           />
         </div>
         
@@ -196,7 +196,7 @@ export default function ArtistReviewsPage() {
               setRatingFilter(val ? Number(val) : undefined);
               setPage(1);
             }}
-            className="h-9 px-3 rounded-lg border border-border bg-bg-card text-white text-xs"
+            className="h-9 px-3 rounded-lg border border-border bg-bg-card text-text-primary text-xs"
           >
             <option value="">All Stars</option>
             <option value="5">5 Stars</option>
@@ -214,7 +214,7 @@ export default function ArtistReviewsPage() {
           <Card key={rev.id} className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-5 rounded-2xl shadow-xl space-y-4 relative">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/40 pb-3">
               <div className="space-y-0.5">
-                <span className="text-sm font-extrabold text-white block">{rev.client.name}</span>
+                <span className="text-sm font-extrabold text-text-primary block">{rev.client.name}</span>
                 <span className="text-[10px] text-text-muted block">
                   Reviewed on {format(new Date(rev.created_at), "dd MMM yyyy HH:mm")}
                 </span>
@@ -239,7 +239,7 @@ export default function ArtistReviewsPage() {
                   <div key={i} className="w-16 h-16 rounded-lg overflow-hidden border border-border bg-bg-elevated flex items-center justify-center relative">
                     <video src={vid} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      <Play className="h-4.5 w-4.5 text-white" />
+                      <Play className="h-4.5 w-4.5 text-text-primary" />
                     </div>
                   </div>
                 ))}

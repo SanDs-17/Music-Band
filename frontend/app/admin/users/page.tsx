@@ -311,7 +311,7 @@ export default function UserManagementPage() {
                       />
                     </TableCell>
                     <TableCell>
-                      <div className="font-bold text-white">{usr.name}</div>
+                      <div className="font-bold text-text-primary">{usr.name}</div>
                       <div className="text-[11px] text-text-secondary mt-0.5">{usr.email}</div>
                     </TableCell>
                     <TableCell>
@@ -333,7 +333,7 @@ export default function UserManagementPage() {
                           onClick={() => setDetailUser(usr)}
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7 text-text-secondary hover:text-white"
+                          className="h-7 w-7 text-text-secondary hover:text-text-primary"
                           title="View Profile Details"
                         >
                           <Eye className="h-3.5 w-3.5" />
@@ -412,7 +412,7 @@ export default function UserManagementPage() {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h4 className="text-base font-bold text-white">{detailUser.name}</h4>
+                <h4 className="text-base font-bold text-text-primary">{detailUser.name}</h4>
                 <Badge variant="secondary" className="uppercase text-[10px] mt-1.5">
                   {detailUser.roles?.[0]?.name || "client"}
                 </Badge>
@@ -421,21 +421,21 @@ export default function UserManagementPage() {
 
             {/* Profile fields */}
             <div className="space-y-3">
-              <h5 className="font-bold text-white uppercase tracking-wider text-[10px]">Database Parameters</h5>
+              <h5 className="font-bold text-text-primary uppercase tracking-wider text-[10px]">Database Parameters</h5>
               <div className="grid grid-cols-3 gap-2 py-2 border-b border-border/30">
                 <span className="font-semibold text-text-muted">Unique ID</span>
-                <span className="col-span-2 font-mono text-[10px] text-white truncate">{detailUser.id}</span>
+                <span className="col-span-2 font-mono text-[10px] text-text-primary truncate">{detailUser.id}</span>
               </div>
               <div className="grid grid-cols-3 gap-2 py-2 border-b border-border/30">
                 <span className="font-semibold text-text-muted">Email</span>
-                <span className="col-span-2 text-white flex items-center gap-1.5">
+                <span className="col-span-2 text-text-primary flex items-center gap-1.5">
                   <Mail className="h-3.5 w-3.5 text-text-muted" />
                   <span>{detailUser.email}</span>
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-2 py-2 border-b border-border/30">
                 <span className="font-semibold text-text-muted">Verified</span>
-                <span className="col-span-2 text-white flex items-center gap-1.5">
+                <span className="col-span-2 text-text-primary flex items-center gap-1.5">
                   <ShieldCheck className={detailUser.is_verified ? "h-3.5 w-3.5 text-secondary" : "h-3.5 w-3.5 text-text-muted"} />
                   <span>{detailUser.is_verified ? "Email Confirmed" : "Verification Pending"}</span>
                 </span>
@@ -450,7 +450,7 @@ export default function UserManagementPage() {
               </div>
               <div className="grid grid-cols-3 gap-2 py-2 border-b border-border/30">
                 <span className="font-semibold text-text-muted">Registered</span>
-                <span className="col-span-2 text-white flex items-center gap-1.5">
+                <span className="col-span-2 text-text-primary flex items-center gap-1.5">
                   <Calendar className="h-3.5 w-3.5 text-text-muted" />
                   <span>{formatDate(detailUser.created_at)}</span>
                 </span>

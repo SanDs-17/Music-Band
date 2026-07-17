@@ -39,11 +39,17 @@ class ArtistProfile(BaseModel):
     verification_status = Column(String(30), default="pending", nullable=False, index=True)
     verification_notes = Column(String(255), nullable=True)
 
+    # Unique public-facing handle (e.g. "the_groove_band"). Stored WITHOUT @.
+    # Displayed as @username in the UI. Lowercase, 3-30 chars, alphanumeric + underscores.
+    username = Column(String(30), unique=True, nullable=True, index=True)
+
     display_name = Column(String(150), nullable=True)
     mobile_number = Column(String(30), nullable=True)
     years_of_experience = Column(Integer, default=0, nullable=False)
     profile_image = Column(String(255), nullable=True)
     cover_image = Column(String(255), nullable=True)
+    city = Column(String(100), nullable=True, index=True)
+    state = Column(String(100), nullable=True)
     
     # Band Details
     band_type = Column(String(50), default="Solo", nullable=False)  # Solo, Duo, Trio, 4 Members, 5+ Members

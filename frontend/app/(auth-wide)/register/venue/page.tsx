@@ -11,7 +11,7 @@ export default function VenueRegistrationPage() {
         <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-2xl border border-primary/20 mb-2">
           <Building2 className="h-8 w-8 text-primary" />
         </div>
-        <h1 className="text-3xl font-black text-white tracking-tight">Onboard Your Venue Space</h1>
+        <h1 className="text-3xl font-black text-text-primary tracking-tight">Onboard Your Venue Space</h1>
         <p className="text-sm text-text-secondary max-w-md mx-auto">
           Complete the onboarding steps below to register your venue space and owner administrative details.
         </p>

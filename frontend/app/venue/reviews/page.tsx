@@ -81,7 +81,7 @@ export default function VenueReviewsPage() {
       
       {/* Title */}
       <div className="space-y-1">
-        <h1 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+        <h1 className="text-2xl font-extrabold text-text-primary tracking-tight flex items-center gap-2">
           <MessageSquare className="h-6.5 w-6.5 text-primary" />
           Client Reviews & Feedback
         </h1>
@@ -132,7 +132,7 @@ export default function VenueReviewsPage() {
                   setRatingFilter(val === "all" ? undefined : Number(val));
                   setPage(1);
                 }}
-                className="h-8.5 px-2.5 rounded-lg border border-border bg-bg-card text-white text-[11px]"
+                className="h-8.5 px-2.5 rounded-lg border border-border bg-bg-card text-text-primary text-[11px]"
               >
                 <option value="all">All Rating Scores</option>
                 <option value="5">5 Stars only</option>
@@ -149,7 +149,7 @@ export default function VenueReviewsPage() {
             {reviews.map(r => (
               <div 
                 key={r.id}
-                className="p-5 border border-border/80 bg-bg-card/45 backdrop-blur-md rounded-2xl shadow space-y-4 text-white"
+                className="p-5 border border-border/80 bg-bg-card/45 backdrop-blur-md rounded-2xl shadow space-y-4 text-text-primary"
               >
                 {/* Upper line: Reviewer info & rating */}
                 <div className="flex items-center justify-between gap-4">
@@ -158,7 +158,7 @@ export default function VenueReviewsPage() {
                       <User className="h-4 w-4" />
                     </span>
                     <div>
-                      <p className="text-xs font-bold text-white">{r.client.name}</p>
+                      <p className="text-xs font-bold text-text-primary">{r.client.name}</p>
                       <p className="text-[10px] text-text-muted flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
                         {format(new Date(r.created_at), "do MMMM, yyyy")}

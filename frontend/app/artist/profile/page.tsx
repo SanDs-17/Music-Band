@@ -86,6 +86,7 @@ export default function ArtistProfilePage() {
           ...profile,
           base_rate: updatedPricing.base_rate,
           currency: updatedPricing.currency,
+          travel_radius: updatedPricing.travel_radius ?? profile.travel_radius,
           travel_charges: updatedPricing.travel_charges,
           min_booking_hours: updatedPricing.min_booking_hours,
           max_booking_hours: updatedPricing.max_booking_hours,
@@ -131,6 +132,7 @@ export default function ArtistProfilePage() {
   const componentPricingData = {
     base_rate: profile.base_rate,
     currency: profile.currency,
+    travel_radius: profile.travel_radius,
     travel_charges: profile.travel_charges,
     min_booking_hours: profile.min_booking_hours,
     max_booking_hours: profile.max_booking_hours,
@@ -143,7 +145,7 @@ export default function ArtistProfilePage() {
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <h1 className="text-2xl font-extrabold text-white tracking-tight">
+        <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">
           Public Profile Management
         </h1>
         <p className="text-xs text-text-secondary">

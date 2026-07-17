@@ -37,7 +37,7 @@ function ArtistOnboardingGuard({ children }: { children: React.ReactNode }) {
         if (apiErr?.response?.status === 404) {
           // No artist profile yet — redirect to setup
           if (!cancelled) {
-            router.replace("/artist/profile");
+            router.replace("/register/artist");
             return;
           }
         }

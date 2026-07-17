@@ -160,7 +160,7 @@ export function BookingDetailsDialog({
                   <span className="text-[10px] uppercase font-bold text-primary tracking-wider">
                     {booking.event_type} Request
                   </span>
-                  <DialogTitle className="text-lg font-extrabold text-white font-heading tracking-tight leading-none">
+                  <DialogTitle className="text-lg font-extrabold text-text-primary font-heading tracking-tight leading-none">
                     {booking.event_title}
                   </DialogTitle>
                 </div>
@@ -184,7 +184,7 @@ export function BookingDetailsDialog({
                     onSubmit={handleCounterSubmit}
                     className="bg-bg-elevated/40 border border-primary/20 rounded-2xl p-4 space-y-4 animate-in fade-in slide-in-from-top-1"
                   >
-                    <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                    <h4 className="text-xs font-bold text-text-primary flex items-center gap-1.5">
                       <IndianRupee className="h-4 w-4 text-primary" />
                       Submit Price Counter Offer
                     </h4>
@@ -198,7 +198,7 @@ export function BookingDetailsDialog({
                           placeholder="e.g. 18000"
                           value={counterPrice}
                           onChange={(e) => setCounterPrice(e.target.value)}
-                          className="text-white text-xs bg-bg-card border-border/80 h-9"
+                          className="text-text-primary text-xs bg-bg-card border-border/80 h-9"
                           required
                         />
                       </div>
@@ -210,7 +210,7 @@ export function BookingDetailsDialog({
                           placeholder="e.g. Travel cost adjustment or extended performance duration."
                           value={counterReason}
                           onChange={(e) => setCounterReason(e.target.value)}
-                          className="text-white text-xs bg-bg-card border-border/80 h-9"
+                          className="text-text-primary text-xs bg-bg-card border-border/80 h-9"
                         />
                       </div>
                     </div>
@@ -298,7 +298,7 @@ export function BookingDetailsDialog({
                       variant="outline"
                       onClick={() => handleStatusAction("cancel")}
                       disabled={actioning}
-                      className="border-border hover:bg-bg-elevated hover:text-white font-bold h-9 text-xs flex items-center gap-1.5 cursor-pointer ml-auto"
+                      className="border-border hover:bg-bg-elevated hover:text-text-primary font-bold h-9 text-xs flex items-center gap-1.5 cursor-pointer ml-auto"
                     >
                       <X className="h-4 w-4 text-text-muted" />
                       <span>Cancel Booking</span>
@@ -308,7 +308,7 @@ export function BookingDetailsDialog({
 
                 {/* Comment / Note Thread */}
                 <div className="space-y-4 pt-4 border-t border-border/50">
-                  <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                  <h4 className="text-xs font-bold text-text-primary uppercase tracking-wider flex items-center gap-1.5">
                     <MessageSquare className="h-4 w-4 text-primary" />
                     Negotiation Thread & Comments
                   </h4>
@@ -330,7 +330,7 @@ export function BookingDetailsDialog({
                           }`}
                         >
                           <div className="flex items-center justify-between gap-2">
-                            <span className="text-[9px] font-bold text-white capitalize">
+                            <span className="text-[9px] font-bold text-text-primary capitalize">
                               {note.author_role}
                             </span>
                             <span className="text-[8px] text-text-muted">
@@ -351,7 +351,7 @@ export function BookingDetailsDialog({
                       placeholder="Type a negotiation comment or message..."
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
-                      className="text-white text-xs bg-bg-card border-border/80 flex-1 h-9"
+                      className="text-text-primary text-xs bg-bg-card border-border/80 flex-1 h-9"
                     />
                     <Button
                       type="submit"
@@ -367,7 +367,7 @@ export function BookingDetailsDialog({
 
               {/* Right Column: Timeline Tracking */}
               <div className="space-y-4 lg:border-l lg:border-border/60 lg:pl-6">
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                <h4 className="text-xs font-bold text-text-primary uppercase tracking-wider">
                   Request Timeline Flow
                 </h4>
                 <BookingTimeline events={booking.timeline_events} />

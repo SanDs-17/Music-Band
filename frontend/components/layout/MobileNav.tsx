@@ -18,9 +18,10 @@ import {
   Users,
   Settings,
   ShieldCheck,
-  AlertCircle,
   MessageSquare,
-  TrendingUp
+  TrendingUp,
+  Tag,
+  MapPin
 } from "lucide-react";
 
 interface MobileNavProps {
@@ -36,14 +37,14 @@ export function MobileNav({ open, onOpenChange, role }: MobileNavProps) {
     switch (role) {
       case "client":
         return [
-          { name: "Dashboard", href: "/client/dashboard", icon: LayoutDashboard },
+          { name: "Home", href: "/client/dashboard", icon: LayoutDashboard },
           { name: "My Bookings", href: "/client/bookings", icon: Calendar },
           { name: "Favorites", href: "/client/favorites", icon: Heart },
           { name: "Settings", href: "/client/settings", icon: Settings },
         ];
       case "artist":
         return [
-          { name: "Dashboard", href: "/artist/dashboard", icon: LayoutDashboard },
+          { name: "Home", href: "/artist/dashboard", icon: LayoutDashboard },
           { name: "Public Profile", href: "/artist/profile", icon: User },
           { name: "Incoming Gigs", href: "/artist/bookings", icon: MusicIcon },
           { name: "Earnings", href: "/artist/earnings", icon: IndianRupee },
@@ -51,9 +52,10 @@ export function MobileNav({ open, onOpenChange, role }: MobileNavProps) {
         ];
       case "venue":
         return [
-          { name: "Dashboard", href: "/venue/dashboard", icon: LayoutDashboard },
-          { name: "My Venues", href: "/venue/venues", icon: Building2 },
-          { name: "Venue Calendar", href: "/venue/bookings", icon: Calendar },
+          { name: "Home", href: "/venue/dashboard", icon: LayoutDashboard },
+          { name: "My Venue Profile", href: "/venue/profile", icon: Building2 },
+          { name: "Booking Calendar", href: "/venue/calendar", icon: Calendar },
+          { name: "Booking Requests", href: "/venue/bookings", icon: MusicIcon },
           { name: "Client Reviews", href: "/venue/reviews", icon: MessageSquare },
           { name: "Earnings", href: "/venue/earnings", icon: IndianRupee },
           { name: "Analytics", href: "/venue/analytics", icon: TrendingUp },
@@ -61,11 +63,13 @@ export function MobileNav({ open, onOpenChange, role }: MobileNavProps) {
         ];
       case "admin":
         return [
-          { name: "Dashboard", href: "/admin/dashboard", icon: ShieldCheck },
+          { name: "Home", href: "/admin/dashboard", icon: ShieldCheck },
+          { name: "Artist Verification", href: "/admin/artists", icon: MusicIcon },
+          { name: "Venue Verification", href: "/admin/venues", icon: Building2 },
           { name: "User Accounts", href: "/admin/users", icon: Users },
-          { name: "All Bookings", href: "/admin/bookings", icon: Calendar },
-          { name: "Payments / Escrow", href: "/admin/payments", icon: IndianRupee },
-          { name: "Support Tickets", href: "/admin/support", icon: AlertCircle },
+          { name: "Categories", href: "/admin/categories", icon: Tag },
+          { name: "Locations", href: "/admin/locations", icon: MapPin },
+          { name: "System Settings", href: "/admin/settings", icon: Settings },
         ];
       default:
         return [];

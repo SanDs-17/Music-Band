@@ -19,7 +19,7 @@ from app.core.config import settings
 from app.features.auth.crud import UserCRUD, RoleCRUD, RefreshTokenCRUD
 from app.features.auth.models import User
 from app.features.auth.schemas import UserRegister, UserLogin
-from app.core.exceptions import ConflictException, UnauthorizedException, NotFoundException
+from app.core.exceptions import ConflictException, UnauthorizedException, NotFoundException, BadRequestException
 
 
 class AuthService:
@@ -34,7 +34,7 @@ class AuthService:
         """Hash a token string to store in DB safely."""
         return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
-    def register_user(self, db: Session, data: UserRegister) -> User:
+    def register_user(self, db: Session, data: UserRegister) -> Tuple[User, bool]:
         """Registers a new platform user and assigns selected roles."""
         # Check if email is already taken
         existing_user = self.user_crud.get_by_email(db, data.email)
@@ -58,7 +58,8 @@ class AuthService:
                 "password_hash": hashed_password,
                 "name": data.name,
                 "is_active": True,
-                "is_verified": False
+                "is_verified": False,
+                "last_verification_sent_at": datetime.utcnow()
             }
         )
 
@@ -66,8 +67,29 @@ class AuthService:
         user.roles.append(role)
         db.commit()
         db.refresh(user)
+
+        # Generate custom verify token expiring in 24 hours
+        verify_token = create_access_token(
+            subject=str(user.id),
+            role="verify",
+            email=user.email,
+            expires_delta=timedelta(hours=24)
+        )
         logger.info(f"User registered successfully: {user.email} | Role: {data.role_name}")
-        return user
+        logger.info(f"Email verification initiated for {user.email}. Sandbox Verification link:\n{settings.APP_URL}/verify-email?token={verify_token}")
+
+        # Attempt to dispatch verification email. If the email service is unreachable
+        # we must NOT raise — the user account is already committed. Return email_sent=False
+        # so the caller can surface a truthful status to the UI (e.g. "Check spam" or "Resend").
+        email_sent = False
+        try:
+            from app.core.email import EmailService
+            email_sent = EmailService.send_verification_email(user.email, verify_token)
+        except Exception as e:
+            logger.warning(f"Verification email dispatch failed for {user.email}: {e}")
+
+        return user, email_sent
+
 
     def login_user(self, db: Session, data: UserLogin) -> Tuple[str, str]:
         """Logs in a user, returning access and refresh JWT tokens."""
@@ -177,8 +199,9 @@ class AuthService:
             expires_delta=timedelta(hours=1)
         )
         
-        # In a real workflow, trigger Celery task to send email
         logger.info(f"Password reset initiated for {email}. Sandbox Token link:\n{settings.APP_URL}/reset-password?token={reset_token}")
+        from app.core.email import EmailService
+        EmailService.send_password_reset_email(user.email, reset_token)
 
     def reset_password(self, db: Session, token: str, new_password: str) -> None:
         """Verifies token claims and resets user credentials password."""
@@ -194,12 +217,83 @@ class AuthService:
 
         # Hash new credentials
         user.password_hash = get_password_hash(new_password)
+        user.is_verified = True  # Resetting password also marks verified as safety
         db.add(user)
         
         # Revoke all old refresh sessions
         self.token_crud.revoke_user_tokens(db, user.id)
         db.commit()
         logger.info(f"Password successfully reset for user: {user.email}")
+
+    def verify_email_token(self, db: Session, token: str) -> dict:
+        """
+        Verifies email verification token and flags user.is_verified to True.
+        Returns a dict with keys: 'verified' (bool) and 'already_verified' (bool).
+        Raises UnauthorizedException for tampered or expired tokens.
+        """
+        payload = decode_token(token)
+        user_id = payload.get("sub")
+        role = payload.get("role")
+        
+        if not user_id or role != "verify":
+            raise UnauthorizedException("Invalid or expired verification token.")
+
+        from uuid import UUID as PyUUID
+        try:
+            user_uuid = PyUUID(user_id)
+        except (ValueError, AttributeError):
+            raise UnauthorizedException("Invalid user ID format in token.")
+
+        user = self.user_crud.get(db, user_uuid)
+        if not user or not user.is_active:
+            raise NotFoundException("User account not found or suspended.")
+
+        # Gracefully handle already-verified — do NOT error the account or the user.
+        if user.is_verified:
+            logger.info(f"Email already verified for user: {user.email}")
+            role_name = user.roles[0].name if user.roles else "client"
+            return {"verified": True, "already_verified": True, "role": role_name}
+
+        user.is_verified = True
+        db.add(user)
+        db.commit()
+        logger.info(f"Email successfully verified for user: {user.email}")
+        role_name = user.roles[0].name if user.roles else "client"
+        return {"verified": True, "already_verified": False, "role": role_name}
+
+
+
+    def resend_verification_email(self, db: Session, email: str) -> bool:
+        """Resends email verification token if not already verified with a 60s cooldown limit."""
+        user = self.user_crud.get_by_email(db, email)
+        if not user:
+            raise NotFoundException("User account not found.")
+
+        if user.is_verified:
+            raise ConflictException("Email already verified.")
+
+        if user.last_verification_sent_at:
+            # Determine elapsed seconds
+            elapsed = (datetime.utcnow() - user.last_verification_sent_at).total_seconds()
+            if elapsed < 60:
+                raise BadRequestException(f"Please wait {int(60 - elapsed)} seconds before requesting another email.")
+
+        # Update cooldown timestamp
+        user.last_verification_sent_at = datetime.utcnow()
+        db.add(user)
+        db.commit()
+
+        # Generate custom verify token expiring in 24 hours
+        verify_token = create_access_token(
+            subject=str(user.id),
+            role="verify",
+            email=user.email,
+            expires_delta=timedelta(hours=24)
+        )
+        logger.info(f"Email verification resent for {user.email}. Sandbox Verification link:\n{settings.APP_URL}/verify-email?token={verify_token}")
+        
+        from app.core.email import EmailService
+        return EmailService.send_verification_email(user.email, verify_token)
 
     def toggle_user_activity(self, db: Session, user_id: str, is_active: bool) -> User:
         """Suspends or activates a user account profile by changing active flag status."""

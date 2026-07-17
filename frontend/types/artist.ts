@@ -22,6 +22,8 @@ export interface ArtistProfile {
   display_name?: string;
   mobile_number?: string;
   years_of_experience: number;
+  city?: string;
+  state?: string;
   profile_image?: string;
   cover_image?: string;
   band_type: string;
@@ -152,6 +154,7 @@ export interface SpecialOfferItem {
 export interface PricingData {
   base_rate: number;
   currency: string;
+  travel_radius?: number;
   travel_charges: number;
   min_booking_hours: number;
   max_booking_hours: number;

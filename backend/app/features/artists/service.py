@@ -158,6 +158,8 @@ class ArtistService:
                 "years_of_experience": data.years_of_experience,
                 "profile_image": data.profile_image,
                 "cover_image": data.cover_image,
+                "city": data.city,
+                "state": data.state,
                 "band_type": data.band_type,
                 "total_members": data.total_members,
                 "currency": data.currency,
@@ -170,7 +172,7 @@ class ArtistService:
                 "gallery": data.gallery,
                 "videos": data.videos,
                 "youtube_links": data.youtube_links,
-                "documents": [],
+                "documents": data.documents or {},
                 "pricing_details": {
                     "hourly_rate": data.base_rate,
                     "travel_charge": data.travel_charges
@@ -422,6 +424,10 @@ class ArtistService:
             artist.profile_image = data.profile_image
         if data.cover_image is not None:
             artist.cover_image = data.cover_image
+        if data.city is not None:
+            artist.city = data.city
+        if data.state is not None:
+            artist.state = data.state
         
         # Band type / members
         if data.band_type is not None:
@@ -449,13 +455,15 @@ class ArtistService:
         if data.max_booking_hours is not None:
             artist.max_booking_hours = data.max_booking_hours
         
-        # Equipment & Social & Achievements
+        # Equipment & Social & Achievements & Documents
         if data.equipment is not None:
             artist.equipment = data.equipment
         if data.social_links is not None:
             artist.social_links = data.social_links
         if data.achievements is not None:
             artist.achievements = data.achievements
+        if data.documents is not None:
+            artist.documents = data.documents
 
         # 3. Resolve & update genres if passed
         if data.genres is not None:
@@ -652,6 +660,7 @@ class ArtistService:
         return {
             "base_rate": float(artist.base_rate),
             "currency": artist.currency or "INR",
+            "travel_radius": float(artist.travel_radius) if artist.travel_radius is not None else 0.0,
             "travel_charges": float(artist.travel_charges),
             "min_booking_hours": float(artist.min_booking_hours),
             "max_booking_hours": float(artist.max_booking_hours),
@@ -669,6 +678,8 @@ class ArtistService:
 
         artist.base_rate = data.get("base_rate", 0.0)
         artist.currency = data.get("currency", "INR")
+        if "travel_radius" in data:
+            artist.travel_radius = data["travel_radius"]
         artist.travel_charges = data.get("travel_charges", 0.0)
         artist.min_booking_hours = data.get("min_booking_hours", 0.0)
         artist.max_booking_hours = data.get("max_booking_hours", 0.0)

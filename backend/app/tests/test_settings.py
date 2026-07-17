@@ -12,7 +12,7 @@ def mock_auth(db_session):
     venue_owner_user = User(
         id=uuid.uuid4(),
         email="venue_owner@example.com",
-        password_hash=get_password_hash("oldpassword123"),
+        password_hash=get_password_hash("Oldpassword123!"),
         name="Venue Owner User",
         is_active=True,
         is_verified=True
@@ -57,8 +57,8 @@ def test_change_user_password(client, db_session, mock_auth):
     app.dependency_overrides[get_current_user] = lambda: {"sub": str(mock_auth["venue_owner"].id), "role": "venue_owner"}
     
     payload = {
-        "old_password": "oldpassword123",
-        "new_password": "newpassword123"
+        "old_password": "Oldpassword123!",
+        "new_password": "Newpassword123!"
     }
     response = client.post("/api/v1/auth/change-password", json=payload)
     assert response.status_code == 200
@@ -66,7 +66,7 @@ def test_change_user_password(client, db_session, mock_auth):
     # Verify login with new password
     login_payload = {
         "email": "venue_owner@example.com",
-        "password": "newpassword123"
+        "password": "Newpassword123!"
     }
     login_response = client.post("/api/v1/auth/login", json=login_payload)
     assert login_response.status_code == 200

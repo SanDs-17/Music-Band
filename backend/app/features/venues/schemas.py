@@ -20,6 +20,8 @@ class VenueResponse(BaseSchema):
     user_id: UUID
     user: UserBriefResponse
     name: str
+    # System-generated immutable venue identifier (BCV-XXXXXX format)
+    venue_number: Optional[str] = None
     description: Optional[str] = None
     address: str
     city_id: UUID
@@ -47,6 +49,7 @@ class VenueResponse(BaseSchema):
     metadata_fields: Dict[str, Any] = {}
     categories: List[CategoryResponse] = []
     created_at: str
+
 
 
 class VenueVerificationUpdate(BaseSchema):
@@ -124,6 +127,73 @@ class VenueRegisterRequest(BaseSchema):
     booking_buffer_time: Optional[int] = 0
 
     # Step 10: Documents
+    doc_pan: Optional[str] = None
+    doc_gst: Optional[str] = None
+    doc_ownership_proof: Optional[str] = None
+    doc_government_id: Optional[str] = None
+    doc_business_license: Optional[str] = None
+
+
+class VenueProfileCreateRequest(BaseSchema):
+    # Owner Details
+    owner_name: str
+    business_name: str
+    contact_details: Optional[str] = None
+    contact_person: Optional[str] = None
+    gst_number: Optional[str] = None
+    pan_number: Optional[str] = None
+
+    # Venue Details
+    venue_name: str
+    venue_type: str  # Marriage Hall, Resort, etc.
+    description: Optional[str] = None
+    established_year: Optional[int] = None
+    indoor_outdoor: Optional[str] = "Both"  # Indoor, Outdoor, Both
+
+    # Location
+    country: str
+    state: str
+    district: Optional[str] = None
+    city_id: UUID
+    area: Optional[str] = None
+    address: str
+    landmark: Optional[str] = None
+    pincode: str
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    google_map_location: Optional[str] = None
+
+    # Facilities
+    facilities: List[str] = []
+
+    # Capacity
+    min_capacity: int
+    max_capacity: int
+
+    # Pricing
+    base_price: float
+    hourly_price: float
+    weekend_price: Optional[float] = 0.0
+    holiday_price: Optional[float] = 0.0
+    security_deposit: Optional[float] = 0.0
+    cancellation_charges: Optional[float] = 0.0
+    extra_hour_charges: Optional[float] = 0.0
+
+    # Gallery
+    cover_image: Optional[str] = None
+    images: List[str] = []
+    videos: List[str] = []
+    youtube_links: List[str] = []
+    virtual_tour: Optional[str] = None
+
+    # Availability
+    weekly_schedule: Dict[str, Any] = {}
+    blocked_dates: List[str] = []
+    maintenance_days: List[str] = []
+    public_holidays: List[str] = []
+    booking_buffer_time: Optional[int] = 0
+
+    # Documents
     doc_pan: Optional[str] = None
     doc_gst: Optional[str] = None
     doc_ownership_proof: Optional[str] = None

@@ -55,7 +55,7 @@ export default function VenueEarningsPage() {
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-extrabold text-text-primary tracking-tight flex items-center gap-2">
             <Wallet className="h-6.5 w-6.5 text-primary" />
             Earnings & Wallet Dashboard
           </h1>
@@ -80,7 +80,7 @@ export default function VenueEarningsPage() {
           <CardContent className="p-5 flex items-center justify-between">
             <div className="space-y-1">
               <span className="text-[10px] uppercase font-bold text-text-muted">Wallet Balance</span>
-              <p className="text-2xl font-black text-white leading-none">
+              <p className="text-2xl font-black text-text-primary leading-none">
                 ₹{summary.wallet_balance.toLocaleString("en-IN")}
               </p>
               <p className="text-[9px] text-text-secondary">Available for withdrawal</p>
@@ -96,7 +96,7 @@ export default function VenueEarningsPage() {
           <CardContent className="p-5 flex items-center justify-between">
             <div className="space-y-1">
               <span className="text-[10px] uppercase font-bold text-text-muted">Total Revenue</span>
-              <p className="text-2xl font-black text-white leading-none">
+              <p className="text-2xl font-black text-text-primary leading-none">
                 ₹{summary.total_earnings.toLocaleString("en-IN")}
               </p>
               <p className="text-[9px] text-text-secondary">All-time credit earnings</p>
@@ -112,7 +112,7 @@ export default function VenueEarningsPage() {
           <CardContent className="p-5 flex items-center justify-between">
             <div className="space-y-1">
               <span className="text-[10px] uppercase font-bold text-text-muted">Pending Payouts</span>
-              <p className="text-2xl font-black text-white leading-none">
+              <p className="text-2xl font-black text-text-primary leading-none">
                 ₹{summary.pending_payments.toLocaleString("en-IN")}
               </p>
               <p className="text-[9px] text-text-secondary">Awaiting bank settlement</p>
@@ -128,7 +128,7 @@ export default function VenueEarningsPage() {
           <CardContent className="p-5 flex items-center justify-between">
             <div className="space-y-1">
               <span className="text-[10px] uppercase font-bold text-text-muted">Monthly Earnings</span>
-              <p className="text-2xl font-black text-white leading-none">
+              <p className="text-2xl font-black text-text-primary leading-none">
                 ₹{summary.monthly_earnings.toLocaleString("en-IN")}
               </p>
               <p className="text-[9px] text-text-secondary">Credited this calendar month</p>
@@ -150,7 +150,7 @@ export default function VenueEarningsPage() {
         </div>
 
         {/* Tax Summary Card */}
-        <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow flex flex-col justify-between p-5 text-white">
+        <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow flex flex-col justify-between p-5 text-text-primary">
           <div className="space-y-4">
             <div className="border-b border-border/30 pb-2">
               <h3 className="text-sm font-bold uppercase tracking-wider flex items-center gap-1.5">
@@ -163,7 +163,7 @@ export default function VenueEarningsPage() {
             <div className="space-y-3.5 text-xs">
               <div className="flex items-center justify-between text-text-secondary">
                 <span>Gross Revenue Rents</span>
-                <span className="font-bold text-white">₹{summary.total_earnings.toLocaleString("en-IN")}</span>
+                <span className="font-bold text-text-primary">₹{summary.total_earnings.toLocaleString("en-IN")}</span>
               </div>
 
               <div className="flex items-center justify-between text-text-secondary">
@@ -179,7 +179,7 @@ export default function VenueEarningsPage() {
           </div>
 
           <div className="p-3 bg-primary/5 rounded-xl border border-primary/20 text-[10px] text-text-secondary leading-relaxed mt-4">
-            <span className="font-bold text-white block mb-0.5">Disclaimer:</span>
+            <span className="font-bold text-text-primary block mb-0.5">Disclaimer:</span>
             Estimates shown are indicative. Actual filings should audit deductions, caution refund credits, and cancellation fee margins.
           </div>
         </Card>
@@ -188,7 +188,7 @@ export default function VenueEarningsPage() {
 
       {/* Transaction History Ledger */}
       <div className="space-y-4">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+        <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
           <List className="h-4.5 w-4.5 text-primary" />
           Transaction Audit Ledger
         </h3>
@@ -209,11 +209,11 @@ export default function VenueEarningsPage() {
               <tbody>
                 {summary.transactions.map(tx => (
                   <tr key={tx.id} className="border-b border-border/40 hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-bold text-white">#{(tx.id || "").substring(0, 8).toUpperCase()}</td>
+                    <td className="p-4 font-bold text-text-primary">#{(tx.id || "").substring(0, 8).toUpperCase()}</td>
                     <td className="p-4 text-text-secondary">
                       {format(new Date(tx.created_at), "do MMM yyyy HH:mm")}
                     </td>
-                    <td className="p-4 text-white max-w-sm truncate">{tx.description || "N/A"}</td>
+                    <td className="p-4 text-text-primary max-w-sm truncate">{tx.description || "N/A"}</td>
                     <td className="p-4">
                       {tx.type === "credit" ? (
                         <span className="flex items-center gap-1 text-emerald-400 font-bold">

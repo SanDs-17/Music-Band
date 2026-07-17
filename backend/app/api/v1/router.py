@@ -17,6 +17,8 @@ from app.features.settings.router import router as settings_router
 from app.features.bookings.router import router as bookings_router
 from app.features.reviews.router import router as reviews_router
 from app.features.earnings.router import router as earnings_router
+from app.features.notifications.router import router as notifications_router
+from app.features.payment.router import router as payment_router
 
 router = APIRouter()
 
@@ -46,6 +48,12 @@ router.include_router(reviews_router, prefix="/reviews", tags=["Reviews"])
 
 # Register earnings feature router
 router.include_router(earnings_router, prefix="/earnings", tags=["Earnings"])
+
+# Register notifications feature router
+router.include_router(notifications_router, prefix="/notifications", tags=["Notifications"])
+
+# Register payments feature router
+router.include_router(payment_router, prefix="/payments", tags=["Payments"])
 
 # Register admin artists feature router
 router.include_router(artists_router, prefix="/admin/artists", tags=["Admin Artists"])

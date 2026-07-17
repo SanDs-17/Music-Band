@@ -70,7 +70,7 @@ export default function DesignSystemPage() {
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider">Typography Samples</h3>
             <div className="space-y-2">
-              <h1 className="text-4xl font-extrabold text-white">Syne Header (Extra Bold)</h1>
+              <h1 className="text-4xl font-extrabold text-text-primary">Syne Header (Extra Bold)</h1>
               <p className="text-base text-text-primary leading-relaxed font-sans">
                 Inter Sans body text: Standard layout sizing configured for optimal line height readability in modern dark browsers layouts.
               </p>
@@ -217,7 +217,7 @@ export default function DesignSystemPage() {
                 <Accessibility className="h-6 w-6" />
               </div>
               <div>
-                <h4 className="text-base font-bold text-white mb-1">WCAG 2.1 Accessibility Compliance</h4>
+                <h4 className="text-base font-bold text-text-primary mb-1">WCAG 2.1 Accessibility Compliance</h4>
                 <p className="text-sm text-text-secondary leading-relaxed">
                   Every interaction button and input field contains default outline borders mapping focus indices, and labels reference matching DOM IDs. Focus indicator outlines are kept visible to enable high-contrast keyboard navigation workflows.
                 </p>
@@ -240,13 +240,13 @@ export default function DesignSystemPage() {
             </TableHeader>
             <TableBody>
               <TableRow>
-                <TableCell className="font-semibold text-white">The Classic Quartet</TableCell>
+                <TableCell className="font-semibold text-text-primary">The Classic Quartet</TableCell>
                 <TableCell>Classical / Symphony</TableCell>
                 <TableCell>₹12,000 / hr</TableCell>
                 <TableCell>★ 4.9</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className="font-semibold text-white">Neon Waves Band</TableCell>
+                <TableCell className="font-semibold text-text-primary">Neon Waves Band</TableCell>
                 <TableCell>Electronic / Pop</TableCell>
                 <TableCell>₹8,500 / hr</TableCell>
                 <TableCell>★ 4.7</TableCell>

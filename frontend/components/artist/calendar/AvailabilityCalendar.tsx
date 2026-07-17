@@ -189,8 +189,8 @@ export function AvailabilityCalendar({ availability, onSave }: AvailabilityCalen
                 
                 {/* Visual indicator bar at bottom */}
                 {isGig && filterGigs && <span className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-white animate-pulse" />}
-                {isBlocked && filterBlocked && <Ban className="h-3 w-3 text-white/70" />}
-                {isHoliday && filterHolidays && <Sparkles className="h-3 w-3 text-white/70" />}
+                {isBlocked && filterBlocked && <Ban className="h-3 w-3 text-text-primary/70" />}
+                {isHoliday && filterHolidays && <Sparkles className="h-3 w-3 text-text-primary/70" />}
               </button>
             );
           })}

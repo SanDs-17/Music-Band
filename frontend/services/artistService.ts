@@ -6,9 +6,9 @@ import { isPreviewActive, toastMutationBlocked } from "@/utils/dev-mode";
 import { mockArtistProfile, mockArtistDashboard, mockArtistAnalytics } from "@/utils/preview-fixtures";
 
 export const artistService = {
-  register: async (data: ArtistRegisterFormData): Promise<ArtistProfile> => {
+  register: async (data: any): Promise<ArtistProfile> => {
     if (isPreviewActive()) return toastMutationBlocked();
-    const { confirmPassword, acceptTerms, ...payload } = data;
+    const { acceptTerms, ...payload } = data;
     const response = await api.post<any>("/artists/register", payload);
     return response.data.data;
   },
@@ -112,6 +112,21 @@ export const artistService = {
   getAnalytics: async (): Promise<ArtistAnalytics> => {
     if (isPreviewActive()) return Promise.resolve(mockArtistAnalytics);
     const response = await api.get<any>("/artists/me/analytics");
+    return response.data.data;
+  },
+
+  getPublicArtists: async (params?: Record<string, unknown>): Promise<{ artists: ArtistProfile[]; total: number }> => {
+    if (isPreviewActive()) {
+      return Promise.resolve({ artists: [mockArtistProfile], total: 1 });
+    }
+    const response = await api.get<any>("/artists", { params });
+    // Handle both { artists: [...] } and directly returning paginated data
+    return response.data.data;
+  },
+
+  getPublicArtistDetail: async (id: string): Promise<ArtistProfile> => {
+    if (isPreviewActive()) return Promise.resolve(mockArtistProfile);
+    const response = await api.get<any>(`/artists/${id}`);
     return response.data.data;
   }
 };

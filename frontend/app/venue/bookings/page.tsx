@@ -138,7 +138,7 @@ export default function VenueBookingsPage() {
       
       {/* Title */}
       <div className="space-y-1">
-        <h1 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+        <h1 className="text-2xl font-extrabold text-text-primary tracking-tight flex items-center gap-2">
           <CheckCircle2 className="h-6.5 w-6.5 text-primary" />
           Venue Booking Management
         </h1>
@@ -200,7 +200,7 @@ export default function VenueBookingsPage() {
                   setStatusFilter(e.target.value);
                   setPage(1);
                 }}
-                className="h-8.5 px-2.5 rounded-lg border border-border bg-bg-card text-white text-[11px]"
+                className="h-8.5 px-2.5 rounded-lg border border-border bg-bg-card text-text-primary text-[11px]"
               >
                 <option value="all">All Request Statuses</option>
                 <option value="pending">Pending</option>
@@ -237,12 +237,12 @@ export default function VenueBookingsPage() {
                   <tbody>
                     {bookings.map(b => (
                       <tr key={b.id} className="border-b border-border/40 hover:bg-white/5 transition-colors">
-                        <td className="p-4 font-bold text-white max-w-xs truncate">{b.event_name}</td>
+                        <td className="p-4 font-bold text-text-primary max-w-xs truncate">{b.event_name}</td>
                         <td className="p-4 text-text-secondary">
                           {format(new Date(b.event_date), "do MMM yyyy")}
                         </td>
                         <td className="p-4 text-text-secondary">{b.start_time} - {b.end_time}</td>
-                        <td className="p-4 text-white font-medium">{b.client.name}</td>
+                        <td className="p-4 text-text-primary font-medium">{b.client.name}</td>
                         <td className="p-4 font-bold text-primary">₹{Number(b.proposed_price).toLocaleString("en-IN")}</td>
                         <td className="p-4 text-center">{getStatusBadge(b.status)}</td>
                         <td className="p-4 text-right">
@@ -250,7 +250,7 @@ export default function VenueBookingsPage() {
                             variant="outline" 
                             size="icon" 
                             onClick={() => openDetails(b)}
-                            className="h-8 w-8 text-text-muted hover:text-white"
+                            className="h-8 w-8 text-text-muted hover:text-text-primary"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>

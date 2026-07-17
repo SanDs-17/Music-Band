@@ -1,90 +1,44 @@
-
-
 "use client";
 
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  LayoutDashboard,
+  Music,
+  Building2,
   Users,
-  Calendar,
-  IndianRupee,
-  Terminal,
-  ChevronDown,
-  ChevronRight,
-  UserCheck,
-  Briefcase,
-  AlertTriangle,
-  History,
-  Activity,
-  Cpu,
-  FileText
+  Tag,
+  MapPin,
+  Settings,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { useUIStore } from "@/store/ui-store";
 
-interface SubMenuItem {
-  name: string;
-  href: string;
-  icon?: React.ComponentType<{ className?: string }>;
-}
-
 interface MenuItem {
   name: string;
-  href?: string;
+  href: string;
   icon: React.ComponentType<{ className?: string }>;
-  submenu?: SubMenuItem[];
 }
 
+/**
+ * Admin sidebar navigation.
+ * Links are limited strictly to routes that exist under app/admin/.
+ * Existing routes: dashboard, artists, venues, users, categories, locations, settings.
+ */
 const menuItems: MenuItem[] = [
-  {
-    name: "Users Management",
-    icon: Users,
-    submenu: [
-      { name: "All Accounts", href: "/admin/users", icon: Users },
-      { name: "Artist Profiles", href: "/admin/users/artists", icon: UserCheck },
-      { name: "Client Details", href: "/admin/users/clients", icon: UserCheck }
-    ]
-  },
-  {
-    name: "Bookings",
-    icon: Calendar,
-    submenu: [
-      { name: "Active Gigs", href: "/admin/bookings", icon: Briefcase },
-      { name: "Disputes / Escrow", href: "/admin/bookings/disputes", icon: AlertTriangle },
-      { name: "Completed Gigs", href: "/admin/bookings/history", icon: History }
-    ]
-  },
-  {
-    name: "Financials",
-    icon: IndianRupee,
-    submenu: [
-      { name: "Escrow Ledger", href: "/admin/financials/ledger", icon: IndianRupee },
-      { name: "Commissions Fee", href: "/admin/financials/commissions", icon: IndianRupee },
-      { name: "Artist Payouts", href: "/admin/financials/payouts", icon: IndianRupee }
-    ]
-  },
-  {
-    name: "System Monitoring",
-    icon: Terminal,
-    submenu: [
-      { name: "Service Health", href: "/admin/system/health", icon: Activity },
-      { name: "Task Queues", href: "/admin/system/tasks", icon: Cpu },
-      { name: "Server Logs", href: "/admin/system/logs", icon: FileText }
-    ]
-  }
+  { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+  { name: "Artist Verification", href: "/admin/artists", icon: Music },
+  { name: "Venue Verification", href: "/admin/venues", icon: Building2 },
+  { name: "User Accounts", href: "/admin/users", icon: Users },
+  { name: "Categories", href: "/admin/categories", icon: Tag },
+  { name: "Locations", href: "/admin/locations", icon: MapPin },
+  { name: "System Settings", href: "/admin/settings", icon: Settings },
 ];
 
 export function AdminSidebar() {
   const pathname = usePathname();
   const { sidebarOpen, setSidebarOpen } = useUIStore();
-  const [expandedItems, setExpandedItems] = React.useState<Record<string, boolean>>({
-    "Users Management": true, // Default open for demonstration
-  });
-
-  const toggleSubmenu = (name: string) => {
-    setExpandedItems((prev) => ({ ...prev, [name]: !prev[name] }));
-  };
 
   return (
     <>
@@ -104,72 +58,31 @@ export function AdminSidebar() {
         )}
       >
         <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-4 scrollbar-thin">
-          <nav className="flex-1 space-y-2">
+          <nav className="flex-1 space-y-1">
             {menuItems.map((item) => {
               const Icon = item.icon;
-              const hasSubmenu = !!item.submenu;
-              const isExpanded = expandedItems[item.name];
+              const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
 
               return (
-                <div key={item.name} className="space-y-1">
-                  {hasSubmenu ? (
-                    <button
-                      onClick={() => toggleSubmenu(item.name)}
-                      type="button"
-                      className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-elevated hover:text-text-primary transition-all group text-left cursor-pointer"
-                    >
-                      <div className="flex items-center gap-3">
-                        <Icon className="h-4 w-4 text-text-secondary group-hover:text-text-primary transition-transform group-hover:scale-110" />
-                        <span>{item.name}</span>
-                      </div>
-                      {isExpanded ? (
-                        <ChevronDown className="h-4 w-4 text-text-muted" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4 text-text-muted" />
-                      )}
-                    </button>
-                  ) : (
-                    <Link
-                      href={item.href || "#"}
-                      className={cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-all group",
-                        pathname === item.href
-                          ? "bg-primary text-white"
-                          : "text-text-secondary hover:bg-bg-elevated hover:text-text-primary"
-                      )}
-                    >
-                      <Icon className="h-4 w-4" />
-                      <span>{item.name}</span>
-                    </Link>
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={() => setSidebarOpen(false)}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all group",
+                    isActive
+                      ? "bg-primary text-white font-semibold"
+                      : "text-text-secondary hover:bg-bg-elevated hover:text-text-primary"
                   )}
-
-                  {/* Render nested submenus */}
-                  {hasSubmenu && isExpanded && (
-                    <div className="pl-6 space-y-1 border-l border-border/40 ml-5 animate-in slide-in-from-top-1 duration-100">
-                      {item.submenu?.map((sub) => {
-                        const SubIcon = sub.icon || ChevronRight;
-                        const isSubActive = pathname === sub.href;
-
-                        return (
-                          <Link
-                            key={sub.name}
-                            href={sub.href}
-                            onClick={() => setSidebarOpen(false)}
-                            className={cn(
-                              "flex items-center gap-3 rounded-md px-3 py-2 text-xs font-semibold transition-all group",
-                              isSubActive
-                                ? "text-primary bg-primary/5"
-                                : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/40"
-                            )}
-                          >
-                            <SubIcon className={cn("h-3.5 w-3.5", isSubActive ? "text-primary" : "text-text-muted group-hover:text-text-primary")} />
-                            <span>{sub.name}</span>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                >
+                  <Icon
+                    className={cn(
+                      "h-4 w-4 shrink-0 transition-transform group-hover:scale-110",
+                      isActive ? "text-white" : "text-text-secondary group-hover:text-text-primary"
+                    )}
+                  />
+                  <span>{item.name}</span>
+                </Link>
               );
             })}
           </nav>

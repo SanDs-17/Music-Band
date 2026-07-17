@@ -1,5 +1,22 @@
 import * as z from "zod";
 
+// ─── Shared password strength validator (mirrors MASTER.md §9.5 + backend validators.py) ───
+const passwordStrengthSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters long")
+  .refine((val) => /[A-Z]/.test(val), {
+    message: "Password must contain at least one uppercase letter",
+  })
+  .refine((val) => /[a-z]/.test(val), {
+    message: "Password must contain at least one lowercase letter",
+  })
+  .refine((val) => /[0-9]/.test(val), {
+    message: "Password must contain at least one number",
+  })
+  .refine((val) => /[!@#$%^&*()_+\-=\[\]{}|;':",./<>?]/.test(val), {
+    message: "Password must contain at least one special character",
+  });
+
 export const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters long"),
@@ -7,12 +24,18 @@ export const loginSchema = z.object({
 
 export type LoginFormData = z.infer<typeof loginSchema>;
 
-export const registerSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  role_name: z.enum(["client", "artist", "venue_owner"]),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
-});
+export const registerSchema = z
+  .object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Invalid email address"),
+    role_name: z.enum(["client", "artist", "venue_owner"]),
+    password: passwordStrengthSchema,
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 export type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -22,22 +45,22 @@ export const forgotPasswordSchema = z.object({
 
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
-export const resetPasswordSchema = z.object({
-  password: z.string().min(8, "Password must be at least 8 characters long"),
-  confirmPassword: z.string().min(8, "Password must be at least 8 characters long"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+export const resetPasswordSchema = z
+  .object({
+    password: passwordStrengthSchema,
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
+
 export const artistRegisterSchema = z.object({
-  // Step 1: Account
-  email: z.string().email("Invalid email address"),
+  // Step 1: Profile Details
   mobile_number: z.string().min(10, "Mobile number must be at least 10 digits"),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
-  confirmPassword: z.string().min(8, "Confirm password must be at least 8 characters long"),
   
   // Step 2: Basic
   name: z.string().min(2, "Band / Artist Name must be at least 2 characters"),
@@ -54,12 +77,12 @@ export const artistRegisterSchema = z.object({
   genres: z.array(z.string()).min(1, "Select at least one genre"),
 
   // Step 4: Pricing
-  base_rate: z.number().min(0, "Rate cannot be negative").default(0),
+  base_rate: z.coerce.number().min(0, "Rate cannot be negative").default(0),
   currency: z.string().min(1, "Currency is required").default("INR"),
-  travel_radius: z.number().min(0, "Radius cannot be negative").default(0),
-  travel_charges: z.number().min(0, "Travel charges cannot be negative").default(0),
-  min_booking_hours: z.number().min(0, "Minimum hours cannot be negative").default(0),
-  max_booking_hours: z.number().min(0, "Maximum hours cannot be negative").default(0),
+  travel_radius: z.coerce.number().min(0, "Radius cannot be negative").default(0),
+  travel_charges: z.coerce.number().min(0, "Travel charges cannot be negative").default(0),
+  min_booking_hours: z.coerce.number().min(0, "Minimum hours cannot be negative").default(0),
+  max_booking_hours: z.coerce.number().min(0, "Maximum hours cannot be negative").default(0),
 
   // Step 5: Equipment
   equipment: z.object({
@@ -89,13 +112,16 @@ export const artistRegisterSchema = z.object({
     blocked_dates: z.array(z.string()).default([]),
   }).default({}),
 
-  // Step 8: Terms
+  // Step 8: Verification
+  documents: z.object({
+    govt_id_number: z.string().min(4, "Government ID or Aadhaar number must be at least 4 digits").default(""),
+    doc_govt_id: z.string().min(1, "Please upload a copy of your Government ID proof").default(""),
+  }).default({}),
+
+  // Step 9: Terms
   acceptTerms: z.boolean().refine((val) => val === true, {
     message: "You must accept the terms and conditions",
   }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
 });
 
 export type ArtistRegisterFormData = z.infer<typeof artistRegisterSchema>;
@@ -110,12 +136,12 @@ export const artistProfileUpdateSchema = z.object({
   mobile_number: z.string().min(10, "Mobile number must be at least 10 digits"),
   band_type: z.enum(["Solo", "Duo", "Trio", "4 Members", "5+ Members"]).default("Solo"),
   total_members: z.number().min(1, "Must have at least 1 member").default(1),
-  base_rate: z.number().min(0, "Rate cannot be negative").default(0),
+  base_rate: z.coerce.number().min(0, "Rate cannot be negative").default(0),
   currency: z.string().min(1, "Currency is required").default("INR"),
-  travel_radius: z.number().min(0, "Radius cannot be negative").default(0),
-  travel_charges: z.number().min(0, "Charges cannot be negative").default(0),
-  min_booking_hours: z.number().min(0, "Minimum hours cannot be negative").default(0),
-  max_booking_hours: z.number().min(0, "Maximum hours cannot be negative").default(0),
+  travel_radius: z.coerce.number().min(0, "Radius cannot be negative").default(0),
+  travel_charges: z.coerce.number().min(0, "Charges cannot be negative").default(0),
+  min_booking_hours: z.coerce.number().min(0, "Minimum hours cannot be negative").default(0),
+  max_booking_hours: z.coerce.number().min(0, "Maximum hours cannot be negative").default(0),
   equipment: z.object({
     own_speaker: z.boolean().default(false),
     mic: z.boolean().default(false),
@@ -141,11 +167,8 @@ export type ArtistProfileUpdateFormData = z.infer<typeof artistProfileUpdateSche
 
 
 export const venueRegisterSchema = z.object({
-  // Step 1: Owner Account
-  email: z.string().email("Invalid email address"),
+  // Step 1: Owner Info
   mobile: z.string().min(10, "Mobile number must be at least 10 digits"),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
-  confirmPassword: z.string().min(8, "Confirm password must be at least 8 characters long"),
 
   // Step 2: Owner Details
   owner_name: z.string().min(2, "Owner Name must be at least 2 characters"),
@@ -230,9 +253,6 @@ export const venueRegisterSchema = z.object({
   acceptTerms: z.boolean().refine((val) => val === true, {
     message: "You must accept the terms and conditions",
   }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
 }).refine((data) => data.max_capacity >= data.min_capacity, {
   message: "Maximum capacity must be greater than or equal to minimum capacity",
   path: ["max_capacity"],

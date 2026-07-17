@@ -233,7 +233,7 @@ export default function AdminBandManagementPage() {
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <div className="font-bold text-white text-xs">{art.user.name}</div>
+                          <div className="font-bold text-text-primary text-xs">{art.user.name}</div>
                           <div className="text-[10px] text-text-secondary mt-0.5">{art.user.email}</div>
                         </div>
                       </div>
@@ -250,7 +250,7 @@ export default function AdminBandManagementPage() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="font-bold text-white text-xs">
+                    <TableCell className="font-bold text-text-primary text-xs">
                       {formatCurrency(art.base_rate)} / hr
                     </TableCell>
                     <TableCell>
@@ -278,7 +278,7 @@ export default function AdminBandManagementPage() {
                           onClick={() => setDetailArtist(art)}
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7 text-text-secondary hover:text-white"
+                          className="h-7 w-7 text-text-secondary hover:text-text-primary"
                           title="View Media & Details"
                         >
                           <Eye className="h-3.5 w-3.5" />
@@ -357,7 +357,7 @@ export default function AdminBandManagementPage() {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h4 className="text-base font-bold text-white">{detailArtist.user.name}</h4>
+                <h4 className="text-base font-bold text-text-primary">{detailArtist.user.name}</h4>
                 <div className="flex items-center gap-1.5 text-text-secondary mt-1">
                   <span>Rating:</span>
                   <span className="font-bold text-accent">★ {detailArtist.rating}</span>
@@ -369,7 +369,7 @@ export default function AdminBandManagementPage() {
             <div className="space-y-4">
               {/* Documents */}
               <div className="space-y-2">
-                <h5 className="font-bold text-white uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                <h5 className="font-bold text-text-primary uppercase tracking-wider text-[10px] flex items-center gap-1.5">
                   <FileText className="h-4 w-4 text-primary" />
                   <span>Verification Documents</span>
                 </h5>
@@ -385,7 +385,7 @@ export default function AdminBandManagementPage() {
                         rel="noreferrer"
                         className="flex items-center justify-between p-2.5 bg-bg-card border border-border/50 rounded-lg hover:border-primary/50 transition-colors"
                       >
-                        <span className="font-bold text-white">{doc.title}</span>
+                        <span className="font-bold text-text-primary">{doc.title}</span>
                         <span className="text-[10px] text-primary hover:underline">Download Link</span>
                       </a>
                     ))}
@@ -395,7 +395,7 @@ export default function AdminBandManagementPage() {
 
               {/* Gallery Images */}
               <div className="space-y-2">
-                <h5 className="font-bold text-white uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                <h5 className="font-bold text-text-primary uppercase tracking-wider text-[10px] flex items-center gap-1.5">
                   <ImageIcon className="h-4 w-4 text-secondary" />
                   <span>Image Gallery</span>
                 </h5>
@@ -414,7 +414,7 @@ export default function AdminBandManagementPage() {
  
               {/* Video links */}
               <div className="space-y-2">
-                <h5 className="font-bold text-white uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                <h5 className="font-bold text-text-primary uppercase tracking-wider text-[10px] flex items-center gap-1.5">
                   <Video className="h-4 w-4 text-accent" />
                   <span>Performance Videos</span>
                 </h5>
@@ -440,7 +440,7 @@ export default function AdminBandManagementPage() {
 
             {/* Profile fields */}
             <div className="space-y-3 pt-4 border-t border-border/50">
-              <h5 className="font-bold text-white uppercase tracking-wider text-[10px]">Description & Genres</h5>
+              <h5 className="font-bold text-text-primary uppercase tracking-wider text-[10px]">Description & Genres</h5>
               <p className="leading-relaxed bg-bg-card p-3 rounded-lg border border-border/50 text-text-secondary">
                 {detailArtist.bio || "No biography provided."}
               </p>
@@ -461,19 +461,19 @@ export default function AdminBandManagementPage() {
 
             {/* Pricing details */}
             <div className="space-y-3 pt-4 border-t border-border/50">
-              <h5 className="font-bold text-white uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+              <h5 className="font-bold text-text-primary uppercase tracking-wider text-[10px] flex items-center gap-1.5">
                 <DollarSign className="h-4 w-4 text-primary" />
                 <span>Pricing Breakdown</span>
               </h5>
               <div className="bg-bg-card p-3 rounded-lg border border-border/50 space-y-2">
                 <div className="flex justify-between">
                   <span className="font-semibold text-text-muted">Marketplace Rate</span>
-                  <span className="text-white font-bold">{formatCurrency(detailArtist.base_rate)} / hr</span>
+                  <span className="text-text-primary font-bold">{formatCurrency(detailArtist.base_rate)} / hr</span>
                 </div>
                 {Object.entries(detailArtist.pricing_details).map(([key, val]) => (
                   <div key={key} className="flex justify-between capitalize">
                     <span className="text-text-muted">{key.replace(/_/g, " ")}</span>
-                    <span className="text-white font-semibold">
+                    <span className="text-text-primary font-semibold">
                       {typeof val === "number" ? formatCurrency(val) : String(val)}
                     </span>
                   </div>
@@ -490,7 +490,7 @@ export default function AdminBandManagementPage() {
           <DialogHeader>
             <DialogTitle>Audit Verification Request</DialogTitle>
             <DialogDescription>
-              Inspecting credentials application for: <span className="text-white font-bold">{verifyArtist?.user.name}</span>
+              Inspecting credentials application for: <span className="text-text-primary font-bold">{verifyArtist?.user.name}</span>
             </DialogDescription>
           </DialogHeader>
 
@@ -498,7 +498,7 @@ export default function AdminBandManagementPage() {
             <div className="space-y-2">
               <Label>Action Decision</Label>
               <div className="flex gap-4">
-                <label className="flex items-center gap-2 font-semibold text-white cursor-pointer">
+                <label className="flex items-center gap-2 font-semibold text-text-primary cursor-pointer">
                   <input
                     type="radio"
                     name="verifyStatus"
@@ -509,7 +509,7 @@ export default function AdminBandManagementPage() {
                   />
                   <span>Approve Profile</span>
                 </label>
-                <label className="flex items-center gap-2 font-semibold text-white cursor-pointer">
+                <label className="flex items-center gap-2 font-semibold text-text-primary cursor-pointer">
                   <input
                     type="radio"
                     name="verifyStatus"

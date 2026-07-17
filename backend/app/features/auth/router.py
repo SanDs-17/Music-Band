@@ -18,7 +18,9 @@ from app.features.auth.schemas import (
     UserStatusUpdate,
     BulkStatusUpdate,
     PaginatedUserList,
-    ChangePasswordRequest
+    ChangePasswordRequest,
+    VerifyEmailRequest,
+    ResendVerificationRequest
 )
 from app.features.auth.service import AuthService
 from app.common.schemas.base import SuccessResponse
@@ -40,11 +42,34 @@ async def register(
     db: Session = Depends(get_db)
 ):
     """Registers a new Client, Artist/Band, or Venue Owner profile."""
-    user = auth_service.register_user(db, data)
+    user, email_sent = auth_service.register_user(db, data)
+    msg = "User successfully registered. Verification email sent." if email_sent else "User successfully registered. Verification email failed to send, please try resending."
     return SuccessResponse(
         success=True,
         data=user,
-        message="User successfully registered."
+        message=msg,
+        email_sent=email_sent
+    )
+
+
+
+@router.post(
+    "/resend-verification",
+    response_model=SuccessResponse[None],
+    status_code=status.HTTP_200_OK,
+    summary="Resend verification email"
+)
+async def resend_verification(
+    data: ResendVerificationRequest,
+    db: Session = Depends(get_db)
+):
+    """Resends email verification token if not already verified with a 60s cooldown limit."""
+    email_sent = auth_service.resend_verification_email(db, data.email)
+    msg = "Verification email resent successfully." if email_sent else "Verification email failed to send. Please try again later."
+    return SuccessResponse(
+        success=True,
+        data=None,
+        message=msg
     )
 
 
@@ -155,6 +180,30 @@ async def reset_password(
         data=None,
         message="Password successfully reset."
     )
+
+
+@router.post(
+    "/verify-email",
+    response_model=SuccessResponse[dict],
+    status_code=status.HTTP_200_OK,
+    summary="Verify user email address"
+)
+async def verify_email(
+    data: VerifyEmailRequest,
+    db: Session = Depends(get_db)
+):
+    """Verifies user email address using valid JWT token. Handles already-verified gracefully."""
+    result = auth_service.verify_email_token(db, data.token)
+    if result.get("already_verified"):
+        msg = "Email already verified. You can proceed to log in."
+    else:
+        msg = "Email successfully verified. Please log in to access your account."
+    return SuccessResponse(
+        success=True,
+        data=result,
+        message=msg
+    )
+
 
 
 @router.get(

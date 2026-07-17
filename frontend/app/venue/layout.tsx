@@ -37,7 +37,7 @@ function VenueOnboardingGuard({ children }: { children: React.ReactNode }) {
         if (apiErr?.response?.status === 404) {
           // No venue record yet — redirect to venue setup
           if (!cancelled) {
-            router.replace("/venue/profile");
+            router.replace("/register/venue");
             return;
           }
         }

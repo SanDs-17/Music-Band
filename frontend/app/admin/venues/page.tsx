@@ -238,7 +238,7 @@ export default function AdminVenueManagementPage() {
                           <Building className="h-4 w-4 text-primary" />
                         </div>
                         <div>
-                          <div className="font-bold text-white text-xs">{venue.name}</div>
+                          <div className="font-bold text-text-primary text-xs">{venue.name}</div>
                           <div className="text-[10px] text-text-secondary mt-0.5">{venue.user.name}</div>
                         </div>
                       </div>
@@ -247,7 +247,7 @@ export default function AdminVenueManagementPage() {
                       {venue.city.name}
                     </TableCell>
                     <TableCell>
-                      <div className="text-white text-xs font-bold">{venue.capacity} Pax</div>
+                      <div className="text-text-primary text-xs font-bold">{venue.capacity} Pax</div>
                       <div className="text-[10px] text-text-secondary mt-0.5">{formatCurrency(venue.base_price)} / event</div>
                     </TableCell>
                     <TableCell>
@@ -275,7 +275,7 @@ export default function AdminVenueManagementPage() {
                           onClick={() => setDetailVenue(venue)}
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7 text-text-secondary hover:text-white"
+                          className="h-7 w-7 text-text-secondary hover:text-text-primary"
                           title="View Space Details"
                         >
                           <Eye className="h-3.5 w-3.5" />
@@ -352,7 +352,7 @@ export default function AdminVenueManagementPage() {
                 <Building className="h-6 w-6" />
               </div>
               <div>
-                <h4 className="text-base font-bold text-white">{detailVenue.name}</h4>
+                <h4 className="text-base font-bold text-text-primary">{detailVenue.name}</h4>
                 <div className="flex items-center gap-1 text-text-secondary mt-1">
                   <MapPin className="h-3.5 w-3.5 text-text-muted" />
                   <span>{detailVenue.city.name}</span>
@@ -362,7 +362,7 @@ export default function AdminVenueManagementPage() {
 
             {/* Photo Gallery Grid */}
             <div className="space-y-2">
-              <h5 className="font-bold text-white uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+              <h5 className="font-bold text-text-primary uppercase tracking-wider text-[10px] flex items-center gap-1.5">
                 <ImageIcon className="h-4 w-4 text-secondary" />
                 <span>Space Image Gallery</span>
               </h5>
@@ -381,7 +381,7 @@ export default function AdminVenueManagementPage() {
 
             {/* Facilities checklists */}
             <div className="space-y-2 pt-2">
-              <h5 className="font-bold text-white uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+              <h5 className="font-bold text-text-primary uppercase tracking-wider text-[10px] flex items-center gap-1.5">
                 <Wrench className="h-4 w-4 text-accent" />
                 <span>On-Site Facilities</span>
               </h5>
@@ -400,7 +400,7 @@ export default function AdminVenueManagementPage() {
 
             {/* Description */}
             <div className="space-y-3 pt-4 border-t border-border/50">
-              <h5 className="font-bold text-white uppercase tracking-wider text-[10px]">Description & Address</h5>
+              <h5 className="font-bold text-text-primary uppercase tracking-wider text-[10px]">Description & Address</h5>
               <p className="leading-relaxed bg-bg-card p-3 rounded-lg border border-border/50 text-text-secondary">
                 {detailVenue.description || "No description provided."}
               </p>
@@ -412,19 +412,19 @@ export default function AdminVenueManagementPage() {
 
             {/* Pricing details */}
             <div className="space-y-3 pt-4 border-t border-border/50">
-              <h5 className="font-bold text-white uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+              <h5 className="font-bold text-text-primary uppercase tracking-wider text-[10px] flex items-center gap-1.5">
                 <DollarSign className="h-4 w-4 text-primary" />
                 <span>Pricing Details</span>
               </h5>
               <div className="bg-bg-card p-3 rounded-lg border border-border/50 space-y-2">
                 <div className="flex justify-between">
                   <span className="font-semibold text-text-muted">Base Event Rent</span>
-                  <span className="text-white font-bold">{formatCurrency(detailVenue.base_price)}</span>
+                  <span className="text-text-primary font-bold">{formatCurrency(detailVenue.base_price)}</span>
                 </div>
                 {Object.entries(detailVenue.pricing_details).map(([key, val]) => (
                   <div key={key} className="flex justify-between capitalize">
                     <span className="text-text-muted">{key.replace(/_/g, " ")}</span>
-                    <span className="text-white font-semibold">
+                    <span className="text-text-primary font-semibold">
                       {typeof val === "number" ? formatCurrency(val) : String(val)}
                     </span>
                   </div>
@@ -434,7 +434,7 @@ export default function AdminVenueManagementPage() {
 
             {/* Availability details */}
             <div className="space-y-3 pt-4 border-t border-border/50">
-              <h5 className="font-bold text-white uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+              <h5 className="font-bold text-text-primary uppercase tracking-wider text-[10px] flex items-center gap-1.5">
                 <Clock className="h-4 w-4 text-secondary" />
                 <span>Availability Calendar Rules</span>
               </h5>
@@ -442,7 +442,7 @@ export default function AdminVenueManagementPage() {
                 {Object.entries(detailVenue.availability_rules).map(([key, val]) => (
                   <div key={key} className="flex justify-between capitalize">
                     <span className="text-text-muted">{key.replace(/_/g, " ")}</span>
-                    <span className="text-white font-semibold">{String(val)}</span>
+                    <span className="text-text-primary font-semibold">{String(val)}</span>
                   </div>
                 ))}
               </div>
@@ -457,7 +457,7 @@ export default function AdminVenueManagementPage() {
           <DialogHeader>
             <DialogTitle>Audit Space Verification</DialogTitle>
             <DialogDescription>
-              Inspecting space application for: <span className="text-white font-bold">{verifyVenue?.name}</span>
+              Inspecting space application for: <span className="text-text-primary font-bold">{verifyVenue?.name}</span>
             </DialogDescription>
           </DialogHeader>
 
@@ -465,7 +465,7 @@ export default function AdminVenueManagementPage() {
             <div className="space-y-2">
               <Label>Action Decision</Label>
               <div className="flex gap-4">
-                <label className="flex items-center gap-2 font-semibold text-white cursor-pointer">
+                <label className="flex items-center gap-2 font-semibold text-text-primary cursor-pointer">
                   <input
                     type="radio"
                     name="verifyStatus"
@@ -476,7 +476,7 @@ export default function AdminVenueManagementPage() {
                   />
                   <span>Approve Venue</span>
                 </label>
-                <label className="flex items-center gap-2 font-semibold text-white cursor-pointer">
+                <label className="flex items-center gap-2 font-semibold text-text-primary cursor-pointer">
                   <input
                     type="radio"
                     name="verifyStatus"

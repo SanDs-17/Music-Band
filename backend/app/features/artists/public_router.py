@@ -2,7 +2,9 @@
 API routes for public and onboarding Artist / Band profile management.
 """
 
-from fastapi import APIRouter, Depends, status
+from uuid import UUID
+from typing import Optional
+from fastapi import APIRouter, Depends, status, Query
 from sqlalchemy.orm import Session
 from app.core.dependencies import get_db, get_current_user
 from app.core.exceptions import NotFoundException
@@ -17,7 +19,8 @@ from app.features.artists.schemas import (
     ConflictCheckResponse,
     MediaGalleryUpdate,
     PricingUpdate,
-    AnalyticsResponse
+    AnalyticsResponse,
+    PaginatedArtistList
 )
 from app.features.artists.router import _format_artist_profile
 from app.features.artists.service import ArtistService
@@ -300,4 +303,123 @@ async def get_current_artist_analytics(
         success=True,
         data=analytics,
         message="Artist analytics insights retrieved successfully."
+    )
+
+
+def _format_public_artist_profile(artist) -> ArtistProfileResponse:
+    profile = _format_artist_profile(artist)
+    # Ensure sensitive verification details are never leaked in public profile endpoints
+    profile.documents = None
+    profile.mobile_number = None
+    return profile
+
+
+@router.get(
+    "",
+    response_model=SuccessResponse[PaginatedArtistList],
+    status_code=status.HTTP_200_OK,
+    summary="Public marketplace search and filter for approved artists"
+)
+async def list_marketplace_artists(
+    search: Optional[str] = Query(None, description="Search by name, display name, or bio"),
+    performer_type: Optional[str] = Query(None, description="Solo, Duo, Trio, 4 Members, 5+ Members"),
+    genre: Optional[str] = Query(None, description="Filter by genre"),
+    language: Optional[str] = Query(None, description="Filter by language"),
+    city: Optional[str] = Query(None, description="Filter by city"),
+    min_rate: Optional[float] = Query(None, description="Minimum performance rate"),
+    max_rate: Optional[float] = Query(None, description="Maximum performance rate"),
+    limit: int = Query(10, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    db: Session = Depends(get_db)
+):
+    from app.features.artists.models import ArtistProfile
+    from app.features.categories.models import Category
+    from app.features.auth.models import User
+
+    # Only approved and active performers should be visible in the marketplace
+    query = (
+        db.query(ArtistProfile)
+        .join(ArtistProfile.user)
+        .filter(
+            ArtistProfile.verification_status == "approved",
+            User.is_active == True,
+            ArtistProfile.deleted_at.is_(None)
+        )
+    )
+
+    if search:
+        query = query.filter(
+            (User.name.ilike(f"%{search}%")) |
+            (ArtistProfile.display_name.ilike(f"%{search}%")) |
+            (ArtistProfile.bio.ilike(f"%{search}%"))
+        )
+
+    if performer_type:
+        query = query.filter(ArtistProfile.band_type == performer_type)
+
+    if city:
+        query = query.filter(ArtistProfile.city.ilike(f"%{city}%"))
+
+    if min_rate is not None:
+        query = query.filter(ArtistProfile.base_rate >= min_rate)
+
+    if max_rate is not None:
+        query = query.filter(ArtistProfile.base_rate <= max_rate)
+
+    if genre:
+        query = (
+            query.join(ArtistProfile.genres)
+            .filter(Category.name.ilike(genre))
+        )
+
+    if language:
+        from sqlalchemy.orm import aliased
+        LangCategory = aliased(Category)
+        query = (
+            query.join(ArtistProfile.languages.of_type(LangCategory))
+            .filter(LangCategory.name.ilike(language))
+        )
+
+    total = query.count()
+    artists = query.offset(offset).limit(limit).all()
+
+    formatted = [_format_public_artist_profile(a) for a in artists]
+    return SuccessResponse(
+        success=True,
+        data=PaginatedArtistList(items=formatted, total=total),
+        message="Marketplace artists retrieved successfully."
+    )
+
+
+@router.get(
+    "/{artist_id}",
+    response_model=SuccessResponse[ArtistProfileResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Get public profile details of an approved artist"
+)
+async def get_public_artist_profile(
+    artist_id: UUID,
+    db: Session = Depends(get_db)
+):
+    from app.features.artists.models import ArtistProfile
+    from app.features.auth.models import User
+
+    artist = (
+        db.query(ArtistProfile)
+        .join(ArtistProfile.user)
+        .filter(
+            ArtistProfile.id == artist_id,
+            ArtistProfile.verification_status == "approved",
+            User.is_active == True,
+            ArtistProfile.deleted_at.is_(None)
+        )
+        .first()
+    )
+    if not artist:
+        raise NotFoundException("Artist profile not found or not approved.")
+
+    return SuccessResponse(
+        success=True,
+        data=_format_public_artist_profile(artist),
+        message="Artist profile retrieved successfully."
     )

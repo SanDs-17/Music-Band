@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, RegisterFormData } from "@/utils/validation";
@@ -11,27 +11,51 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { api } from "@/services/api";
 import toast from "react-hot-toast";
+import * as React from "react";
+import { Loader2 } from "lucide-react";
 
-export default function RegisterPage() {
+function RegisterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   
+  const roleParam = searchParams.get("role") || "client";
+  const defaultRole = ["client", "artist", "venue_owner"].includes(roleParam) ? roleParam : "client";
+
   const {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { name: "", email: "", role_name: "client", password: "" },
+    defaultValues: { name: "", email: "", role_name: defaultRole as any, password: "", confirmPassword: "" },
   });
+
+  // Synchronize form value with search params if they change dynamically
+  React.useEffect(() => {
+    if (roleParam && ["client", "artist", "venue_owner"].includes(roleParam)) {
+      setValue("role_name", roleParam as any);
+    }
+  }, [roleParam, setValue]);
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      const response = await api.post("/auth/register", data);
-      const { success, message } = response.data;
+      // Strip confirmPassword — backend does not accept this field
+      const { confirmPassword: _cp, ...payload } = data;
+      const response = await api.post("/auth/register", payload);
+      const { success, message, email_sent } = response.data;
       if (success) {
-        toast.success(message || "Account registered successfully! Please log in.");
-        router.push("/login");
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("registration_email", data.email);
+        }
+        if (email_sent === false) {
+          toast.success("Account Created (Verification email failed to send)");
+          router.push("/verify-email?email_sent=false");
+        } else {
+          toast.success(message || "Account registered successfully! Verification email sent.");
+          router.push("/verify-email?email_sent=true");
+        }
       }
     } catch (err) {
       const error = err as { response?: { data?: { error?: { message?: string } } } };
@@ -39,6 +63,7 @@ export default function RegisterPage() {
       toast.error(errMsg);
     }
   };
+
 
   return (
     <div className="flex flex-col space-y-6">
@@ -85,13 +110,7 @@ export default function RegisterPage() {
             render={({ field }) => (
               <Select
                 onValueChange={(val) => {
-                  if (val === "artist") {
-                    router.push("/register/artist");
-                  } else if (val === "venue_owner") {
-                    router.push("/register/venue");
-                  } else {
-                    field.onChange(val);
-                  }
+                  field.onChange(val);
                 }}
                 value={field.value}
               >
@@ -116,7 +135,7 @@ export default function RegisterPage() {
           <Input
             id="password"
             type="password"
-            placeholder="••••••••"
+            placeholder="Min 8 chars, uppercase, number, symbol"
             disabled={isSubmitting}
             {...register("password")}
           />
@@ -125,8 +144,31 @@ export default function RegisterPage() {
           )}
         </div>
 
-        <Button type="submit" className="w-full font-bold h-10 mt-2" disabled={isSubmitting}>
-          {isSubmitting ? "Creating account..." : "Sign Up"}
+        <div className="space-y-1">
+          <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <Input
+            id="confirmPassword"
+            type="password"
+            placeholder="Re-enter your password"
+            disabled={isSubmitting}
+            {...register("confirmPassword")}
+          />
+          {errors.confirmPassword && (
+            <p className="text-xs text-error font-medium mt-1">{errors.confirmPassword.message}</p>
+          )}
+        </div>
+
+        <Button
+          type="submit"
+          id="register-submit-btn"
+          className="w-full font-bold h-10 mt-2"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating account...</>
+          ) : (
+            "Sign Up"
+          )}
         </Button>
       </form>
 
@@ -139,3 +181,16 @@ export default function RegisterPage() {
     </div>
   );
 }
+
+export default function RegisterPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="flex flex-col items-center justify-center text-center space-y-6 py-6">
+        <Loader2 className="h-12 w-12 text-primary animate-spin" />
+      </div>
+    }>
+      <RegisterContent />
+    </React.Suspense>
+  );
+}
+

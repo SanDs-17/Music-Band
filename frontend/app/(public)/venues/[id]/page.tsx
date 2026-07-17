@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { venueService } from "@/services/venueService";
 import { reviewService } from "@/services/reviewService";
 import { VenueResponseData } from "@/types/venue";
@@ -13,6 +13,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/hooks/use-auth";
+import toast from "react-hot-toast";
 import { 
   Building2,
   Users, 
@@ -34,6 +36,8 @@ import { format } from "date-fns";
 
 export default function PublicVenueProfilePage() {
   const params = useParams();
+  const router = useRouter();
+  const { user } = useAuth();
   const venueId = params.id as string;
 
   const [venue, setVenue] = React.useState<VenueResponseData | null>(null);
@@ -53,6 +57,27 @@ export default function PublicVenueProfilePage() {
 
   // Booking CTA Dialog
   const [isBookingModalOpen, setIsBookingModalOpen] = React.useState(false);
+
+  const handleBookSpace = () => {
+    if (!venue) return;
+    const basePrice = venue.base_price || 0;
+    const intent = {
+      venueId: venue.id,
+      venueName: venue.name,
+      proposedPrice: basePrice,
+    };
+
+    if (!user) {
+      sessionStorage.setItem("pending_booking_intent", JSON.stringify(intent));
+      toast.success("Please log in to submit a booking request.");
+      router.push("/login");
+    } else if (user.role !== "client") {
+      toast.error("Only client accounts can create booking requests.");
+    } else {
+      sessionStorage.setItem("active_booking_intent", JSON.stringify(intent));
+      router.push("/client/bookings");
+    }
+  };
 
   const fetchVenueDetail = React.useCallback(async () => {
     setLoadingVenue(true);
@@ -136,7 +161,7 @@ export default function PublicVenueProfilePage() {
   const publicHolidays = venue.availability_rules?.public_holidays || [];
 
   return (
-    <div className="min-h-screen bg-background text-white pb-16">
+    <div className="min-h-screen bg-background text-text-primary pb-16">
       
       {/* 1. HERO & GALLERY */}
       <div className="relative h-[45vh] md:h-[60vh] w-full overflow-hidden">
@@ -161,7 +186,7 @@ export default function PublicVenueProfilePage() {
                 </Badge>
               )}
             </div>
-            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white">{venue.name}</h1>
+            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-text-primary">{venue.name}</h1>
             <p className="text-sm text-text-secondary flex items-center gap-1.5">
               <MapPin className="h-4 w-4 text-primary shrink-0" />
               <span>{venue.address}, {venue.city?.name}</span>
@@ -204,7 +229,7 @@ export default function PublicVenueProfilePage() {
           
           {/* Overview */}
           <div className="space-y-4">
-            <h2 className="text-xl font-extrabold text-white border-b border-border/30 pb-3 flex items-center gap-2">
+            <h2 className="text-xl font-extrabold text-text-primary border-b border-border/30 pb-3 flex items-center gap-2">
               <Building2 className="h-5 w-5 text-primary" />
               About this Space
             </h2>
@@ -218,17 +243,17 @@ export default function PublicVenueProfilePage() {
             <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-4 space-y-1">
               <Users className="h-5 w-5 text-primary mb-1" />
               <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider block">Max Capacity</span>
-              <span className="text-sm font-extrabold text-white block">{venue.capacity} Guests</span>
+              <span className="text-sm font-extrabold text-text-primary block">{venue.capacity} Guests</span>
             </Card>
             <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-4 space-y-1">
               <Users className="h-5 w-5 text-primary mb-1" />
               <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider block">Min Capacity</span>
-              <span className="text-sm font-extrabold text-white block">{venue.min_capacity} Guests</span>
+              <span className="text-sm font-extrabold text-text-primary block">{venue.min_capacity} Guests</span>
             </Card>
             <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-4 space-y-1 col-span-2 sm:col-span-1">
               <Layers className="h-5 w-5 text-primary mb-1" />
               <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider block">Established Year</span>
-              <span className="text-sm font-extrabold text-white block">
+              <span className="text-sm font-extrabold text-text-primary block">
                 {venue.metadata_fields?.established_year || "N/A"}
               </span>
             </Card>
@@ -236,7 +261,7 @@ export default function PublicVenueProfilePage() {
 
           {/* Facilities Listing */}
           <div className="space-y-4">
-            <h2 className="text-xl font-extrabold text-white border-b border-border/30 pb-3 flex items-center gap-2">
+            <h2 className="text-xl font-extrabold text-text-primary border-b border-border/30 pb-3 flex items-center gap-2">
               <Check className="h-5 w-5 text-primary" />
               Available Facilities
             </h2>
@@ -255,7 +280,7 @@ export default function PublicVenueProfilePage() {
 
           {/* Operational Availability Calendar */}
           <div className="space-y-4">
-            <h2 className="text-xl font-extrabold text-white border-b border-border/30 pb-3 flex items-center gap-2">
+            <h2 className="text-xl font-extrabold text-text-primary border-b border-border/30 pb-3 flex items-center gap-2">
               <Clock className="h-5 w-5 text-primary" />
               Weekly schedule & Availability
             </h2>
@@ -265,7 +290,7 @@ export default function PublicVenueProfilePage() {
                 <div className="space-y-2">
                   {Object.entries(schedule).map(([day, hours], idx) => (
                     <div key={idx} className="flex justify-between text-xs border-b border-border/30 pb-1.5">
-                      <span className="capitalize font-bold text-white">{day}</span>
+                      <span className="capitalize font-bold text-text-primary">{day}</span>
                       <span className="text-text-secondary font-mono">{String(hours)}</span>
                     </div>
                   ))}
@@ -309,14 +334,14 @@ export default function PublicVenueProfilePage() {
 
           {/* Location / Google Maps */}
           <div className="space-y-4">
-            <h2 className="text-xl font-extrabold text-white border-b border-border/30 pb-3 flex items-center gap-2">
+            <h2 className="text-xl font-extrabold text-text-primary border-b border-border/30 pb-3 flex items-center gap-2">
               <MapPin className="h-5 w-5 text-primary" />
               Location Mapping
             </h2>
             <Card className="bg-bg-card/45 border border-border/80 overflow-hidden rounded-2xl">
               <div className="h-[250px] bg-bg-elevated/40 relative flex flex-col items-center justify-center gap-2 text-center p-6">
                 <MapPin className="h-8 w-8 text-primary animate-bounce" />
-                <span className="text-sm font-bold text-white">{venue.name}</span>
+                <span className="text-sm font-bold text-text-primary">{venue.name}</span>
                 <span className="text-xs text-text-secondary max-w-sm">{venue.address}, {venue.city?.name}, {venue.state || ""} {venue.pincode || ""}</span>
                 
                 {venue.google_map_location && (
@@ -336,7 +361,7 @@ export default function PublicVenueProfilePage() {
 
           {/* Reviews List & Ratings Summary */}
           <div className="space-y-6">
-            <h2 className="text-xl font-extrabold text-white border-b border-border/30 pb-3 flex items-center gap-2">
+            <h2 className="text-xl font-extrabold text-text-primary border-b border-border/30 pb-3 flex items-center gap-2">
               <MessageSquare className="h-5 w-5 text-primary" />
               Client Testimonials & Ratings
             </h2>
@@ -346,7 +371,7 @@ export default function PublicVenueProfilePage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl p-5">
                 <div className="flex flex-col items-center justify-center text-center space-y-2 border-b md:border-b-0 md:border-r border-border/30 pb-4 md:pb-0 md:pr-4">
                   <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider">Average Rating</span>
-                  <span className="text-4xl font-extrabold text-white flex items-center gap-1">
+                  <span className="text-4xl font-extrabold text-text-primary flex items-center gap-1">
                     {reviewsData.average_rating.toFixed(1)}
                     <Star className="h-6 w-6 text-amber-400 fill-current" />
                   </span>
@@ -423,7 +448,7 @@ export default function PublicVenueProfilePage() {
                         {rev.client?.name?.[0] || "U"}
                       </div>
                       <div className="space-y-0.5">
-                        <span className="text-xs font-bold text-white block">{rev.client?.name || "Client User"}</span>
+                        <span className="text-xs font-bold text-text-primary block">{rev.client?.name || "Client User"}</span>
                         <span className="text-[9px] text-text-muted block">
                           {format(new Date(rev.created_at), "dd MMM yyyy")}
                         </span>
@@ -448,7 +473,7 @@ export default function PublicVenueProfilePage() {
                   {rev.reply_comment && (
                     <div className="p-3 bg-bg-elevated/40 border border-border/55 rounded-xl text-xs text-text-secondary space-y-1 ml-4 sm:ml-6">
                       <div className="flex items-center justify-between gap-2 border-b border-border/30 pb-1 mb-1">
-                        <span className="font-bold text-white">Owner Response</span>
+                        <span className="font-bold text-text-primary">Owner Response</span>
                         {rev.reply_at && (
                           <span className="text-[9px] text-text-muted font-mono">
                             {format(new Date(rev.reply_at), "dd MMM yyyy")}
@@ -478,7 +503,7 @@ export default function PublicVenueProfilePage() {
               <div className="border-b border-border/30 pb-4">
                 <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider block mb-1">Rental Rates</span>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-extrabold text-white">₹{basePrice.toLocaleString()}</span>
+                  <span className="text-3xl font-extrabold text-text-primary">₹{basePrice.toLocaleString()}</span>
                   <span className="text-xs text-text-secondary font-medium">/ event base</span>
                 </div>
               </div>
@@ -488,31 +513,31 @@ export default function PublicVenueProfilePage() {
                 {hourlyPrice > 0 && (
                   <div className="flex justify-between">
                     <span className="text-text-secondary">Hourly Rate</span>
-                    <span className="font-bold text-white font-mono">₹{hourlyPrice.toLocaleString()}</span>
+                    <span className="font-bold text-text-primary font-mono">₹{hourlyPrice.toLocaleString()}</span>
                   </div>
                 )}
                 {weekendPrice > 0 && (
                   <div className="flex justify-between">
                     <span className="text-text-secondary">Weekend Surcharge</span>
-                    <span className="font-bold text-white font-mono">₹{weekendPrice.toLocaleString()}</span>
+                    <span className="font-bold text-text-primary font-mono">₹{weekendPrice.toLocaleString()}</span>
                   </div>
                 )}
                 {securityDeposit > 0 && (
                   <div className="flex justify-between">
                     <span className="text-text-secondary">Refundable Deposit</span>
-                    <span className="font-bold text-white font-mono">₹{securityDeposit.toLocaleString()}</span>
+                    <span className="font-bold text-text-primary font-mono">₹{securityDeposit.toLocaleString()}</span>
                   </div>
                 )}
                 {extraHourCharges > 0 && (
                   <div className="flex justify-between">
                     <span className="text-text-secondary">Extra Hour Charge</span>
-                    <span className="font-bold text-white font-mono">₹{extraHourCharges.toLocaleString()}</span>
+                    <span className="font-bold text-text-primary font-mono">₹{extraHourCharges.toLocaleString()}</span>
                   </div>
                 )}
               </div>
 
               <Button 
-                onClick={() => setIsBookingModalOpen(true)}
+                onClick={handleBookSpace}
                 className="w-full bg-primary hover:bg-primary/95 text-white font-bold h-11 px-5 rounded-xl flex items-center justify-center gap-2 group transition-all"
               >
                 <span>Book this Space</span>
@@ -522,7 +547,7 @@ export default function PublicVenueProfilePage() {
 
             {/* Host Contacts Card */}
             <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow p-6 space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-text-primary">
                 Contact Space Operator
               </h3>
               
@@ -588,13 +613,13 @@ export default function PublicVenueProfilePage() {
             <Button 
               variant="outline"
               onClick={() => setIsBookingModalOpen(false)}
-              className="absolute top-4 right-4 p-2 bg-bg-elevated hover:bg-bg-elevated/80 border-border text-white rounded-full transition-all"
+              className="absolute top-4 right-4 p-2 bg-bg-elevated hover:bg-bg-elevated/80 border-border text-text-primary rounded-full transition-all"
             >
               <X className="h-3.5 w-3.5" />
             </Button>
 
             <div className="space-y-2">
-              <h3 className="text-base font-extrabold text-white">How to Book this Hall</h3>
+              <h3 className="text-base font-extrabold text-text-primary">How to Book this Hall</h3>
               <p className="text-xs text-text-secondary leading-relaxed">
                 Reservations and calendar slot block bookings are coordinated directly with our events team. Please contact the space administrator using the details below:
               </p>
@@ -603,7 +628,7 @@ export default function PublicVenueProfilePage() {
             <div className="p-4 bg-bg-elevated/40 border border-border/80 rounded-xl space-y-2 text-xs">
               <div className="flex justify-between">
                 <span className="text-text-muted">Contact Person:</span>
-                <span className="font-bold text-white">{venue.metadata_fields?.contact_person || "Venue Owner"}</span>
+                <span className="font-bold text-text-primary">{venue.metadata_fields?.contact_person || "Venue Owner"}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-text-muted">Direct Email:</span>
@@ -612,7 +637,7 @@ export default function PublicVenueProfilePage() {
               {venue.contact_details && (
                 <div className="flex justify-between">
                   <span className="text-text-muted">Phone Number:</span>
-                  <span className="font-bold text-white font-mono">{venue.contact_details}</span>
+                  <span className="font-bold text-text-primary font-mono">{venue.contact_details}</span>
                 </div>
               )}
             </div>

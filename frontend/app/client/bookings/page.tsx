@@ -31,6 +31,27 @@ export default function ClientBookingsPage() {
   const [selectedBookingId, setSelectedBookingId] = React.useState<string | null>(null);
   const [detailsOpen, setDetailsOpen] = React.useState<boolean>(false);
   const [formOpen, setFormOpen] = React.useState<boolean>(false);
+  const [prefilledIntent, setPrefilledIntent] = React.useState<{
+    artistProfileId?: string;
+    venueId?: string;
+    artistName?: string;
+    venueName?: string;
+    proposedPrice?: number;
+  } | null>(null);
+
+  React.useEffect(() => {
+    const activeIntent = sessionStorage.getItem("active_booking_intent");
+    if (activeIntent) {
+      try {
+        const parsed = JSON.parse(activeIntent);
+        setPrefilledIntent(parsed);
+        setFormOpen(true);
+        sessionStorage.removeItem("active_booking_intent");
+      } catch (err) {
+        console.error("Failed to parse prefilled booking intent.", err);
+      }
+    }
+  }, []);
 
   const fetchBookings = React.useCallback(async () => {
     setLoading(true);
@@ -73,17 +94,17 @@ export default function ClientBookingsPage() {
     <div className="space-y-6">
       {/* Portal Breadcrumb: Dashboard > My Bookings */}
       <nav className="flex items-center gap-2 text-xs font-semibold text-text-secondary">
-        <a href="/client/dashboard" className="hover:text-white transition-colors">
+        <a href="/client/dashboard" className="hover:text-text-primary transition-colors">
           Dashboard
         </a>
         <span className="text-text-muted">›</span>
-        <span className="text-white">My Bookings</span>
+        <span className="text-text-primary">My Bookings</span>
       </nav>
 
       {/* Header Panel */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-black text-text-primary tracking-tight flex items-center gap-2">
             <CalendarRange className="h-6 w-6 text-primary" />
             My Event Bookings
           </h1>
@@ -123,7 +144,7 @@ export default function ClientBookingsPage() {
               placeholder="Search by event title, location..."
               value={search}
               onChange={handleSearchChange}
-              className="h-9 text-xs text-white bg-bg-card border-border/80"
+              className="h-9 text-xs text-text-primary bg-bg-card border-border/80"
             />
           </div>
           
@@ -135,7 +156,7 @@ export default function ClientBookingsPage() {
                 setStatus(e.target.value);
                 setPage(1);
               }}
-              className="h-9 px-3 rounded-lg border border-border/80 bg-bg-card text-white text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+              className="h-9 px-3 rounded-lg border border-border/80 bg-bg-card text-text-primary text-xs focus:outline-none focus:ring-1 focus:ring-primary"
             >
               <option value="">All Statuses</option>
               <option value="pending">Pending</option>
@@ -232,11 +253,20 @@ export default function ClientBookingsPage() {
       <Dialog open={formOpen} onOpenChange={(open) => !open && setFormOpen(false)}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-bg-card border border-border p-6 rounded-2xl shadow-2xl">
           <BookingRequestForm
+            artistProfileId={prefilledIntent?.artistProfileId}
+            venueId={prefilledIntent?.venueId}
+            artistName={prefilledIntent?.artistName}
+            venueName={prefilledIntent?.venueName}
+            proposedPrice={prefilledIntent?.proposedPrice}
             onSuccess={() => {
               setFormOpen(false);
+              setPrefilledIntent(null);
               fetchBookings();
             }}
-            onCancel={() => setFormOpen(false)}
+            onCancel={() => {
+              setFormOpen(false);
+              setPrefilledIntent(null);
+            }}
           />
         </DialogContent>
       </Dialog>

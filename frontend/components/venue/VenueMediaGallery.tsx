@@ -171,7 +171,7 @@ export function VenueMediaGallery({ media, onSave }: VenueMediaGalleryProps) {
       {/* Title */}
       <div className="border-b border-border/50 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-0.5">
-          <h2 className="text-xl font-bold text-white">Venue Media Showcase & Albums</h2>
+          <h2 className="text-xl font-bold text-text-primary">Venue Media Showcase & Albums</h2>
           <p className="text-xs text-text-secondary">Upload high resolution photos of your spaces, walkthrough clips and Matterport 360° virtual tours.</p>
         </div>
         <Button 
@@ -186,7 +186,7 @@ export function VenueMediaGallery({ media, onSave }: VenueMediaGalleryProps) {
 
       {/* COVER IMAGE SECTION */}
       <div className="space-y-4">
-        <Label className="text-sm font-bold text-white">Cover Banner Image</Label>
+        <Label className="text-sm font-bold text-text-primary">Cover Banner Image</Label>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end p-4 border border-border/60 bg-bg-elevated/15 rounded-2xl">
           <div className="md:col-span-2">
             {coverImage ? (
@@ -216,7 +216,7 @@ export function VenueMediaGallery({ media, onSave }: VenueMediaGalleryProps) {
       {/* GALLERY PHOTOS SECTION */}
       <div className="space-y-4 pt-4 border-t border-border/50">
         <div className="space-y-1">
-          <h3 className="text-base font-bold text-white flex items-center gap-2">
+          <h3 className="text-base font-bold text-text-primary flex items-center gap-2">
             <ImageIcon className="h-5 w-5 text-primary" />
             Photo Gallery Albums
           </h3>
@@ -230,7 +230,7 @@ export function VenueMediaGallery({ media, onSave }: VenueMediaGalleryProps) {
             <select 
               value={newAlbumName} 
               onChange={e => setNewAlbumName(e.target.value)}
-              className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-white text-xs"
+              className="w-full h-10 px-3 rounded-lg border border-border bg-bg-card text-text-primary text-xs"
             >
               {ALBUMS.map(al => (
                 <option key={al} value={al}>{al}</option>
@@ -272,7 +272,7 @@ export function VenueMediaGallery({ media, onSave }: VenueMediaGalleryProps) {
                   <select
                     value={item.album}
                     onChange={e => handleAlbumChange(idx, e.target.value)}
-                    className="w-full h-8 px-2 rounded border border-border bg-bg-elevated text-white text-[10px]"
+                    className="w-full h-8 px-2 rounded border border-border bg-bg-elevated text-text-primary text-[10px]"
                   >
                     {ALBUMS.map(al => (
                       <option key={al} value={al}>{al}</option>
@@ -330,7 +330,7 @@ export function VenueMediaGallery({ media, onSave }: VenueMediaGalleryProps) {
       {/* WALKTHROUGH VIDEOS SECTION */}
       <div className="space-y-4 pt-4 border-t border-border/50">
         <div className="space-y-1">
-          <h3 className="text-base font-bold text-white flex items-center gap-2">
+          <h3 className="text-base font-bold text-text-primary flex items-center gap-2">
             <VideoIcon className="h-5 w-5 text-primary" />
             Upload Walkthrough Videos
           </h3>
@@ -366,7 +366,7 @@ export function VenueMediaGallery({ media, onSave }: VenueMediaGalleryProps) {
                 <select
                   value={v.category}
                   onChange={e => handleVideoCategoryChange(idx, e.target.value)}
-                  className="w-full h-8 px-2 mt-1 rounded border border-border bg-bg-elevated text-white text-[10px]"
+                  className="w-full h-8 px-2 mt-1 rounded border border-border bg-bg-elevated text-text-primary text-[10px]"
                 >
                   {VIDEO_CATEGORIES.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -384,7 +384,7 @@ export function VenueMediaGallery({ media, onSave }: VenueMediaGalleryProps) {
         {/* YouTube Links Widget */}
         <div className="space-y-4">
           <div className="space-y-1">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
+            <h3 className="text-base font-bold text-text-primary flex items-center gap-2">
               <Youtube className="h-5 w-5 text-red-500" />
               YouTube Video Embeds
             </h3>
@@ -405,7 +405,7 @@ export function VenueMediaGallery({ media, onSave }: VenueMediaGalleryProps) {
           <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
             {youtubeLinks.map((link, idx) => (
               <div key={idx} className="flex items-center justify-between p-3 rounded-xl border border-border/80 bg-bg-elevated/20 hover:border-primary/30 transition-colors">
-                <span className="text-xs text-white truncate max-w-[280px]">{link}</span>
+                <span className="text-xs text-text-primary truncate max-w-[280px]">{link}</span>
                 <button type="button" onClick={() => removeYoutube(idx)} className="text-error hover:text-red-400 p-1 shrink-0">
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -420,7 +420,7 @@ export function VenueMediaGallery({ media, onSave }: VenueMediaGalleryProps) {
         {/* 360 Virtual Tour Placeholder */}
         <div className="space-y-4">
           <div className="space-y-1">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
+            <h3 className="text-base font-bold text-text-primary flex items-center gap-2">
               <Compass className="h-5 w-5 text-emerald-400" />
               Matterport 360° Virtual Tour Link
             </h3>

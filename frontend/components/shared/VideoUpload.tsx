@@ -78,7 +78,7 @@ export function VideoUpload({ value, onChange, onRemove, subfolder: _subfolder =
           ) : (
             <>
               <div className="p-3 bg-bg-elevated rounded-full border border-border group-hover:bg-primary group-hover:text-white transition-colors">
-                <VideoIcon className="h-5 w-5 text-text-secondary group-hover:text-white" />
+                <VideoIcon className="h-5 w-5 text-text-secondary group-hover:text-text-primary" />
               </div>
               <p className="text-sm font-semibold text-text-primary">Click to upload demo video</p>
               <p className="text-xs text-text-muted">Supports MP4, WebM (Max 20MB)</p>

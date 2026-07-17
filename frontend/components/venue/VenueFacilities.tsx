@@ -341,7 +341,7 @@ export function VenueFacilities({ data, onSave }: VenueFacilitiesProps) {
       {/* Header */}
       <div className="border-b border-border/50 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-0.5">
-          <h2 className="text-xl font-bold text-white">Amenities & Facilities Management</h2>
+          <h2 className="text-xl font-bold text-text-primary">Amenities & Facilities Management</h2>
           <p className="text-xs text-text-secondary">Enable default spaces/utilities, input capacities, and configure custom facilities.</p>
         </div>
         <Button 
@@ -374,7 +374,7 @@ export function VenueFacilities({ data, onSave }: VenueFacilitiesProps) {
             <select 
               value={categoryFilter} 
               onChange={e => setCategoryFilter(e.target.value as any)}
-              className="h-8.5 px-2.5 rounded-lg border border-border bg-bg-card text-white text-[11px]"
+              className="h-8.5 px-2.5 rounded-lg border border-border bg-bg-card text-text-primary text-[11px]"
             >
               <option value="All">All Categories</option>
               <option value="Space">Halls & Spaces</option>
@@ -391,7 +391,7 @@ export function VenueFacilities({ data, onSave }: VenueFacilitiesProps) {
             <select 
               value={statusFilter} 
               onChange={e => setStatusFilter(e.target.value as any)}
-              className="h-8.5 px-2.5 rounded-lg border border-border bg-bg-card text-white text-[11px]"
+              className="h-8.5 px-2.5 rounded-lg border border-border bg-bg-card text-text-primary text-[11px]"
             >
               <option value="All">All Statuses</option>
               <option value="Active">Active Only</option>
@@ -407,7 +407,7 @@ export function VenueFacilities({ data, onSave }: VenueFacilitiesProps) {
         
         {/* Left Column: Standard checklist selector */}
         <div className="space-y-4">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
             <Sliders className="h-4.5 w-4.5 text-primary" />
             Standard Checklist
           </h3>
@@ -430,7 +430,7 @@ export function VenueFacilities({ data, onSave }: VenueFacilitiesProps) {
                       <IconComp className="h-4 w-4" />
                     </span>
                     <div>
-                      <p className="text-xs font-bold text-white leading-snug">{fac.label}</p>
+                      <p className="text-xs font-bold text-text-primary leading-snug">{fac.label}</p>
                       <p className="text-[10px] text-text-muted capitalize">{fac.category} Category</p>
                     </div>
                   </div>
@@ -457,7 +457,7 @@ export function VenueFacilities({ data, onSave }: VenueFacilitiesProps) {
 
         {/* Right Column: Specifications Forms for Active Facilities */}
         <div className="space-y-6">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
             <Sliders className="h-4.5 w-4.5 text-primary" />
             Active Specifications
           </h3>
@@ -474,7 +474,7 @@ export function VenueFacilities({ data, onSave }: VenueFacilitiesProps) {
                   <CardContent className="p-4 space-y-3">
                     <div className="flex items-center gap-2 border-b border-border/30 pb-2">
                       <fac.icon className="h-4 w-4 text-primary" />
-                      <span className="text-xs font-bold text-white">{fac.label} Details</span>
+                      <span className="text-xs font-bold text-text-primary">{fac.label} Details</span>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -487,7 +487,7 @@ export function VenueFacilities({ data, onSave }: VenueFacilitiesProps) {
                               <select
                                 value={val === "" ? "false" : String(val)}
                                 onChange={e => updateDetailField(fac.id, f.key, e.target.value === "true")}
-                                className="w-full h-8 px-2 rounded border border-border bg-bg-card text-white text-[11px]"
+                                className="w-full h-8 px-2 rounded border border-border bg-bg-card text-text-primary text-[11px]"
                               >
                                 <option value="false">No / Disabled</option>
                                 <option value="true">Yes / Enabled</option>
@@ -525,7 +525,7 @@ export function VenueFacilities({ data, onSave }: VenueFacilitiesProps) {
       {showCustomSection && (
         <div className="pt-6 border-t border-border/50 space-y-4">
           <div className="space-y-1">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
               <Grid className="h-4.5 w-4.5 text-primary" />
               Add Custom Venue Facilities
             </h3>
@@ -567,7 +567,7 @@ export function VenueFacilities({ data, onSave }: VenueFacilitiesProps) {
                   <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] py-0.5 uppercase font-bold">
                     Custom Spec
                   </Badge>
-                  <p className="text-xs font-bold text-white">{custom.name}</p>
+                  <p className="text-xs font-bold text-text-primary">{custom.name}</p>
                   <p className="text-[10px] text-text-secondary leading-snug">{custom.desc || "No specifications description"}</p>
                 </div>
 

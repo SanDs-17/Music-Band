@@ -49,7 +49,7 @@ export function BookingTimeline({ events }: BookingTimelineProps) {
 
           <div className="space-y-1">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-              <span className="text-xs font-bold text-white tracking-tight capitalize">
+              <span className="text-xs font-bold text-text-primary tracking-tight capitalize">
                 {ev.message}
               </span>
               <span className="text-[10px] text-text-muted">
@@ -58,7 +58,7 @@ export function BookingTimeline({ events }: BookingTimelineProps) {
             </div>
             <div className="flex items-center gap-1.5 text-[10px] text-text-secondary">
               <span>Initiated by:</span>
-              <span className="bg-bg-elevated border border-border/50 px-1.5 py-0.5 rounded text-white capitalize text-[9px] font-semibold">
+              <span className="bg-bg-elevated border border-border/50 px-1.5 py-0.5 rounded text-text-primary capitalize text-[9px] font-semibold">
                 {ev.created_by_role}
               </span>
             </div>

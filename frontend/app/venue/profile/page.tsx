@@ -219,7 +219,7 @@ export default function VenueProfilePage() {
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <h1 className="text-2xl font-extrabold text-white tracking-tight">
+        <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">
           Venue Space Management
         </h1>
         <p className="text-xs text-text-secondary">

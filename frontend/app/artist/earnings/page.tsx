@@ -76,7 +76,7 @@ export default function ArtistEarningsPage() {
       {/* Header Panel */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-extrabold text-text-primary tracking-tight flex items-center gap-2">
             <Wallet className="h-6 w-6 text-primary" />
             Earnings & Wallet Ledger
           </h1>
@@ -117,7 +117,7 @@ export default function ArtistEarningsPage() {
             <Wallet className="h-5 w-5 text-primary" />
           </div>
           <div className="space-y-1">
-            <span className="text-2xl font-black text-white block">
+            <span className="text-2xl font-black text-text-primary block">
               {formatCurrency(data.wallet_balance)}
             </span>
             <span className="text-[10px] text-text-muted block">Direct bank payout active</span>
@@ -131,7 +131,7 @@ export default function ArtistEarningsPage() {
             <DollarSign className="h-5 w-5 text-emerald-400" />
           </div>
           <div className="space-y-1">
-            <span className="text-2xl font-black text-white block">
+            <span className="text-2xl font-black text-text-primary block">
               {formatCurrency(data.total_earnings)}
             </span>
             <span className="text-[10px] text-text-muted block">Includes platform commissions</span>
@@ -145,7 +145,7 @@ export default function ArtistEarningsPage() {
             <TrendingUp className="h-5 w-5 text-blue-400" />
           </div>
           <div className="space-y-1">
-            <span className="text-2xl font-black text-white block">
+            <span className="text-2xl font-black text-text-primary block">
               {formatCurrency(data.monthly_earnings)}
             </span>
             <span className="text-[10px] text-text-muted block">Resets on next calendar month</span>
@@ -159,7 +159,7 @@ export default function ArtistEarningsPage() {
             <Clock className="h-5 w-5 text-amber-400" />
           </div>
           <div className="space-y-1">
-            <span className="text-2xl font-black text-white block">
+            <span className="text-2xl font-black text-text-primary block">
               {formatCurrency(data.pending_payments)}
             </span>
             <span className="text-[10px] text-text-muted block">Gigs awaiting completion</span>
@@ -175,7 +175,7 @@ export default function ArtistEarningsPage() {
         <div className="lg:col-span-1 space-y-6">
           <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-5 rounded-2xl shadow-xl">
             <CardHeader className="p-0 pb-4 border-b border-border/40">
-              <CardTitle className="text-sm font-bold uppercase tracking-wider text-white">
+              <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary">
                 Monthly Performance
               </CardTitle>
             </CardHeader>
@@ -192,7 +192,7 @@ export default function ArtistEarningsPage() {
                   const percent = (point.revenue / maxRevenue) * 100;
                   return (
                     <div key={idx} className="flex-1 flex flex-col items-center h-full justify-end group cursor-pointer relative z-10">
-                      <span className="opacity-0 group-hover:opacity-100 absolute -top-5 text-[8px] bg-bg-elevated border border-border px-1 py-0.5 rounded text-white font-black z-20 transition-opacity">
+                      <span className="opacity-0 group-hover:opacity-100 absolute -top-5 text-[8px] bg-bg-elevated border border-border px-1 py-0.5 rounded text-text-primary font-black z-20 transition-opacity">
                         {formatCurrency(point.revenue)}
                       </span>
                       <div 
@@ -209,7 +209,7 @@ export default function ArtistEarningsPage() {
 
           {/* Special Actions triggers */}
           <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-5 rounded-2xl shadow-xl space-y-4">
-            <h4 className="text-xs font-bold uppercase text-white tracking-wider">Reports & Statements</h4>
+            <h4 className="text-xs font-bold uppercase text-text-primary tracking-wider">Reports & Statements</h4>
             <div className="space-y-2">
               <Button 
                 onClick={handleDownloadStatement}
@@ -227,7 +227,7 @@ export default function ArtistEarningsPage() {
         <div className="lg:col-span-2">
           <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl overflow-hidden shadow-xl">
             <CardHeader className="pb-3 border-b border-border/50 bg-bg-elevated/10">
-              <CardTitle className="text-sm font-bold uppercase tracking-wider text-white">
+              <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary">
                 Ledger Transaction History
               </CardTitle>
             </CardHeader>
@@ -246,13 +246,13 @@ export default function ArtistEarningsPage() {
                   {data.transactions.map(tx => (
                     <tr key={tx.id} className="hover:bg-bg-elevated/10 transition-colors">
                       <td className="p-4">
-                        <span className="font-bold text-white block">{tx.description || "Inbound booking payout"}</span>
+                        <span className="font-bold text-text-primary block">{tx.description || "Inbound booking payout"}</span>
                         <span className="text-[10px] text-text-muted block mt-0.5">ID: {tx.id.slice(0, 8)}...</span>
                       </td>
                       <td className="p-4 font-semibold text-text-secondary">
                         {format(new Date(tx.created_at), "dd MMM yyyy HH:mm")}
                       </td>
-                      <td className="p-4 font-black text-white">
+                      <td className="p-4 font-black text-text-primary">
                         {formatCurrency(tx.amount)}
                       </td>
                       <td className="p-4 font-bold">
@@ -290,7 +290,7 @@ export default function ArtistEarningsPage() {
       {showTaxModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <Card className="bg-bg-card border border-border/80 max-w-md w-full rounded-2xl shadow-2xl p-6 relative">
-            <h3 className="text-lg font-black text-white flex items-center gap-2">
+            <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
               <FileText className="h-5.5 w-5.5 text-primary" />
               Annual Tax Summary (Estimate)
             </h3>
@@ -302,7 +302,7 @@ export default function ArtistEarningsPage() {
             <div className="mt-5 space-y-3.5 divide-y divide-border/40 text-xs">
               <div className="flex justify-between items-center py-2.5">
                 <span className="text-text-secondary">Gross Platform Sales</span>
-                <span className="font-bold text-white">{formatCurrency(data.total_earnings)}</span>
+                <span className="font-bold text-text-primary">{formatCurrency(data.total_earnings)}</span>
               </div>
               <div className="flex justify-between items-center py-2.5">
                 <span className="text-text-secondary">Deductible Commission (10%)</span>
@@ -310,11 +310,11 @@ export default function ArtistEarningsPage() {
               </div>
               <div className="flex justify-between items-center py-2.5">
                 <span className="text-text-secondary">Net Taxable Revenue</span>
-                <span className="font-bold text-white">{formatCurrency(data.total_earnings * 0.9)}</span>
+                <span className="font-bold text-text-primary">{formatCurrency(data.total_earnings * 0.9)}</span>
               </div>
               <div className="flex justify-between items-center py-2.5">
                 <span className="text-text-secondary">Estimated Tax Bracket Liability</span>
-                <span className="font-bold text-white">Zone Specific (Calculated at withdrawal)</span>
+                <span className="font-bold text-text-primary">Zone Specific (Calculated at withdrawal)</span>
               </div>
             </div>
 

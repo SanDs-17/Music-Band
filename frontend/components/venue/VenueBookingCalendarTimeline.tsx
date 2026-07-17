@@ -75,7 +75,7 @@ export function VenueBookingCalendarTimeline({
         {/* Header Nav */}
         <div className="flex items-center justify-between pb-2 border-b border-border/30">
           <div className="space-y-0.5">
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+            <h3 className="text-sm font-bold text-text-primary uppercase tracking-wider flex items-center gap-1.5">
               <CalendarIcon className="h-4.5 w-4.5 text-primary" />
               Event Schedule Grid
             </h3>
@@ -153,7 +153,7 @@ export function VenueBookingCalendarTimeline({
         {/* Selected Day Bookings Drawer Info */}
         {selectedDate && (
           <div className="mt-4 pt-4 border-t border-border/40 space-y-2 text-xs">
-            <p className="font-bold text-white uppercase tracking-wider text-[10px] text-text-secondary">
+            <p className="font-bold text-text-primary uppercase tracking-wider text-[10px] text-text-secondary">
               Selected Day: {format(selectedDate, "do MMMM, yyyy")}
             </p>
 
@@ -165,7 +165,7 @@ export function VenueBookingCalendarTimeline({
                   className="p-3 border border-border/80 bg-bg-elevated/10 hover:bg-bg-elevated/20 cursor-pointer rounded-xl flex items-center justify-between transition-all"
                 >
                   <div className="space-y-1">
-                    <p className="font-bold text-white text-xs">{b.event_name}</p>
+                    <p className="font-bold text-text-primary text-xs">{b.event_name}</p>
                     <div className="flex items-center gap-3 text-[10px] text-text-muted">
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
@@ -192,7 +192,7 @@ export function VenueBookingCalendarTimeline({
       {/* Right Column: Upcoming Timeline List */}
       <div className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-5 rounded-2xl shadow-xl flex flex-col space-y-4">
         <div className="border-b border-border/30 pb-2">
-          <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+          <h3 className="text-sm font-bold text-text-primary uppercase tracking-wider flex items-center gap-1.5">
             <ListOrdered className="h-4.5 w-4.5 text-primary" />
             Upcoming Reservations
           </h3>
@@ -215,7 +215,7 @@ export function VenueBookingCalendarTimeline({
                 </span>
               </div>
 
-              <p className="text-xs font-bold text-white truncate leading-snug">{b.event_name}</p>
+              <p className="text-xs font-bold text-text-primary truncate leading-snug">{b.event_name}</p>
 
               <div className="flex flex-col gap-1 text-[10px] text-text-secondary pt-0.5">
                 <span className="flex items-center gap-1">

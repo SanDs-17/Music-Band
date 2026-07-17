@@ -50,7 +50,7 @@ export default function VenueAnalyticsPage() {
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-extrabold text-text-primary tracking-tight flex items-center gap-2">
             <TrendingUp className="h-6.5 w-6.5 text-primary" />
             Venue Analytics Hub
           </h1>
@@ -77,7 +77,7 @@ export default function VenueAnalyticsPage() {
           <CardContent className="p-5 flex items-center justify-between">
             <div className="space-y-1">
               <span className="text-[10px] uppercase font-bold text-text-muted">Occupancy Rate</span>
-              <p className="text-2xl font-black text-white leading-none">
+              <p className="text-2xl font-black text-text-primary leading-none">
                 {data.occupancy_rate.toFixed(1)}%
               </p>
               <p className="text-[9px] text-text-secondary">This calendar month</p>
@@ -109,7 +109,7 @@ export default function VenueAnalyticsPage() {
           <CardContent className="p-5 flex items-center justify-between">
             <div className="space-y-1">
               <span className="text-[10px] uppercase font-bold text-text-muted">Average Rating</span>
-              <p className="text-2xl font-black text-white leading-none">
+              <p className="text-2xl font-black text-text-primary leading-none">
                 {data.average_rating.toFixed(1)} / 5
               </p>
               <p className="text-[9px] text-text-secondary">Across client reviews</p>
@@ -125,7 +125,7 @@ export default function VenueAnalyticsPage() {
           <CardContent className="p-5 flex items-center justify-between">
             <div className="space-y-1">
               <span className="text-[10px] uppercase font-bold text-text-muted">Total Bookings</span>
-              <p className="text-2xl font-black text-white leading-none">
+              <p className="text-2xl font-black text-text-primary leading-none">
                 {data.total_bookings}
               </p>
               <p className="text-[9px] text-text-secondary">All-time reservations</p>
@@ -141,7 +141,7 @@ export default function VenueAnalyticsPage() {
           <CardContent className="p-5 flex items-center justify-between">
             <div className="space-y-1">
               <span className="text-[10px] uppercase font-bold text-text-muted">Profile Traffic</span>
-              <p className="text-2xl font-black text-white leading-none">
+              <p className="text-2xl font-black text-text-primary leading-none">
                 {data.venue_views.toLocaleString()}
               </p>
               <p className="text-[9px] text-text-secondary">Views in last 30 days</p>
@@ -187,7 +187,7 @@ export default function VenueAnalyticsPage() {
         {/* Popular Event Types */}
         <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow p-5">
           <div className="border-b border-border/30 pb-3 mb-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-text-primary flex items-center gap-1.5">
               <Award className="h-4.5 w-4.5 text-primary" />
               Popular Events
             </h3>
@@ -200,7 +200,7 @@ export default function VenueAnalyticsPage() {
               return (
                 <div key={idx} className="space-y-1">
                   <div className="flex justify-between text-xs font-semibold">
-                    <span className="text-white">{item.name}</span>
+                    <span className="text-text-primary">{item.name}</span>
                     <span className="text-text-secondary">{item.value} bookings</span>
                   </div>
                   <div className="h-1.5 w-full bg-border/30 rounded-full overflow-hidden">
@@ -218,7 +218,7 @@ export default function VenueAnalyticsPage() {
         {/* Top Clients */}
         <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow p-5">
           <div className="border-b border-border/30 pb-3 mb-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-text-primary flex items-center gap-1.5">
               <Users className="h-4.5 w-4.5 text-blue-400" />
               Top Clients
             </h3>
@@ -231,7 +231,7 @@ export default function VenueAnalyticsPage() {
               return (
                 <div key={idx} className="space-y-1">
                   <div className="flex justify-between text-xs font-semibold">
-                    <span className="text-white">{item.name}</span>
+                    <span className="text-text-primary">{item.name}</span>
                     <span className="text-text-secondary">{item.value} gigs</span>
                   </div>
                   <div className="h-1.5 w-full bg-border/30 rounded-full overflow-hidden">
@@ -249,7 +249,7 @@ export default function VenueAnalyticsPage() {
         {/* Top Cities */}
         <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow p-5">
           <div className="border-b border-border/30 pb-3 mb-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-text-primary flex items-center gap-1.5">
               <MapPin className="h-4.5 w-4.5 text-pink-400" />
               Top Cities
             </h3>
@@ -262,7 +262,7 @@ export default function VenueAnalyticsPage() {
               return (
                 <div key={idx} className="space-y-1">
                   <div className="flex justify-between text-xs font-semibold">
-                    <span className="text-white">{item.name}</span>
+                    <span className="text-text-primary">{item.name}</span>
                     <span className="text-text-secondary">{item.value} reservation(s)</span>
                   </div>
                   <div className="h-1.5 w-full bg-border/30 rounded-full overflow-hidden">
@@ -280,7 +280,7 @@ export default function VenueAnalyticsPage() {
         {/* Peak Seasons */}
         <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl shadow p-5">
           <div className="border-b border-border/30 pb-3 mb-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-text-primary flex items-center gap-1.5">
               <CalendarRange className="h-4.5 w-4.5 text-purple-400" />
               Peak Seasons
             </h3>
@@ -293,7 +293,7 @@ export default function VenueAnalyticsPage() {
               return (
                 <div key={idx} className="space-y-1">
                   <div className="flex justify-between text-xs font-semibold">
-                    <span className="text-white">{item.name}</span>
+                    <span className="text-text-primary">{item.name}</span>
                     <span className="text-text-secondary">{item.value} bookings</span>
                   </div>
                   <div className="h-1.5 w-full bg-border/30 rounded-full overflow-hidden">

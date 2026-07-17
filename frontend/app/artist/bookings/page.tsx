@@ -77,7 +77,7 @@ export default function ArtistBookingsCalendarPage() {
       {/* Header Panel */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-extrabold text-text-primary tracking-tight flex items-center gap-2">
             <CalendarDays className="h-6 w-6 text-primary" />
             Bookings & Calendar Control
           </h1>

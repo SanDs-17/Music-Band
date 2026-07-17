@@ -18,12 +18,34 @@ class BaseRepository(Generic[ModelType]):
     def __init__(self, model: Type[ModelType]):
         self.model = model
 
-    def get(self, db: Session, id: UUID) -> Optional[ModelType]:
-        """Fetch a record by its UUID key, ignoring soft-deleted entries."""
+    def get(self, db: Session, id: Any) -> Optional[ModelType]:
+        """
+        Fetch a record by its UUID key, ignoring soft-deleted entries.
+        Normalizes the id to either a UUID object (PostgreSQL) or string (SQLite)
+        so that tests using an in-memory SQLite database work correctly.
+        """
+        import uuid as _uuid
+        from sqlalchemy.dialects.postgresql import UUID as PG_UUID
+
+        # If id is already a UUID object, preserve it for PostgreSQL.
+        # For SQLite (which stores UUIDs as VARCHAR), we must use str().
+        col_type = self.model.__table__.c["id"].type if hasattr(self.model, "__table__") else None
+        if isinstance(col_type, PG_UUID):
+            # PostgreSQL native UUID — keep as UUID object
+            if isinstance(id, str):
+                try:
+                    id = _uuid.UUID(id)
+                except (ValueError, AttributeError):
+                    pass
+        else:
+            # SQLite or any other dialect — use plain string
+            id = str(id)
+
         return db.query(self.model).filter(
             self.model.id == id,
             self.model.deleted_at.is_(None)
         ).first()
+
 
     def get_all(self, db: Session) -> List[ModelType]:
         """Fetch all records that are not soft-deleted."""

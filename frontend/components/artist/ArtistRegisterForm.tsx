@@ -16,13 +16,13 @@ import { artistService } from "@/services/artistService";
 import toast from "react-hot-toast";
 
 const STEPS = [
-  "Account",
   "Basic Info",
-  "Band Details",
+  "Band details",
   "Pricing",
   "Equipment",
   "Media",
   "Availability",
+  "Verification",
   "Submit"
 ];
 
@@ -45,10 +45,7 @@ export function ArtistRegisterForm() {
     resolver: zodResolver(artistRegisterSchema),
     mode: "onChange",
     defaultValues: {
-      email: "",
       mobile_number: "",
-      password: "",
-      confirmPassword: "",
       name: "",
       display_name: "",
       description: "",
@@ -91,6 +88,10 @@ export function ArtistRegisterForm() {
         holidays: [],
         blocked_dates: []
       },
+      documents: {
+        govt_id_number: "",
+        doc_govt_id: ""
+      },
       acceptTerms: false
     }
   });
@@ -105,24 +106,25 @@ export function ArtistRegisterForm() {
   const watchedWeeklySchedule = watch("availability.weekly_schedule") || {};
   const watchedProfileImage = watch("profile_image");
   const watchedCoverImage = watch("cover_image");
+  const watchedDocuments = watch("documents") || { govt_id_number: "", doc_govt_id: "" };
 
   // Step fields validation before going forward
   const getStepFields = (step: number): (keyof ArtistRegisterFormData)[] => {
     switch (step) {
       case 1:
-        return ["email", "mobile_number", "password", "confirmPassword"];
+        return ["mobile_number", "name", "display_name", "description", "years_of_experience"];
       case 2:
-        return ["name", "display_name", "description", "years_of_experience"];
-      case 3:
         return ["band_type", "total_members", "languages", "genres"];
-      case 4:
+      case 3:
         return ["base_rate", "currency", "travel_radius", "travel_charges", "min_booking_hours", "max_booking_hours"];
-      case 5:
+      case 4:
         return ["equipment"];
+      case 5:
+        return ["profile_image", "cover_image", "gallery", "videos", "youtube_links"];
       case 6:
-        return ["gallery", "videos", "youtube_links"];
-      case 7:
         return ["availability"];
+      case 7:
+        return ["documents"];
       case 8:
         return ["acceptTerms"];
       default:
@@ -197,12 +199,36 @@ export function ArtistRegisterForm() {
 
   const onSubmit = async (data: ArtistRegisterFormData) => {
     try {
-      await artistService.register(data);
+      const payload = {
+        display_name: data.display_name,
+        mobile_number: data.mobile_number,
+        bio: data.description || "",
+        years_of_experience: Number(data.years_of_experience) || 0,
+        profile_image: data.profile_image || null,
+        cover_image: data.cover_image || null,
+        band_type: data.band_type,
+        total_members: Number(data.total_members) || 1,
+        languages: data.languages,
+        genres: data.genres,
+        base_rate: Number(data.base_rate) || 0.0,
+        currency: data.currency,
+        travel_radius: Number(data.travel_radius) || 0.0,
+        travel_charges: Number(data.travel_charges) || 0.0,
+        min_booking_hours: Number(data.min_booking_hours) || 0.0,
+        max_booking_hours: Number(data.max_booking_hours) || 0.0,
+        equipment: data.equipment,
+        availability: data.availability,
+        gallery: data.gallery,
+        videos: data.videos,
+        youtube_links: data.youtube_links,
+        documents: data.documents
+      };
+      await artistService.createProfile(payload);
       setIsSuccess(true);
-      toast.success("Band registration submitted successfully!");
+      toast.success("Band profile onboarding completed successfully!");
     } catch (err) {
       const error = err as { response?: { data?: { error?: { message?: string } } } };
-      const errMsg = error.response?.data?.error?.message || "Registration failed. Please try again.";
+      const errMsg = error.response?.data?.error?.message || "Profile creation failed. Please try again.";
       toast.error(errMsg);
     }
   };
@@ -213,20 +239,20 @@ export function ArtistRegisterForm() {
         <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-full text-emerald-400">
           <CheckCircle2 className="h-16 w-16" />
         </div>
-        <h1 className="text-3xl font-extrabold text-text-primary tracking-tight">Onboarding Request Received!</h1>
+        <h1 className="text-3xl font-extrabold text-text-primary tracking-tight">Onboarding Profile Completed!</h1>
         <p className="text-text-secondary text-base leading-relaxed">
-          Thank you for registering your profile on BandConnect. Your request is currently under review by our admin team.
+          Thank you for setting up your artist profile on BandConnect. Your request is currently under review by our admin team.
         </p>
         <div className="bg-bg-elevated/40 border border-border/80 w-full p-4 rounded-xl text-left space-y-2">
           <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider">What happens next?</h4>
           <ul className="text-xs text-text-secondary space-y-1 list-disc pl-5">
             <li>Our moderation team will verify your details, photos, and links.</li>
-          <li>We&apos;ll contact you at <span className="text-text-primary font-medium">{watch("email")}</span> if we need additional info.</li>
-          <li>Once approved, you&apos;ll receive login credentials to access your Band Dashboard!</li>
+            <li>You can now view your bookings and configure dashboard items.</li>
+            <li>Once approved, your profile will become visible to all event hosts on the public marketplace!</li>
           </ul>
         </div>
-        <Button onClick={() => window.location.href = "/login"} className="w-full font-bold h-11 bg-primary text-white hover:bg-primary/90 mt-4">
-          Go to Login Screen
+        <Button onClick={() => window.location.href = "/artist/dashboard"} className="w-full font-bold h-11 bg-primary text-white hover:bg-primary/90 mt-4">
+          Go to Dashboard
         </Button>
       </div>
     );
@@ -250,17 +276,23 @@ export function ArtistRegisterForm() {
       {/* Main Form container */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         
-        {/* STEP 1: ACCOUNT DETAILS */}
+        {/* STEP 1: PROFILE DETAILS */}
         {currentStep === 1 && (
           <div className="space-y-4 transition-all duration-300">
-            <h2 className="text-xl font-bold text-text-primary">Step 1: Account Information</h2>
-            <p className="text-xs text-text-secondary">Setup your account credentials to log in.</p>
+            <h2 className="text-xl font-bold text-text-primary">Step 1: Profile Information</h2>
+            <p className="text-xs text-text-secondary">Please enter your display details and contact number.</p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" placeholder="band@example.com" {...register("email")} />
-                {errors.email && <p className="text-xs text-error font-medium">{errors.email.message}</p>}
+                <Label htmlFor="name">Artist / Band Name</Label>
+                <Input id="name" placeholder="E.g. The Acoustic Trio" {...register("name")} />
+                {errors.name && <p className="text-xs text-error font-medium">{errors.name.message}</p>}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="display_name">Display Name (Slug-friendly)</Label>
+                <Input id="display_name" placeholder="E.g. theacoustictrio" {...register("display_name")} />
+                {errors.display_name && <p className="text-xs text-error font-medium">{errors.display_name.message}</p>}
               </div>
 
               <div className="space-y-1.5">
@@ -270,71 +302,14 @@ export function ArtistRegisterForm() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" placeholder="••••••••" {...register("password")} />
-                {errors.password && <p className="text-xs text-error font-medium">{errors.password.message}</p>}
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input id="confirmPassword" type="password" placeholder="••••••••" {...register("confirmPassword")} />
-                {errors.confirmPassword && <p className="text-xs text-error font-medium">{errors.confirmPassword.message}</p>}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 2: BASIC INFO */}
-        {currentStep === 2 && (
-          <div className="space-y-4 transition-all duration-300">
-            <h2 className="text-xl font-bold text-text-primary">Step 2: Basic Profile Information</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="name">Band / Artist Name</Label>
-                  <Input id="name" placeholder="E.g. The Acoustic Trio" {...register("name")} />
-                  {errors.name && <p className="text-xs text-error font-medium">{errors.name.message}</p>}
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="display_name">Display Name (Slug-friendly)</Label>
-                  <Input id="display_name" placeholder="E.g. theacoustictrio" {...register("display_name")} />
-                  {errors.display_name && <p className="text-xs text-error font-medium">{errors.display_name.message}</p>}
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="years_of_experience">Years of Experience</Label>
-                  <Input 
-                    id="years_of_experience" 
-                    type="number" 
-                    placeholder="E.g. 5" 
-                    {...register("years_of_experience", { valueAsNumber: true })} 
-                  />
-                  {errors.years_of_experience && <p className="text-xs text-error font-medium">{errors.years_of_experience.message}</p>}
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label>Profile Picture</Label>
-                  <ImageUpload 
-                    value={watchedProfileImage} 
-                    onChange={(url) => setValue("profile_image", url, { shouldValidate: true })} 
-                    onRemove={() => setValue("profile_image", "")}
-                    subfolder="artists/avatars"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label>Cover Banner Image</Label>
-                  <ImageUpload 
-                    value={watchedCoverImage} 
-                    onChange={(url) => setValue("cover_image", url, { shouldValidate: true })} 
-                    onRemove={() => setValue("cover_image", "")}
-                    subfolder="artists/covers"
-                  />
-                </div>
+                <Label htmlFor="years_of_experience">Years of Experience</Label>
+                <Input 
+                  id="years_of_experience" 
+                  type="number" 
+                  placeholder="E.g. 5" 
+                  {...register("years_of_experience", { valueAsNumber: true })} 
+                />
+                {errors.years_of_experience && <p className="text-xs text-error font-medium">{errors.years_of_experience.message}</p>}
               </div>
             </div>
 
@@ -351,10 +326,10 @@ export function ArtistRegisterForm() {
           </div>
         )}
 
-        {/* STEP 3: BAND DETAILS */}
-        {currentStep === 3 && (
+        {/* STEP 2: BAND DETAILS */}
+        {currentStep === 2 && (
           <div className="space-y-6 transition-all duration-300">
-            <h2 className="text-xl font-bold text-text-primary">Step 3: Performance Details</h2>
+            <h2 className="text-xl font-bold text-text-primary">Step 2: Band details</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
@@ -436,14 +411,14 @@ export function ArtistRegisterForm() {
           </div>
         )}
 
-        {/* STEP 4: PRICING */}
-        {currentStep === 4 && (
+        {/* STEP 3: PRICING */}
+        {currentStep === 3 && (
           <div className="space-y-4 transition-all duration-300">
-            <h2 className="text-xl font-bold text-text-primary">Step 4: Pricing & Travel Charges</h2>
+            <h2 className="text-xl font-bold text-text-primary">Step 3: Pricing Details</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label htmlFor="base_rate">Starting Price (Hourly base rate)</Label>
+                <Label htmlFor="base_rate">Hourly Performance Rate (INR)</Label>
                 <div className="relative">
                   <Input id="base_rate" type="number" placeholder="E.g. 15000" {...register("base_rate", { valueAsNumber: true })} />
                   <span className="absolute right-3 top-2.5 text-xs text-text-muted font-bold">INR</span>
@@ -452,71 +427,80 @@ export function ArtistRegisterForm() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="travel_radius">Max Travel Radius (km from base city)</Label>
+                <Label htmlFor="travel_radius">Travel Radius (km)</Label>
                 <Input id="travel_radius" type="number" placeholder="E.g. 100" {...register("travel_radius", { valueAsNumber: true })} />
                 {errors.travel_radius && <p className="text-xs text-error font-medium">{errors.travel_radius.message}</p>}
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="travel_charges">Travel Surcharge (Per extra km)</Label>
-                <Input id="travel_charges" type="number" placeholder="E.g. 15" {...register("travel_charges", { valueAsNumber: true })} />
-                {errors.travel_charges && <p className="text-xs text-error font-medium">{errors.travel_charges.message}</p>}
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="min_booking_hours">Minimum Booking Hours</Label>
-                <Input id="min_booking_hours" type="number" placeholder="E.g. 2" {...register("min_booking_hours", { valueAsNumber: true })} />
-                {errors.min_booking_hours && <p className="text-xs text-error font-medium">{errors.min_booking_hours.message}</p>}
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="max_booking_hours">Maximum Booking Hours</Label>
-                <Input id="max_booking_hours" type="number" placeholder="E.g. 6" {...register("max_booking_hours", { valueAsNumber: true })} />
-                {errors.max_booking_hours && <p className="text-xs text-error font-medium">{errors.max_booking_hours.message}</p>}
-              </div>
+              <input type="hidden" {...register("travel_charges", { valueAsNumber: true })} />
+              <input type="hidden" {...register("min_booking_hours", { valueAsNumber: true })} />
+              <input type="hidden" {...register("max_booking_hours", { valueAsNumber: true })} />
             </div>
           </div>
         )}
 
-        {/* STEP 5: EQUIPMENT */}
-        {currentStep === 5 && (
-          <div className="space-y-4 transition-all duration-300">
-            <h2 className="text-xl font-bold text-text-primary">Step 5: Sound & Instruments Equipment</h2>
-            <p className="text-xs text-text-secondary">Indicate what hardware you bring to gigs by default.</p>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
-              {Object.keys(watchedEquipment).map((key) => {
-                const label = key.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase());
-                const isSelected = !!watchedEquipment[key as keyof typeof watchedEquipment];
-                return (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => handleEquipmentChange(key, !isSelected)}
-                    className={`h-20 flex flex-col items-center justify-center gap-1.5 rounded-xl border text-sm font-semibold transition-all ${
-                      isSelected
-                        ? "bg-primary/10 border-primary text-primary shadow-sm"
-                        : "bg-bg-elevated/20 border-border text-text-secondary hover:text-text-primary"
-                    }`}
-                  >
-                    <span className="capitalize">{label}</span>
-                    <span className={`text-[10px] uppercase font-bold tracking-wider ${isSelected ? "text-primary" : "text-text-muted"}`}>
-                      {isSelected ? "Included" : "N/A"}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* STEP 6: MEDIA */}
-        {currentStep === 6 && (
+        {/* STEP 4: EQUIPMENT */}
+        {currentStep === 4 && (
           <div className="space-y-6 transition-all duration-300">
-            <h2 className="text-xl font-bold text-text-primary">Step 6: Media Gallery & Demo Links</h2>
+            <h2 className="text-xl font-bold text-text-primary">Step 4: Sound & Instruments Equipment</h2>
+            <div className="space-y-3 pt-2">
+              <Label>Equipment Included in Performance Package (Select all that apply)</Label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {Object.keys(watchedEquipment).map((key) => {
+                  const label = key.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase());
+                  const isSelected = !!watchedEquipment[key as keyof typeof watchedEquipment];
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => handleEquipmentChange(key, !isSelected)}
+                      className={`h-20 flex flex-col items-center justify-center gap-1.5 rounded-xl border text-sm font-semibold transition-all ${
+                        isSelected
+                          ? "bg-primary/10 border-primary text-primary shadow-sm"
+                          : "bg-bg-elevated/20 border-border text-text-secondary hover:text-text-primary"
+                      }`}
+                    >
+                      <span className="capitalize">{label}</span>
+                      <span className={`text-[10px] uppercase font-bold tracking-wider ${isSelected ? "text-primary" : "text-text-muted"}`}>
+                        {isSelected ? "Included" : "N/A"}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 5: MEDIA */}
+        {currentStep === 5 && (
+          <div className="space-y-6 transition-all duration-300">
+            <h2 className="text-xl font-bold text-text-primary">Step 5: Media Gallery & Demo Links</h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-1.5">
+                <Label>Profile Picture</Label>
+                <ImageUpload 
+                  value={watchedProfileImage} 
+                  onChange={(url) => setValue("profile_image", url, { shouldValidate: true })} 
+                  onRemove={() => setValue("profile_image", "")}
+                  subfolder="artists/avatars"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Cover Banner Image</Label>
+                <ImageUpload 
+                  value={watchedCoverImage} 
+                  onChange={(url) => setValue("cover_image", url, { shouldValidate: true })} 
+                  onRemove={() => setValue("cover_image", "")}
+                  subfolder="artists/covers"
+                />
+              </div>
+            </div>
 
             {/* Gallery Section */}
-            <div className="space-y-3">
+            <div className="space-y-3 pt-2">
               <Label>Photos Showcase Gallery (Up to 4 images)</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[0, 1, 2, 3].map((idx) => {
@@ -587,10 +571,10 @@ export function ArtistRegisterForm() {
           </div>
         )}
 
-        {/* STEP 7: AVAILABILITY */}
-        {currentStep === 7 && (
+        {/* STEP 6: AVAILABILITY */}
+        {currentStep === 6 && (
           <div className="space-y-4 transition-all duration-300">
-            <h2 className="text-xl font-bold text-text-primary">Step 7: Weekly Performance Schedule</h2>
+            <h2 className="text-xl font-bold text-text-primary">Step 6: Weekly Performance Schedule</h2>
             <p className="text-xs text-text-secondary">Toggle days and set standard hours you&apos;re open for bookings.</p>
 
             <div className="border border-border rounded-2xl divide-y divide-border overflow-hidden bg-bg-card/45">
@@ -636,7 +620,45 @@ export function ArtistRegisterForm() {
           </div>
         )}
 
-        {/* STEP 8: TERMS */}
+        {/* STEP 7: VERIFICATION */}
+        {currentStep === 7 && (
+          <div className="space-y-6 transition-all duration-300">
+            <h2 className="text-xl font-bold text-text-primary">Step 7: Government Verification Details</h2>
+            <p className="text-xs text-text-secondary">
+              Upload your identification documents for administrative verification. Your details will be stored securely and will not be displayed on public marketplace endpoints.
+            </p>
+
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="govt_id_number">Government ID / Aadhaar Number</Label>
+                <Input 
+                  id="govt_id_number" 
+                  placeholder="E.g. Aadhaar, Driver License, Passport ID" 
+                  value={watchedDocuments.govt_id_number}
+                  onChange={(e) => setValue("documents.govt_id_number", e.target.value, { shouldValidate: true })}
+                />
+                {errors.documents?.govt_id_number && (
+                  <p className="text-xs text-error font-medium">{errors.documents.govt_id_number.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label>Upload Identification Document Copy</Label>
+                <ImageUpload 
+                  value={watchedDocuments.doc_govt_id} 
+                  onChange={(url) => setValue("documents.doc_govt_id", url, { shouldValidate: true })} 
+                  onRemove={() => setValue("documents.doc_govt_id", "")}
+                  subfolder="artists/documents"
+                />
+                {errors.documents?.doc_govt_id && (
+                  <p className="text-xs text-error font-medium">{errors.documents.doc_govt_id.message}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 8: SUBMIT */}
         {currentStep === 8 && (
           <div className="space-y-6 transition-all duration-300">
             <h2 className="text-xl font-bold text-text-primary">Step 8: Accept Terms & Submit Application</h2>
@@ -702,7 +724,7 @@ export function ArtistRegisterForm() {
               disabled={isSubmitting}
               className="flex items-center gap-1.5 h-10 bg-primary hover:bg-primary/95 text-white font-bold"
             >
-              {isSubmitting ? "Submitting Request..." : "Submit Registration"}
+              {isSubmitting ? "Submitting Details..." : "Complete Profile"}
             </Button>
           )}
         </div>

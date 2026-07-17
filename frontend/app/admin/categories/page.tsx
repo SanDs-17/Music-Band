@@ -279,7 +279,7 @@ export default function CategoryManagementPage() {
               ) : (
                 categories.map((cat) => (
                   <TableRow key={cat.id}>
-                    <TableCell className="font-bold text-white text-xs">{cat.name}</TableCell>
+                    <TableCell className="font-bold text-text-primary text-xs">{cat.name}</TableCell>
                     <TableCell className="text-text-secondary text-xs max-w-xs truncate">
                       {cat.description || <span className="text-text-muted">No description</span>}
                     </TableCell>
@@ -297,7 +297,7 @@ export default function CategoryManagementPage() {
                           onClick={() => handleOpenEdit(cat)}
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7 text-text-secondary hover:text-white"
+                          className="h-7 w-7 text-text-secondary hover:text-text-primary"
                           title="Edit Details"
                         >
                           <Edit2 className="h-3.5 w-3.5" />

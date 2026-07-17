@@ -67,6 +67,7 @@ class User(BaseModel):
     name = Column(String(150), nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
     is_verified = Column(Boolean, default=False, nullable=False)
+    last_verification_sent_at = Column(DateTime(timezone=True), nullable=True)
     
     roles = relationship("Role", secondary=user_roles, backref="users")
     refresh_tokens = relationship("RefreshToken", back_populates="user", cascade="all, delete-orphan")

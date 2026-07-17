@@ -68,6 +68,8 @@ class ArtistProfileCreateRequest(BaseSchema):
     years_of_experience: int = Field(0, ge=0)
     profile_image: Optional[str] = None
     cover_image: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
 
     # Band composition
     band_type: str = Field("Solo", description="Solo, Duo, Trio, 4 Members, 5+ Members")
@@ -95,6 +97,7 @@ class ArtistProfileCreateRequest(BaseSchema):
 
     # Availability
     availability: Dict[str, Any] = Field(default_factory=dict)
+    documents: Optional[Dict[str, Any]] = None
 
 
 class ArtistProfileResponse(BaseSchema):
@@ -112,6 +115,8 @@ class ArtistProfileResponse(BaseSchema):
     years_of_experience: int
     profile_image: Optional[str] = None
     cover_image: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
     band_type: str
     total_members: int
     currency: str
@@ -124,7 +129,7 @@ class ArtistProfileResponse(BaseSchema):
     social_links: Dict[str, str] = {}
     achievements: List[str] = []
     
-    documents: List[Dict[str, Any]] = []
+    documents: Optional[Dict[str, Any]] = None
     gallery: List[Any] = []
     videos: List[Any] = []
     youtube_links: List[str] = []
@@ -170,6 +175,7 @@ class SpecialOfferItem(BaseSchema):
 class PricingUpdate(BaseSchema):
     base_rate: float
     currency: str = "INR"
+    travel_radius: Optional[float] = 0.0
     travel_charges: float = 0.0
     min_booking_hours: float = 0.0
     max_booking_hours: float = 0.0
@@ -187,6 +193,8 @@ class ArtistProfileUpdate(BaseSchema):
     years_of_experience: Optional[int] = None
     profile_image: Optional[str] = None
     cover_image: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
     band_type: Optional[str] = None
     total_members: Optional[int] = None
     base_rate: Optional[float] = None
@@ -201,6 +209,7 @@ class ArtistProfileUpdate(BaseSchema):
     social_links: Optional[Dict[str, str]] = None
     achievements: Optional[List[str]] = None
     instagram_reels: Optional[List[str]] = None
+    documents: Optional[Dict[str, Any]] = None
 
 
 class ArtistVerificationUpdate(BaseSchema):

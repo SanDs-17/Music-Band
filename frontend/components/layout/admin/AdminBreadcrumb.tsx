@@ -12,9 +12,12 @@ export function AdminBreadcrumb() {
     const paths = pathname.split("/").filter(Boolean);
     return paths.map((path, idx) => {
       const href = "/" + paths.slice(0, idx + 1).join("/");
-      const label = path
+      let label = path
         .replace(/-/g, " ")
         .replace(/\b\w/g, (c) => c.toUpperCase());
+      if (label === "Dashboard") {
+        label = "Home";
+      }
       
       return { label, href, isLast: idx === paths.length - 1 };
     });

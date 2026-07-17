@@ -10,7 +10,7 @@ export default function ClientFavoritesPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="space-y-1">
-        <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
+        <h1 className="text-2xl font-black text-text-primary tracking-tight flex items-center gap-2">
           <Heart className="h-6 w-6 text-primary" />
           Favorite Performers
         </h1>
@@ -21,7 +21,7 @@ export default function ClientFavoritesPage() {
 
       <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 rounded-2xl overflow-hidden shadow-xl p-8 text-center flex flex-col items-center justify-center min-h-[40vh]">
         <Heart className="h-10 w-10 text-text-muted mb-3 animate-pulse" />
-        <h3 className="text-base font-extrabold text-white mb-1">Your Favorites List is Empty</h3>
+        <h3 className="text-base font-extrabold text-text-primary mb-1">Your Favorites List is Empty</h3>
         <p className="text-xs text-text-secondary max-w-sm mb-6 leading-relaxed">
           Browse the performer and venue directories to add bands or event spaces to your favorites layout.
         </p>

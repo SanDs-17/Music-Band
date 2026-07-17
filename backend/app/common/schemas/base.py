@@ -18,6 +18,8 @@ class SuccessResponse(BaseSchema, Generic[T]):
     success: bool = True
     data: Optional[T] = None
     message: str = "Request processed successfully."
+    email_sent: Optional[bool] = None
+
 
 
 class ErrorDetails(BaseSchema):

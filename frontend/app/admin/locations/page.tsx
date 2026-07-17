@@ -361,7 +361,7 @@ export default function LocationManagementPage() {
                     areas.map((area) => (
                       <TableRow key={area.id}>
                         <TableCell>
-                          <div className="font-bold text-white text-xs">{area.name}</div>
+                          <div className="font-bold text-text-primary text-xs">{area.name}</div>
                           <div className="text-[10px] text-text-secondary mt-0.5 font-mono">{area.pincode}</div>
                         </TableCell>
                         <TableCell className="text-xs">
@@ -385,7 +385,7 @@ export default function LocationManagementPage() {
                               onClick={() => handleOpenEditArea(area)}
                               variant="ghost"
                               size="icon"
-                              className="h-7 w-7 text-text-secondary hover:text-white"
+                              className="h-7 w-7 text-text-secondary hover:text-text-primary"
                               title="Edit Area details"
                             >
                               <Edit2 className="h-3.5 w-3.5" />

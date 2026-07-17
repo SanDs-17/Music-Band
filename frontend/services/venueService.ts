@@ -5,10 +5,16 @@ import { isPreviewActive, toastMutationBlocked } from "@/utils/dev-mode";
 import { mockVenueProfile, mockVenueDashboard, mockVenueAnalytics } from "@/utils/preview-fixtures";
 
 export const venueService = {
-  register: async (data: VenueRegisterFormData): Promise<VenueResponseData> => {
+  register: async (data: any): Promise<VenueResponseData> => {
     if (isPreviewActive()) return toastMutationBlocked();
-    const { confirmPassword, acceptTerms, ...payload } = data;
+    const { acceptTerms, ...payload } = data;
     const response = await api.post<any>("/venues/register", payload);
+    return response.data.data;
+  },
+
+  createProfile: async (data: Record<string, unknown>): Promise<VenueResponseData> => {
+    if (isPreviewActive()) return toastMutationBlocked();
+    const response = await api.post<any>("/venues/me", data);
     return response.data.data;
   },
 
@@ -158,5 +164,13 @@ export const venueService = {
     if (isPreviewActive()) return Promise.resolve(mockVenueProfile);
     const response = await api.get<any>(`/venues/${id}`);
     return response.data.data;
+  },
+
+  getPublicVenues: async (params?: Record<string, unknown>): Promise<{ venues: VenueResponseData[]; total: number }> => {
+    if (isPreviewActive()) return Promise.resolve({ venues: [mockVenueProfile], total: 1 });
+    const response = await api.get<any>("/venues", { params });
+    const d = response.data.data;
+    // Backend returns PaginatedVenueList { items: [...], total: N }
+    return { venues: d.items ?? d.venues ?? [], total: d.total ?? 0 };
   }
 };

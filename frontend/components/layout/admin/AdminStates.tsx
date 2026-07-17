@@ -48,7 +48,7 @@ export function AdminErrorLayout({ error, reset }: AdminErrorLayoutProps) {
       <div className="p-4 bg-destructive/10 rounded-full border border-destructive/20 text-destructive mb-6 animate-bounce">
         <AlertTriangle className="h-10 w-10" />
       </div>
-      <h3 className="text-xl font-bold text-white mb-2">Administrative Error Boundary</h3>
+      <h3 className="text-xl font-bold text-text-primary mb-2">Administrative Error Boundary</h3>
       <p className="text-sm text-text-secondary mb-6 max-w-md leading-relaxed">
         {error?.message || "An administrative process exception occurred. System operators have been notified."}
       </p>
@@ -75,7 +75,7 @@ export function AdminUnauthorizedLayout() {
       <div className="p-4 bg-primary/10 rounded-full border border-primary/20 text-primary mb-6 animate-pulse">
         <Lock className="h-10 w-10" />
       </div>
-      <h3 className="text-xl font-bold text-white mb-2">Restricted Access Areas</h3>
+      <h3 className="text-xl font-bold text-text-primary mb-2">Restricted Access Areas</h3>
       <p className="text-sm text-text-secondary mb-6 max-w-md leading-relaxed">
         You do not hold correct administrator credentials access permissions list claims. Please log in with authorized credentials.
       </p>

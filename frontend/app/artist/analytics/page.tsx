@@ -55,7 +55,7 @@ export default function ArtistAnalyticsPage() {
       {/* Header Panel */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-extrabold text-text-primary tracking-tight flex items-center gap-2">
             <BarChart3 className="h-6 w-6 text-primary" />
             Business Insights & Analytics
           </h1>
@@ -83,7 +83,7 @@ export default function ArtistAnalyticsPage() {
             <TrendingUp className="h-5 w-5 text-emerald-400" />
           </div>
           <div className="space-y-1">
-            <span className="text-2xl font-black text-white block">
+            <span className="text-2xl font-black text-text-primary block">
               +{data.booking_growth}%
             </span>
             <span className="text-[10px] text-emerald-400 block">Growth vs last calendar month</span>
@@ -97,7 +97,7 @@ export default function ArtistAnalyticsPage() {
             <TrendingUp className="h-5 w-5 text-emerald-400" />
           </div>
           <div className="space-y-1">
-            <span className="text-2xl font-black text-white block">
+            <span className="text-2xl font-black text-text-primary block">
               +{data.revenue_growth}%
             </span>
             <span className="text-[10px] text-emerald-400 block">Surcharge gains active</span>
@@ -111,7 +111,7 @@ export default function ArtistAnalyticsPage() {
             <Target className="h-5 w-5 text-primary" />
           </div>
           <div className="space-y-1">
-            <span className="text-2xl font-black text-white block">
+            <span className="text-2xl font-black text-text-primary block">
               {data.booking_conversion}%
             </span>
             <span className="text-[10px] text-text-muted block">Bookings / Profile views ratio</span>
@@ -125,7 +125,7 @@ export default function ArtistAnalyticsPage() {
             <Eye className="h-5 w-5 text-blue-400" />
           </div>
           <div className="space-y-1">
-            <span className="text-2xl font-black text-white block">
+            <span className="text-2xl font-black text-text-primary block">
               {data.profile_views}
             </span>
             <span className="text-[10px] text-text-muted block">Total unique listings hits</span>
@@ -139,7 +139,7 @@ export default function ArtistAnalyticsPage() {
         {/* Popular event types */}
         <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-5 rounded-2xl shadow-xl">
           <CardHeader className="p-0 pb-4 border-b border-border/40 mb-4">
-            <CardTitle className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+            <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
               <Music className="h-4.5 w-4.5 text-primary" />
               Popular Event Types
             </CardTitle>
@@ -150,7 +150,7 @@ export default function ArtistAnalyticsPage() {
               return (
                 <div key={item.name} className="space-y-1.5">
                   <div className="flex justify-between text-xs font-bold">
-                    <span className="text-white">{item.name}</span>
+                    <span className="text-text-primary">{item.name}</span>
                     <span className="text-text-secondary">{item.value} gigs</span>
                   </div>
                   <div className="h-2 rounded-full bg-border/40 overflow-hidden">
@@ -168,7 +168,7 @@ export default function ArtistAnalyticsPage() {
         {/* Top Cities */}
         <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-5 rounded-2xl shadow-xl">
           <CardHeader className="p-0 pb-4 border-b border-border/40 mb-4">
-            <CardTitle className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+            <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
               <MapPin className="h-4.5 w-4.5 text-primary" />
               Top Booking Cities
             </CardTitle>
@@ -179,7 +179,7 @@ export default function ArtistAnalyticsPage() {
               return (
                 <div key={item.name} className="space-y-1.5">
                   <div className="flex justify-between text-xs font-bold">
-                    <span className="text-white">{item.name}</span>
+                    <span className="text-text-primary">{item.name}</span>
                     <span className="text-text-secondary">{item.value} gigs</span>
                   </div>
                   <div className="h-2 rounded-full bg-border/40 overflow-hidden">
@@ -202,7 +202,7 @@ export default function ArtistAnalyticsPage() {
         {/* Peak booking times */}
         <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-5 rounded-2xl shadow-xl">
           <CardHeader className="p-0 pb-4 border-b border-border/40 mb-4">
-            <CardTitle className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+            <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
               <Clock className="h-4.5 w-4.5 text-primary" />
               Peak Booking Times
             </CardTitle>
@@ -213,7 +213,7 @@ export default function ArtistAnalyticsPage() {
               return (
                 <div key={t.time_slot} className="space-y-1.5">
                   <div className="flex justify-between text-xs font-bold">
-                    <span className="text-white">{t.time_slot}</span>
+                    <span className="text-text-primary">{t.time_slot}</span>
                     <span className="text-text-secondary">{t.count} gigs</span>
                   </div>
                   <div className="h-2 rounded-full bg-border/40 overflow-hidden">
@@ -231,7 +231,7 @@ export default function ArtistAnalyticsPage() {
         {/* Rating trends */}
         <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-5 rounded-2xl shadow-xl">
           <CardHeader className="p-0 pb-4 border-b border-border/40 mb-4">
-            <CardTitle className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+            <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
               <Award className="h-4.5 w-4.5 text-primary" />
               Average Rating Trends
             </CardTitle>
@@ -243,7 +243,7 @@ export default function ArtistAnalyticsPage() {
                 const percent = (pt.rating / 5) * 100;
                 return (
                   <div key={i} className="flex-1 flex flex-col items-center h-full justify-end group cursor-pointer relative">
-                    <span className="opacity-0 group-hover:opacity-100 absolute -top-5 text-[8px] bg-bg-elevated border border-border px-1 py-0.5 rounded text-white font-black z-20 transition-opacity">
+                    <span className="opacity-0 group-hover:opacity-100 absolute -top-5 text-[8px] bg-bg-elevated border border-border px-1 py-0.5 rounded text-text-primary font-black z-20 transition-opacity">
                       {pt.rating.toFixed(1)} ★
                     </span>
                     <div 
@@ -261,14 +261,14 @@ export default function ArtistAnalyticsPage() {
         {/* Client Demographics placeholder */}
         <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-5 rounded-2xl shadow-xl flex flex-col justify-between">
           <CardHeader className="p-0 pb-4 border-b border-border/40">
-            <CardTitle className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+            <CardTitle className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
               <Users className="h-4.5 w-4.5 text-primary" />
               Client Demographics
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0 pt-4 flex flex-col items-center justify-center text-center flex-1 space-y-2">
             <Users className="h-10 w-10 text-text-muted animate-pulse" />
-            <h4 className="text-xs font-bold text-white">Target segment analytics</h4>
+            <h4 className="text-xs font-bold text-text-primary">Target segment analytics</h4>
             <p className="text-[10px] text-text-secondary leading-relaxed max-w-[200px]">
               Demographics segmentation tracking will be enabled once your profile crosses 50 verified event bookings.
             </p>
