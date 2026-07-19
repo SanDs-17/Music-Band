@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { ArtistRegisterForm } from "@/components/artist/ArtistRegisterForm";
+import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
 
 export const metadata: Metadata = {
   title: "Register as Artist / Band | BandConnect",
@@ -8,8 +9,10 @@ export const metadata: Metadata = {
 
 export default function ArtistRegisterPage() {
   return (
-    <div className="container mx-auto py-10 px-4">
-      <ArtistRegisterForm />
-    </div>
+    <ProtectedRoute allowedRoles={["artist"]}>
+      <div className="container mx-auto py-10 px-4">
+        <ArtistRegisterForm />
+      </div>
+    </ProtectedRoute>
   );
 }

@@ -13,6 +13,7 @@ import { ErrorState } from "@/components/ui/error-state";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Eye, Edit3, Image as ImageIcon, DollarSign } from "lucide-react";
 import toast from "react-hot-toast";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface APIErrorResponse {
   response?: {
@@ -25,9 +26,26 @@ interface APIErrorResponse {
 }
 
 export default function ArtistProfilePage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
   const [profile, setProfile] = React.useState<ArtistProfile | null>(null);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<string | null>(null);
+
+  const [activeTab, setActiveTab] = React.useState<string>("edit");
+
+  React.useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    if (tabParam && ["edit", "media", "pricing", "preview"].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (val: string) => {
+    setActiveTab(val);
+    router.push(`/artist/profile?tab=${val}`, { scroll: false });
+  };
 
   const fetchProfile = React.useCallback(async () => {
     setLoading(true);
@@ -153,7 +171,7 @@ export default function ArtistProfilePage() {
         </p>
       </div>
 
-      <Tabs defaultValue="edit" className="w-full">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="bg-bg-elevated border border-border/80 p-1 rounded-xl flex gap-1 self-start max-w-xl mb-4">
           <TabsTrigger value="edit" className="flex items-center gap-1.5 text-xs py-2 px-3 rounded-lg w-1/4 justify-center">
             <Edit3 className="h-3.5 w-3.5" />

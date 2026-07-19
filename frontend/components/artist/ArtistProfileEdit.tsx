@@ -246,7 +246,7 @@ export function ArtistProfileEdit({ profile, onSuccess }: ArtistProfileEditProps
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="base_rate">Starting Price (Hourly)</Label>
+            <Label htmlFor="base_rate">Hourly Price</Label>
             <Input id="base_rate" type="number" {...register("base_rate", { valueAsNumber: true })} />
           </div>
 

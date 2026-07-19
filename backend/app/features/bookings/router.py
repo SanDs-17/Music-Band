@@ -13,6 +13,7 @@ from app.features.bookings.schemas import (
     BookingCreateRequest,
     BookingResponse,
     CounterOfferRequest,
+    BookingCancelRequest,
 )
 from app.features.bookings.service import booking_service
 from fastapi import APIRouter, Depends, Query, status
@@ -77,6 +78,43 @@ async def get_artist_bookings_list(
             "limit": limit,
         },
         message="Artist bookings list retrieved.",
+    )
+
+
+@router.get(
+    "/client",
+    response_model=SuccessResponse[dict],
+    status_code=status.HTTP_200_OK,
+    summary="Get bookings list for the authenticated client",
+)
+async def get_client_bookings_list(
+    status: Optional[str] = Query(
+        None,
+        description="Filter by pending, accepted, rejected, counter_offered, cancelled, completed",
+    ),
+    search: Optional[str] = Query(
+        None, description="Search by event name or location"
+    ),
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    current_user_claims: dict = Depends(get_current_client),
+    db: Session = Depends(get_db),
+):
+    """
+    Retrieves a paginated list of bookings and requests initiated by the client.
+    """
+    results, total = booking_service.get_client_bookings(
+        db, current_user_claims["sub"], status, search, page, limit
+    )
+    return SuccessResponse(
+        success=True,
+        data={
+            "bookings": [_format_booking_brief(b) for b in results],
+            "total": total,
+            "page": page,
+            "limit": limit,
+        },
+        message="Client bookings list retrieved.",
     )
 
 
@@ -172,10 +210,12 @@ async def counter_offer_booking_request(
 )
 async def cancel_booking_request(
     booking_id: UUID,
+    data: Optional[BookingCancelRequest] = None,
     current_user_claims: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    booking = booking_service.cancel_booking(db, current_user_claims["sub"], booking_id)
+    reason = data.reason if data else None
+    booking = booking_service.cancel_booking(db, current_user_claims["sub"], booking_id, reason)
     return SuccessResponse(
         success=True,
         data=_format_booking(booking),
@@ -314,11 +354,13 @@ async def complete_venue_booking_request(
 )
 async def cancel_venue_booking_request(
     booking_id: UUID,
+    data: Optional[BookingCancelRequest] = None,
     current_user_claims: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    reason = data.reason if data else None
     booking = booking_service.cancel_venue_booking(
-        db, current_user_claims["sub"], booking_id
+        db, current_user_claims["sub"], booking_id, reason
     )
     return SuccessResponse(
         success=True,
@@ -340,6 +382,11 @@ def _format_booking_brief(b) -> dict:
         except Exception:
             return str(val)[:5]
 
+    artist_profile = getattr(b, "artist_profile", None)
+    artist_name = getattr(artist_profile, "display_name", None) if artist_profile else None
+    venue = getattr(b, "venue", None)
+    venue_name = getattr(venue, "name", None) if venue else None
+
     return {
         "id": str(b.id),
         "event_name": b.event_name,
@@ -350,28 +397,43 @@ def _format_booking_brief(b) -> dict:
         "counter_price": float(b.counter_price) if b.counter_price else None,
         "status": b.status,
         "created_at": _as_iso(b.created_at),
+        "artist_profile_id": str(b.artist_profile_id) if b.artist_profile_id else None,
+        "venue_id": str(b.venue_id) if b.venue_id else None,
+        "artist_name": artist_name,
+        "venue_name": venue_name,
     }
 
 
 def _timeline_entry_to_dict(entry) -> dict:
     """Convert a timeline entry (dict, ORM object, or SimpleNamespace) to a plain dict."""
     if isinstance(entry, dict):
-        return entry
-    # Handle ORM models and SimpleNamespace objects via __dict__ or vars()
-    try:
-        raw = vars(entry)
-        # SQLAlchemy model instances include internal state keys — filter them
-        return {k: v for k, v in raw.items() if not k.startswith("_")}
-    except TypeError:
-        pass
-    # Fallback: build dict from known timeline fields via getattr
+        status_val = entry.get("status")
+        message_val = entry.get("message")
+        by_val = entry.get("created_by_role") or entry.get("by")
+        timestamp_val = entry.get("created_at") or entry.get("timestamp")
+        return {
+            "id": entry.get("id"),
+            "status": status_val,
+            "message": message_val,
+            "event_type": entry.get("event_type") or status_val,
+            "created_by_role": by_val,
+            "created_at": timestamp_val,
+            "timestamp": timestamp_val,
+            "by": by_val,
+        }
+    # Handle ORM models and SimpleNamespace objects via getattr
+    status_val = getattr(entry, "status", None)
+    timestamp_val = getattr(entry, "created_at", None) or getattr(entry, "timestamp", "")
+    by_val = getattr(entry, "created_by_role", None) or getattr(entry, "by", "")
     return {
         "id": getattr(entry, "id", None),
-        "status": getattr(entry, "status", None),
+        "status": status_val,
         "message": getattr(entry, "message", None),
-        "event_type": getattr(entry, "event_type", None),
-        "created_by_role": getattr(entry, "created_by_role", None),
-        "created_at": str(getattr(entry, "created_at", "")),
+        "event_type": getattr(entry, "event_type", None) or status_val,
+        "created_by_role": by_val,
+        "created_at": str(timestamp_val),
+        "timestamp": str(timestamp_val),
+        "by": str(by_val),
     }
 
 
@@ -380,6 +442,28 @@ def _format_booking(b) -> dict:
     # then fall back to `timeline_events` (ORM relationship rows).
     raw_timeline = getattr(b, "timeline", None) or getattr(b, "timeline_events", None) or []
     timeline = [_timeline_entry_to_dict(e) for e in raw_timeline]
+
+    artist_profile = getattr(b, "artist_profile", None)
+    artist_data = None
+    if artist_profile:
+        artist_data = {
+            "id": str(artist_profile.id),
+            "display_name": artist_profile.display_name,
+            "bio": getattr(artist_profile, "bio", None),
+            "base_rate": float(artist_profile.base_rate),
+            "rating": float(artist_profile.rating) if getattr(artist_profile, "rating", None) else 0.0,
+        }
+
+    venue = getattr(b, "venue", None)
+    venue_data = None
+    if venue:
+        venue_data = {
+            "id": str(venue.id),
+            "name": venue.name,
+            "address": venue.address,
+            "capacity": venue.capacity,
+            "base_price": float(venue.base_price),
+        }
 
     return {
         **_format_booking_brief(b),
@@ -390,7 +474,8 @@ def _format_booking(b) -> dict:
             "name": b.client.name,
             "email": b.client.email,
         },
-        # serialized timeline entries as plain dicts for frontend compatibility
+        "artist": artist_data,
+        "venue": venue_data,
         "timeline": timeline,
         "updated_at": (
             b.updated_at.isoformat()

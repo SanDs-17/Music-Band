@@ -3,17 +3,25 @@
 import * as React from "react";
 import { useArtistDashboard } from "@/hooks/use-artist-dashboard";
 import { StatsCards } from "@/components/artist/dashboard/StatsCards";
-import { QuickActionsWidget } from "@/components/artist/dashboard/QuickActionsWidget";
 import { UpcomingEventsWidget } from "@/components/artist/dashboard/UpcomingEventsWidget";
 import { BookingRequestsWidget } from "@/components/artist/dashboard/BookingRequestsWidget";
 import { ReviewsWidget } from "@/components/artist/dashboard/ReviewsWidget";
-import { NotificationsWidget } from "@/components/artist/dashboard/NotificationsWidget";
 import { RevenueChartWidget } from "@/components/artist/dashboard/RevenueChartWidget";
 import { Spinner } from "@/components/ui/spinner";
 import { ErrorState } from "@/components/ui/error-state";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, CircleDot } from "lucide-react";
 
+/**
+ * Artist Home — lightweight overview page.
+ *
+ * Changes from previous version:
+ *  - Removed QuickActionsWidget (belongs in Bookings sidebar navigation)
+ *  - Removed NotificationsWidget / Inbox widget (Inbox already in Sidebar nav)
+ *  - StatsCards reduced to 4 metrics: Upcoming, Monthly Revenue, Rating, Views
+ *  - Revenue chart bug fixed (empty-array guard)
+ *  - Booking statistics (Total, Pending) moved to Bookings page
+ */
 export default function ArtistDashboardPage() {
   const { data, loading, error, refetch } = useArtistDashboard();
 
@@ -22,7 +30,7 @@ export default function ArtistDashboardPage() {
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
         <Spinner className="h-10 w-10 text-primary" />
         <p className="text-sm text-text-secondary animate-pulse">
-          Loading performer metrics dashboard...
+          Loading your home overview...
         </p>
       </div>
     );
@@ -32,8 +40,8 @@ export default function ArtistDashboardPage() {
     return (
       <div className="flex items-center justify-center min-h-[65vh] p-4">
         <ErrorState 
-          title="Dashboard Load Failure"
-          message={error || "An unexpected error occurred while compiling your dashboard statistics."} 
+          title="Home Overview Load Failure"
+          message={error || "An unexpected error occurred while loading your home overview."} 
           onRetry={refetch}
         />
       </div>
@@ -46,10 +54,10 @@ export default function ArtistDashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">
-            Performer Console
+            Home
           </h1>
           <p className="text-xs text-text-secondary">
-            Realtime overview of your band performance statistics, events calendar, and inquiries.
+            Your BandConnect home — overview of your performance metrics, upcoming gigs, and recent reviews.
           </p>
         </div>
         <Button 
@@ -59,35 +67,34 @@ export default function ArtistDashboardPage() {
           className="flex items-center gap-1.5 self-start sm:self-center text-xs h-9"
         >
           <RefreshCw className="h-3.5 w-3.5" />
-          <span>Reload Console</span>
+          <span>Refresh</span>
         </Button>
       </div>
 
-      {/* 8 Stats Metrics */}
+      {/* 4 Lightweight Stat Cards */}
       <StatsCards stats={data} />
 
-      {/* Grid: Revenue Chart + Profile progress */}
+      {/* Revenue Chart + Profile Completion */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <RevenueChartWidget data={data.revenue_chart} />
         </div>
         <div className="space-y-6">
-          {/* Profile progress card */}
+          {/* Profile Completion Card */}
           <div className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-5 rounded-2xl shadow-xl flex flex-col justify-between h-full">
             <div className="space-y-2">
               <span className="text-xs font-bold text-text-secondary uppercase tracking-wider block">
-                Profile Completion Status
+                Profile Completion
               </span>
               <h3 className="text-lg font-extrabold text-text-primary">
                 Complete your setup to receive gigs!
               </h3>
               <p className="text-xs text-text-secondary leading-relaxed">
-                Add profile images, pricing details, availability hours, and instruments lists to stand out to event hosts.
+                Add profile images, pricing details, availability hours, and instruments to stand out to event hosts.
               </p>
             </div>
 
             <div className="py-4 flex items-center justify-center relative">
-              {/* Custom SVG completion circle */}
               <svg className="w-28 h-28 transform -rotate-90">
                 <circle
                   cx="56"
@@ -122,21 +129,14 @@ export default function ArtistDashboardPage() {
         </div>
       </div>
 
-      {/* Quick Actions Panel */}
-      <QuickActionsWidget />
-
-      {/* Events / Requests Grid */}
+      {/* Incoming Gigs + Recent Reviews */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <UpcomingEventsWidget events={data.upcoming_events} />
         <BookingRequestsWidget requests={data.recent_booking_requests} />
       </div>
 
-      {/* Feedback / Notification Log Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ReviewsWidget reviews={data.recent_reviews} />
-        <NotificationsWidget notifications={data.notifications} />
-      </div>
-
+      {/* Reviews */}
+      <ReviewsWidget reviews={data.recent_reviews} />
     </div>
   );
 }

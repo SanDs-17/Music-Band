@@ -26,6 +26,26 @@ class BookingBriefResponse(BaseSchema):
     counter_price: Optional[float] = None
     status: str
     created_at: datetime
+    artist_profile_id: Optional[UUID] = None
+    venue_id: Optional[UUID] = None
+    artist_name: Optional[str] = None
+    venue_name: Optional[str] = None
+
+
+class ArtistBriefResponse(BaseSchema):
+    id: UUID
+    display_name: str
+    bio: Optional[str] = None
+    base_rate: float
+    rating: float
+
+
+class VenueBriefResponse(BaseSchema):
+    id: UUID
+    name: str
+    address: str
+    capacity: int
+    base_price: float
 
 
 class BookingResponse(BookingBriefResponse):
@@ -34,6 +54,8 @@ class BookingResponse(BookingBriefResponse):
     client: ClientBriefResponse
     timeline: List[TimelineItem] = []
     updated_at: datetime
+    artist: Optional[ArtistBriefResponse] = None
+    venue: Optional[VenueBriefResponse] = None
 
 
 class BookingCreateRequest(BaseSchema):
@@ -51,3 +73,12 @@ class BookingCreateRequest(BaseSchema):
 class CounterOfferRequest(BaseSchema):
     counter_price: float
     message: Optional[str] = None
+
+
+class DisputeResolveRequest(BaseSchema):
+    status: str
+    message: Optional[str] = None
+
+
+class BookingCancelRequest(BaseSchema):
+    reason: Optional[str] = None

@@ -6,7 +6,7 @@ import { bookingService } from "@/services/bookingService";
 import { BookingStatusBadge } from "./BookingStatusBadge";
 import { BookingTimeline } from "./BookingTimeline";
 import { BookingInformationCard } from "./BookingInformationCard";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,6 +42,11 @@ export function BookingDetailsDialog({
   const [counterPrice, setCounterPrice] = React.useState<string>("");
   const [counterReason, setCounterReason] = React.useState<string>("");
 
+  // Cancellation confirm states
+  const [cancelConfirmOpen, setCancelConfirmOpen] = React.useState<boolean>(false);
+  const [cancelReason, setCancelReason] = React.useState<string>("");
+  const [cancelReasonError, setCancelReasonError] = React.useState<string | null>(null);
+
   const fetchBookingDetails = React.useCallback(async () => {
     setLoading(true);
     try {
@@ -61,7 +66,7 @@ export function BookingDetailsDialog({
     }
   }, [isOpen, bookingId, fetchBookingDetails]);
 
-  const handleStatusAction = async (action: "accept" | "reject" | "cancel" | "complete") => {
+  const handleStatusAction = async (action: "accept" | "reject" | "complete") => {
     setActioning(true);
     try {
       let res: BookingRequestDetail;
@@ -71,9 +76,6 @@ export function BookingDetailsDialog({
       } else if (action === "reject") {
         res = await bookingService.rejectBooking(bookingId);
         toast.success("Booking request rejected.");
-      } else if (action === "cancel") {
-        res = await bookingService.cancelBooking(bookingId);
-        toast.success("Booking cancelled.");
       } else {
         res = await bookingService.completeVenueBooking(bookingId);
         toast.success("Event marked as completed!");
@@ -83,6 +85,33 @@ export function BookingDetailsDialog({
     } catch (err) {
       const error = err as { response?: { data?: { error?: { message?: string } } } };
       const msg = error.response?.data?.error?.message || `Failed to perform ${action} action.`;
+      toast.error(msg);
+    } finally {
+      setActioning(false);
+    }
+  };
+
+  const handleCancelWithReason = async () => {
+    if (cancelReason.trim().length < 10) {
+      setCancelReasonError("Please provide a reason of at least 10 characters.");
+      return;
+    }
+    setCancelReasonError(null);
+    setActioning(true);
+    try {
+      let res: BookingRequestDetail;
+      if (booking?.venue_id) {
+        res = await bookingService.cancelVenueBooking(bookingId, cancelReason);
+      } else {
+        res = await bookingService.cancelBooking(bookingId, cancelReason);
+      }
+      toast.success("Booking request cancelled.");
+      setBooking(res);
+      setCancelConfirmOpen(false);
+      setCancelReason("");
+      if (onRefresh) onRefresh();
+    } catch (err: any) {
+      const msg = err.response?.data?.message || "Failed to cancel booking.";
       toast.error(msg);
     } finally {
       setActioning(false);
@@ -141,7 +170,8 @@ export function BookingDetailsDialog({
   const canComplete = booking && ["accepted", "confirmed"].includes(booking.status) && role !== "client";
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <>
+      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-bg-card border border-border rounded-2xl shadow-2xl p-6 text-xs text-text-secondary scrollbar-thin">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
@@ -296,7 +326,7 @@ export function BookingDetailsDialog({
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleStatusAction("cancel")}
+                      onClick={() => setCancelConfirmOpen(true)}
                       disabled={actioning}
                       className="border-border hover:bg-bg-elevated hover:text-text-primary font-bold h-9 text-xs flex items-center gap-1.5 cursor-pointer ml-auto"
                     >
@@ -377,5 +407,57 @@ export function BookingDetailsDialog({
         )}
       </DialogContent>
     </Dialog>
+
+    <Dialog open={cancelConfirmOpen} onOpenChange={setCancelConfirmOpen}>
+      <DialogContent className="bg-bg-card border border-border/80 max-w-md text-text-primary">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-base font-black tracking-tight text-text-primary">
+            Cancel Booking Request?
+          </DialogTitle>
+          <DialogDescription className="text-xs text-text-secondary mt-1">
+            Please provide a cancellation reason. This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-2 my-4">
+          <Label htmlFor="cancel_reason_dialog" className="text-xs font-bold text-text-primary">
+            Cancellation Rationale
+          </Label>
+          <textarea
+            id="cancel_reason_dialog"
+            placeholder="Provide cancellation rationale here..."
+            value={cancelReason}
+            onChange={(e) => setCancelReason(e.target.value)}
+            rows={3}
+            className="w-full p-3 rounded-lg border border-border bg-bg-primary/50 text-xs font-semibold focus-visible:ring-primary focus-visible:outline-none resize-none"
+          />
+          {cancelReasonError && (
+            <p className="text-[10px] font-bold text-red-500 animate-pulse">{cancelReasonError}</p>
+          )}
+        </div>
+
+        <DialogFooter className="gap-2 sm:gap-0">
+          <Button
+            variant="outline"
+            disabled={actioning}
+            onClick={() => {
+              setCancelConfirmOpen(false);
+              setCancelReasonError(null);
+            }}
+            className="border-border/60 hover:bg-bg-elevated/20 text-xs font-bold"
+          >
+            Keep Reservation
+          </Button>
+          <Button
+            disabled={actioning}
+            onClick={handleCancelWithReason}
+            className="bg-red-500 hover:bg-red-600 text-white text-xs font-bold"
+          >
+            {actioning ? "Cancelling..." : "Confirm Cancellation"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }

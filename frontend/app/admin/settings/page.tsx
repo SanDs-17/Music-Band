@@ -10,8 +10,11 @@ import {
   Globe,
   ChevronLeft,
   ChevronRight,
-  Eye
+  Eye,
+  Bell
 } from "lucide-react";
+import { NotificationPreferencesCard } from "@/components/notifications/NotificationPreferencesCard";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -41,6 +44,7 @@ const settingsTabs = [
   { label: "Application & Theme", value: "app_theme", icon: Settings },
   { label: "Templates config", value: "templates", icon: Mail },
   { label: "System Preferences", value: "preferences", icon: Sliders },
+  { label: "Notification Preferences", value: "notif_preferences", icon: Bell },
   { label: "Audit Logs history", value: "audit_logs", icon: Terminal },
 ];
 
@@ -420,6 +424,13 @@ export default function AdminSettingsPage() {
             </Button>
           </CardContent>
         </Card>
+      )}
+
+      {/* ─── TAB: NOTIFICATION PREFERENCES ────────────────────────── */}
+      {activeTab === "notif_preferences" && (
+        <div className="max-w-xl">
+          <NotificationPreferencesCard />
+        </div>
       )}
 
       {/* ─── TAB 4: AUDIT LOGS HISTORY FEED ──────────────────────────────────── */}

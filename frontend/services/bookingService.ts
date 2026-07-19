@@ -63,9 +63,9 @@ export const bookingService = {
     return response.data.data;
   },
 
-  cancelBooking: async (bookingId: string): Promise<BookingRequestDetail> => {
+  cancelBooking: async (bookingId: string, reason?: string): Promise<BookingRequestDetail> => {
     if (isPreviewActive()) return toastMutationBlocked();
-    const response = await api.put<any>(`/bookings/${bookingId}/cancel`);
+    const response = await api.put<any>(`/bookings/${bookingId}/cancel`, { reason });
     return response.data.data;
   },
 
@@ -104,15 +104,39 @@ export const bookingService = {
     return response.data.data;
   },
 
-  cancelVenueBooking: async (bookingId: string): Promise<BookingRequestDetail> => {
+  cancelVenueBooking: async (bookingId: string, reason?: string): Promise<BookingRequestDetail> => {
     if (isPreviewActive()) return toastMutationBlocked();
-    const response = await api.put<any>(`/bookings/venue/${bookingId}/cancel`);
+    const response = await api.put<any>(`/bookings/venue/${bookingId}/cancel`, { reason });
     return response.data.data;
   },
 
   addBookingNote: async (bookingId: string, content: string): Promise<any> => {
     if (isPreviewActive()) return toastMutationBlocked();
     const response = await api.post<any>(`/bookings/${bookingId}/notes`, { content });
+    return response.data.data;
+  },
+
+  adminGetBookings: async (params: {
+    status?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<BookingsListResponse> => {
+    if (isPreviewActive()) return Promise.resolve(mockBookingsList);
+    const response = await api.get<any>("/admin/bookings", { params });
+    return response.data.data;
+  },
+
+  adminResolveDispute: async (
+    bookingId: string,
+    status: string,
+    message?: string
+  ): Promise<BookingRequestDetail> => {
+    if (isPreviewActive()) return toastMutationBlocked();
+    const response = await api.put<any>(`/admin/bookings/${bookingId}/dispute`, {
+      status,
+      message
+    });
     return response.data.data;
   },
 };

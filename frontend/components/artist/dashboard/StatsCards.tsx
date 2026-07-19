@@ -3,12 +3,8 @@
 import * as React from "react";
 import { 
   Calendar, 
-  Clock, 
-  CheckSquare, 
   TrendingUp, 
-  DollarSign, 
   Star, 
-  CheckCircle, 
   Eye 
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,28 +26,12 @@ interface StatsCardsProps {
 export function StatsCards({ stats }: StatsCardsProps) {
   const cardData = [
     {
-      title: "Total Bookings",
-      value: stats.total_bookings,
-      description: "Lifetime gigs done",
-      icon: CheckSquare,
-      color: "text-blue-400",
-      bg: "bg-blue-500/10 border-blue-500/20"
-    },
-    {
       title: "Upcoming Events",
       value: stats.upcoming_events_count,
       description: "Confirmed upcoming gigs",
       icon: Calendar,
       color: "text-emerald-400",
       bg: "bg-emerald-500/10 border-emerald-500/20"
-    },
-    {
-      title: "Pending Requests",
-      value: stats.pending_requests_count,
-      description: "Awaiting your approval",
-      icon: Clock,
-      color: "text-amber-400",
-      bg: "bg-amber-500/10 border-amber-500/20"
     },
     {
       title: "Monthly Revenue",
@@ -62,28 +42,12 @@ export function StatsCards({ stats }: StatsCardsProps) {
       bg: "bg-purple-500/10 border-purple-500/20"
     },
     {
-      title: "Total Earnings",
-      value: formatCurrency(stats.total_earnings),
-      description: "Total revenue generated",
-      icon: DollarSign,
-      color: "text-indigo-400",
-      bg: "bg-indigo-500/10 border-indigo-500/20"
-    },
-    {
       title: "Average Rating",
-      value: `${stats.average_rating} / 5`,
+      value: `${stats.average_rating.toFixed(1)} / 5`,
       description: "Based on client reviews",
       icon: Star,
       color: "text-yellow-400",
       bg: "bg-yellow-500/10 border-yellow-500/20"
-    },
-    {
-      title: "Profile Completion",
-      value: `${stats.profile_completion}%`,
-      description: "Wizard steps completed",
-      icon: CheckCircle,
-      color: "text-teal-400",
-      bg: "bg-teal-500/10 border-teal-500/20"
     },
     {
       title: "Profile Views",

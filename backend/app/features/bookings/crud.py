@@ -31,7 +31,9 @@ class BookingCRUD(BaseRepository[Booking]):
         limit: int = 10
     ) -> Tuple[List[Booking], int]:
         query = db.query(Booking).options(
-            joinedload(Booking.client)
+            joinedload(Booking.client),
+            joinedload(Booking.artist_profile),
+            joinedload(Booking.venue)
         ).filter(
             Booking.artist_profile_id == artist_id,
             Booking.deleted_at.is_(None)
@@ -104,7 +106,9 @@ class BookingCRUD(BaseRepository[Booking]):
         limit: int = 10
     ) -> Tuple[List[Booking], int]:
         query = db.query(Booking).options(
-            joinedload(Booking.client)
+            joinedload(Booking.client),
+            joinedload(Booking.artist_profile),
+            joinedload(Booking.venue)
         ).filter(
             Booking.venue_id == venue_id,
             Booking.deleted_at.is_(None)
@@ -165,6 +169,69 @@ class BookingCRUD(BaseRepository[Booking]):
         db.commit()
         db.refresh(booking)
         return booking
+
+    def get_by_client(
+        self,
+        db: Session,
+        client_id: UUID,
+        status: Optional[str] = None,
+        search: Optional[str] = None,
+        offset: int = 0,
+        limit: int = 10
+    ) -> Tuple[List[Booking], int]:
+        query = db.query(Booking).options(
+            joinedload(Booking.artist_profile),
+            joinedload(Booking.venue)
+        ).filter(
+            Booking.client_id == client_id,
+            Booking.deleted_at.is_(None)
+        )
+
+        if status:
+            query = query.filter(Booking.status == status)
+
+        if search:
+            search_clause = or_(
+                Booking.event_name.ilike(f"%{search}%"),
+                Booking.location.ilike(f"%{search}%")
+            )
+            query = query.filter(search_clause)
+
+        total = query.count()
+        results = query.order_by(Booking.created_at.desc()).offset(offset).limit(limit).all()
+        return results, total
+
+    def get_all_bookings(
+        self,
+        db: Session,
+        status: Optional[str] = None,
+        search: Optional[str] = None,
+        offset: int = 0,
+        limit: int = 10
+    ) -> Tuple[List[Booking], int]:
+        query = db.query(Booking).options(
+            joinedload(Booking.client),
+            joinedload(Booking.artist_profile),
+            joinedload(Booking.venue)
+        ).filter(
+            Booking.deleted_at.is_(None)
+        )
+
+        if status:
+            query = query.filter(Booking.status == status)
+
+        if search:
+            search_clause = or_(
+                Booking.event_name.ilike(f"%{search}%"),
+                Booking.location.ilike(f"%{search}%")
+            )
+            query = query.join(Booking.client).filter(
+                or_(search_clause, User.name.ilike(f"%{search}%"), User.email.ilike(f"%{search}%"))
+            )
+
+        total = query.count()
+        results = query.order_by(Booking.created_at.desc()).offset(offset).limit(limit).all()
+        return results, total
 
 booking_crud = BookingCRUD()
 

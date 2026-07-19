@@ -116,7 +116,7 @@ export default function AdminDashboardPage() {
 
   return (
     <AdminPageContainer
-      title="Admin Overview Dashboard"
+      title="Admin Home"
       description="Real-time metric counters, escrow cash positions, system approvals queue, and performance logs."
       actions={
         <div className="flex gap-2">

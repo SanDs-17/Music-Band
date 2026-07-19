@@ -6,6 +6,8 @@ export interface NotificationItem {
   title: string;
   message: string;
   is_read: boolean;
+  notification_type?: string;
+  link?: string;
   created_at: string;
 }
 
@@ -45,5 +47,12 @@ export const notificationService = {
    */
   markAllAsRead: async (): Promise<void> => {
     await api.put<any>("/notifications/read-all");
+  },
+
+  /**
+   * Delete a single notification.
+   */
+  deleteNotification: async (notificationId: string): Promise<void> => {
+    await api.delete<any>(`/notifications/${notificationId}`);
   },
 };

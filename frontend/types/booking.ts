@@ -4,6 +4,22 @@ export interface ClientBrief {
   email: string;
 }
 
+export interface ArtistBrief {
+  id: string;
+  display_name: string;
+  bio: string | null;
+  base_rate: number;
+  rating: number;
+}
+
+export interface VenueBrief {
+  id: string;
+  name: string;
+  address: string;
+  capacity: number;
+  base_price: number;
+}
+
 export interface TimelineItem {
   status: string;
   timestamp: string;
@@ -19,10 +35,14 @@ export interface BookingRequestDetail {
   end_time: string;
   proposed_price: number;
   counter_price: number | null;
-  status: "pending" | "counter_offered" | "accepted" | "rejected" | "cancelled" | "completed";
+  status: "pending" | "counter_offered" | "accepted" | "rejected" | "cancelled" | "completed" | "confirmed";
   location: string;
   notes: string | null;
   client: ClientBrief;
+  artist?: ArtistBrief | null;
+  venue?: VenueBrief | null;
+  artist_name?: string | null;
+  venue_name?: string | null;
   timeline: TimelineItem[];
   booking_notes: any[];
   timeline_events: any[];

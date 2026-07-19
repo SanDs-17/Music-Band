@@ -14,6 +14,7 @@ import { ErrorState } from "@/components/ui/error-state";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Eye, Edit3, Image as ImageIcon, Sliders, DollarSign } from "lucide-react";
 import toast from "react-hot-toast";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface APIErrorResponse {
   response?: {
@@ -26,9 +27,26 @@ interface APIErrorResponse {
 }
 
 export default function VenueProfilePage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [profile, setProfile] = React.useState<VenueResponseData | null>(null);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<string | null>(null);
+
+  const [activeTab, setActiveTab] = React.useState<string>("edit");
+
+  React.useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    if (tabParam && ["edit", "facilities", "pricing", "media", "preview"].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (val: string) => {
+    setActiveTab(val);
+    router.push(`/venue/profile?tab=${val}`, { scroll: false });
+  };
 
   const fetchProfile = React.useCallback(async () => {
     setLoading(true);
@@ -227,11 +245,11 @@ export default function VenueProfilePage() {
         </p>
       </div>
 
-      <Tabs defaultValue="edit" className="w-full">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="bg-bg-elevated border border-border/80 p-1 rounded-xl flex flex-wrap gap-1 self-start max-w-2xl mb-4">
           <TabsTrigger value="edit" className="flex items-center gap-1.5 text-xs py-2 px-3 rounded-lg w-[18%] justify-center">
             <Edit3 className="h-3.5 w-3.5" />
-            <span>Edit Profile</span>
+            <span>Venue Details</span>
           </TabsTrigger>
           <TabsTrigger value="facilities" className="flex items-center gap-1.5 text-xs py-2 px-3 rounded-lg w-[18%] justify-center">
             <Sliders className="h-3.5 w-3.5" />
@@ -247,7 +265,7 @@ export default function VenueProfilePage() {
           </TabsTrigger>
           <TabsTrigger value="preview" className="flex items-center gap-1.5 text-xs py-2 px-3 rounded-lg w-[18%] justify-center">
             <Eye className="h-3.5 w-3.5" />
-            <span>Preview</span>
+            <span>Public Preview</span>
           </TabsTrigger>
         </TabsList>
 

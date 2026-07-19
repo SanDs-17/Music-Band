@@ -15,9 +15,11 @@ from app.features.venues.router import router as venues_router
 from app.features.venues.public_router import router as public_venues_router
 from app.features.settings.router import router as settings_router
 from app.features.bookings.router import router as bookings_router
+from app.features.bookings.admin_router import router as admin_bookings_router
 from app.features.reviews.router import router as reviews_router
 from app.features.earnings.router import router as earnings_router
 from app.features.notifications.router import router as notifications_router
+from app.features.notifications.websocket_router import router as websocket_router
 from app.features.payment.router import router as payment_router
 
 router = APIRouter()
@@ -52,6 +54,9 @@ router.include_router(earnings_router, prefix="/earnings", tags=["Earnings"])
 # Register notifications feature router
 router.include_router(notifications_router, prefix="/notifications", tags=["Notifications"])
 
+# Register notifications websocket router
+router.include_router(websocket_router, prefix="/ws")
+
 # Register payments feature router
 router.include_router(payment_router, prefix="/payments", tags=["Payments"])
 
@@ -63,3 +68,6 @@ router.include_router(venues_router, prefix="/admin/venues", tags=["Admin Venues
 
 # Register admin settings feature router
 router.include_router(settings_router, prefix="/admin/settings", tags=["Admin Settings"])
+
+# Register admin bookings feature router
+router.include_router(admin_bookings_router, prefix="/admin/bookings", tags=["Admin Bookings"])

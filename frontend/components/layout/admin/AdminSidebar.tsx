@@ -4,13 +4,14 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
+  Home,
   Music,
   Building2,
   Users,
-  Tag,
-  MapPin,
   Settings,
+  Calendar,
+  IndianRupee,
+  BarChart2,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { useUIStore } from "@/store/ui-store";
@@ -27,13 +28,14 @@ interface MenuItem {
  * Existing routes: dashboard, artists, venues, users, categories, locations, settings.
  */
 const menuItems: MenuItem[] = [
-  { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-  { name: "Artist Verification", href: "/admin/artists", icon: Music },
-  { name: "Venue Verification", href: "/admin/venues", icon: Building2 },
-  { name: "User Accounts", href: "/admin/users", icon: Users },
-  { name: "Categories", href: "/admin/categories", icon: Tag },
-  { name: "Locations", href: "/admin/locations", icon: MapPin },
-  { name: "System Settings", href: "/admin/settings", icon: Settings },
+  { name: "Home",     href: "/admin/dashboard", icon: Home },
+  { name: "Users",    href: "/admin/users",     icon: Users },
+  { name: "Artists",  href: "/admin/artists",   icon: Music },
+  { name: "Venues",   href: "/admin/venues",    icon: Building2 },
+  { name: "Bookings", href: "/admin/bookings",  icon: Calendar },
+  { name: "Payments", href: "/admin/payments",  icon: IndianRupee },
+  { name: "Reports",  href: "/admin/reports",   icon: BarChart2 },
+  { name: "Settings", href: "/admin/settings",  icon: Settings },
 ];
 
 export function AdminSidebar() {

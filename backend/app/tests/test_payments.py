@@ -82,7 +82,7 @@ def test_payment_flow(client, db_session):
         # Check notifications created
         notif = db_session.query(Notification).filter(Notification.user_id == client_user.id).first()
         assert notif is not None
-        assert "Payment Confirmed" in notif.title
+        assert "Booking Confirmed" in notif.title  # notification_type=booking_confirmed emits this title
 
     finally:
         app.dependency_overrides.pop(get_current_user, None)

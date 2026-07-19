@@ -25,6 +25,10 @@ setup_logging()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifecycle manager. Runs setup on startup, teardown on shutdown."""
+    import asyncio
+    from app.features.notifications.publisher import set_publisher_event_loop
+    set_publisher_event_loop(asyncio.get_running_loop())
+
     from loguru import logger
     logger.info(
         "BandConnect API starting...",

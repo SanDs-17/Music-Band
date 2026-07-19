@@ -49,6 +49,17 @@ class BookingService:
             logger.info(
                 f"Booking {booking.id} created successfully by client {client_id} for venue {data.venue_id}"
             )
+            try:
+                from app.features.notifications.service import create_booking_notification
+                create_booking_notification(
+                    db=db,
+                    booking=booking,
+                    event_type="created",
+                    actor_id=str(client_id),
+                    actor_role="client"
+                )
+            except Exception as notif_err:
+                logger.error(f"Failed to trigger created notification for booking {booking.id}: {notif_err}")
             return booking
 
         elif data.artist_profile_id:
@@ -79,6 +90,17 @@ class BookingService:
             logger.info(
                 f"Booking {booking.id} created successfully by client {client_id} for artist {data.artist_profile_id}"
             )
+            try:
+                from app.features.notifications.service import create_booking_notification
+                create_booking_notification(
+                    db=db,
+                    booking=booking,
+                    event_type="created",
+                    actor_id=str(client_id),
+                    actor_role="client"
+                )
+            except Exception as notif_err:
+                logger.error(f"Failed to trigger created notification for booking {booking.id}: {notif_err}")
             return booking
         else:
             raise BadRequestException(
@@ -105,72 +127,49 @@ class BookingService:
         if not booking:
             raise NotFoundException("Booking request not found.")
 
-        artist = self.artist_crud.get_by_user_id(db, user_id)
-        # Verify access: user is client or target performer
-        if str(booking.client_id) != user_id and (
-            not artist or booking.artist_profile_id != artist.id
-        ):
-            raise BadRequestException("Access denied to view this booking request.")
+        # Check if user is admin
+        from app.features.auth.models import User, Role
+        user = None
+        try:
+            user_uuid = UUID(user_id) if isinstance(user_id, str) else user_id
+            user = db.query(User).filter(User.id == user_uuid).first()
+        except Exception:
+            pass
+        is_admin = any(role.name == "admin" for role in user.roles) if user else False
+
+        if not is_admin:
+            artist = self.artist_crud.get_by_user_id(db, user_id)
+            # Verify access: user is client or target performer
+            if str(booking.client_id) != user_id and (
+                not artist or booking.artist_profile_id != artist.id
+            ):
+                raise BadRequestException("Access denied to view this booking request.")
 
         return booking
 
     def accept_booking(self, db: Session, user_id: str, booking_id: UUID) -> Booking:
-        artist = self.get_artist_profile(db, user_id)
-        booking = booking_crud.get(db, booking_id)
-        if not booking or booking.artist_profile_id != artist.id:
-            raise NotFoundException("Booking request not found.")
-
-        if booking.status in ["accepted", "rejected", "cancelled"]:
-            raise BadRequestException(
-                f"Cannot accept booking: Already marked as {booking.status}."
-            )
-
-        now_str = datetime.utcnow().isoformat()
-        timeline = list(booking.timeline or [])
-        timeline.append(
-            {
-                "status": "accepted",
-                "timestamp": now_str,
-                "by": "artist",
-                "message": "Booking request approved by performer! Get ready for the gig.",
-            }
+        from app.features.bookings.workflow import BookingWorkflowEngine
+        booking = BookingWorkflowEngine.transition(
+            db=db,
+            booking_id=booking_id,
+            actor_id=user_id,
+            actor_role="artist",
+            action="accept",
+            target_status="accepted",
         )
-
-        booking.status = "accepted"
-        booking.timeline = timeline
-        db.add(booking)
-        db.commit()
-        db.refresh(booking)
         logger.info(f"Booking request {booking.id} accepted by artist user {user_id}")
         return booking
 
     def reject_booking(self, db: Session, user_id: str, booking_id: UUID) -> Booking:
-        artist = self.get_artist_profile(db, user_id)
-        booking = booking_crud.get(db, booking_id)
-        if not booking or booking.artist_profile_id != artist.id:
-            raise NotFoundException("Booking request not found.")
-
-        if booking.status in ["accepted", "rejected", "cancelled"]:
-            raise BadRequestException(
-                f"Cannot reject booking: Already marked as {booking.status}."
-            )
-
-        now_str = datetime.utcnow().isoformat()
-        timeline = list(booking.timeline or [])
-        timeline.append(
-            {
-                "status": "rejected",
-                "timestamp": now_str,
-                "by": "artist",
-                "message": "Booking request rejected by performer.",
-            }
+        from app.features.bookings.workflow import BookingWorkflowEngine
+        booking = BookingWorkflowEngine.transition(
+            db=db,
+            booking_id=booking_id,
+            actor_id=user_id,
+            actor_role="artist",
+            action="reject",
+            target_status="rejected",
         )
-
-        booking.status = "rejected"
-        booking.timeline = timeline
-        db.add(booking)
-        db.commit()
-        db.refresh(booking)
         logger.info(f"Booking request {booking.id} rejected by artist user {user_id}")
         return booking
 
@@ -182,67 +181,53 @@ class BookingService:
         counter_price: float,
         message: Optional[str],
     ) -> Booking:
-        artist = self.get_artist_profile(db, user_id)
-        booking = booking_crud.get(db, booking_id)
-        if not booking or booking.artist_profile_id != artist.id:
-            raise NotFoundException("Booking request not found.")
-
-        if booking.status in ["accepted", "rejected", "cancelled"]:
-            raise BadRequestException(
-                f"Cannot place counter offer: Already marked as {booking.status}."
-            )
-
-        now_str = datetime.utcnow().isoformat()
-        timeline = list(booking.timeline or [])
-        timeline.append(
-            {
-                "status": "counter_offered",
-                "timestamp": now_str,
-                "by": "artist",
-                "message": f"Counter offer placed by performer: {counter_price}. Note: {message or 'No message'}",
-            }
+        from app.features.bookings.workflow import BookingWorkflowEngine
+        booking = BookingWorkflowEngine.transition(
+            db=db,
+            booking_id=booking_id,
+            actor_id=user_id,
+            actor_role="artist",
+            action="counter",
+            target_status="counter_offered",
+            reason=message,
+            counter_price=counter_price,
         )
-
-        booking.status = "counter_offered"
-        booking.counter_price = counter_price
-        booking.timeline = timeline
-        db.add(booking)
-        db.commit()
-        db.refresh(booking)
         logger.info(
             f"Booking request {booking.id} counter offered by artist user {user_id} with price {counter_price}"
         )
         return booking
 
-    def cancel_booking(self, db: Session, user_id: str, booking_id: UUID) -> Booking:
+    def cancel_booking(self, db: Session, user_id: str, booking_id: UUID, reason: Optional[str] = None) -> Booking:
         booking = booking_crud.get(db, booking_id)
         if not booking:
             raise NotFoundException("Booking request not found.")
-
-        artist = self.artist_crud.get_by_user_id(db, user_id)
-        # Verify access: user is client or target performer
         is_client = str(booking.client_id) == user_id
-        is_artist = artist and booking.artist_profile_id == artist.id
-        if not is_client and not is_artist:
-            raise BadRequestException("Access denied to cancel this booking request.")
+        
+        from app.features.auth.models import User, Role
+        user = None
+        try:
+            user_uuid = UUID(user_id) if isinstance(user_id, str) else user_id
+            user = db.query(User).filter(User.id == user_uuid).first()
+        except Exception:
+            pass
+        is_admin = any(role.name == "admin" for role in user.roles) if user else False
 
-        now_str = datetime.utcnow().isoformat()
-        timeline = list(booking.timeline or [])
-        timeline.append(
-            {
-                "status": "cancelled",
-                "timestamp": now_str,
-                "by": "client" if is_client else "artist",
-                "message": "Booking request cancelled.",
-            }
+        if is_admin:
+            role = "admin"
+        else:
+            role = "client" if is_client else "artist"
+
+        from app.features.bookings.workflow import BookingWorkflowEngine
+        booking = BookingWorkflowEngine.transition(
+            db=db,
+            booking_id=booking_id,
+            actor_id=user_id,
+            actor_role=role,
+            action="cancel",
+            target_status="cancelled",
+            reason=reason,
         )
-
-        booking.status = "cancelled"
-        booking.timeline = timeline
-        db.add(booking)
-        db.commit()
-        db.refresh(booking)
-        logger.info(f"Booking request {booking.id} cancelled by user {user_id}")
+        logger.info(f"Booking request {booking.id} cancelled by user {user_id} ({role})")
         return booking
 
     def get_venue_profile(self, db: Session, user_id: str):
@@ -273,42 +258,36 @@ class BookingService:
         if not booking:
             raise NotFoundException("Booking request not found.")
 
-        venue = self.get_venue_profile(db, user_id)
-        # Verify access: user is client or target venue owner
-        if str(booking.client_id) != user_id and booking.venue_id != venue.id:
-            raise BadRequestException("Access denied to view this booking request.")
+        # Check if user is admin
+        from app.features.auth.models import User, Role
+        user = None
+        try:
+            user_uuid = UUID(user_id) if isinstance(user_id, str) else user_id
+            user = db.query(User).filter(User.id == user_uuid).first()
+        except Exception:
+            pass
+        is_admin = any(role.name == "admin" for role in user.roles) if user else False
+
+        if not is_admin:
+            venue = self.get_venue_profile(db, user_id)
+            # Verify access: user is client or target venue owner
+            if str(booking.client_id) != user_id and booking.venue_id != venue.id:
+                raise BadRequestException("Access denied to view this booking request.")
 
         return booking
 
     def accept_venue_booking(
         self, db: Session, user_id: str, booking_id: UUID
     ) -> Booking:
-        venue = self.get_venue_profile(db, user_id)
-        booking = booking_crud.get(db, booking_id)
-        if not booking or booking.venue_id != venue.id:
-            raise NotFoundException("Booking request not found.")
-
-        if booking.status in ["accepted", "rejected", "cancelled", "completed"]:
-            raise BadRequestException(
-                f"Cannot accept booking: Already marked as {booking.status}."
-            )
-
-        now_str = datetime.utcnow().isoformat()
-        timeline = list(booking.timeline or [])
-        timeline.append(
-            {
-                "status": "accepted",
-                "timestamp": now_str,
-                "by": "venue",
-                "message": "Booking request accepted by venue owner!",
-            }
+        from app.features.bookings.workflow import BookingWorkflowEngine
+        booking = BookingWorkflowEngine.transition(
+            db=db,
+            booking_id=booking_id,
+            actor_id=user_id,
+            actor_role="venue_owner",
+            action="accept",
+            target_status="accepted",
         )
-
-        booking.status = "accepted"
-        booking.timeline = timeline
-        db.add(booking)
-        db.commit()
-        db.refresh(booking)
         logger.info(
             f"Booking request {booking.id} accepted by venue owner user {user_id}"
         )
@@ -317,32 +296,15 @@ class BookingService:
     def reject_venue_booking(
         self, db: Session, user_id: str, booking_id: UUID
     ) -> Booking:
-        venue = self.get_venue_profile(db, user_id)
-        booking = booking_crud.get(db, booking_id)
-        if not booking or booking.venue_id != venue.id:
-            raise NotFoundException("Booking request not found.")
-
-        if booking.status in ["accepted", "rejected", "cancelled", "completed"]:
-            raise BadRequestException(
-                f"Cannot reject booking: Already marked as {booking.status}."
-            )
-
-        now_str = datetime.utcnow().isoformat()
-        timeline = list(booking.timeline or [])
-        timeline.append(
-            {
-                "status": "rejected",
-                "timestamp": now_str,
-                "by": "venue",
-                "message": "Booking request rejected by venue owner.",
-            }
+        from app.features.bookings.workflow import BookingWorkflowEngine
+        booking = BookingWorkflowEngine.transition(
+            db=db,
+            booking_id=booking_id,
+            actor_id=user_id,
+            actor_role="venue_owner",
+            action="reject",
+            target_status="rejected",
         )
-
-        booking.status = "rejected"
-        booking.timeline = timeline
-        db.add(booking)
-        db.commit()
-        db.refresh(booking)
         logger.info(
             f"Booking request {booking.id} rejected by venue owner user {user_id}"
         )
@@ -351,68 +313,53 @@ class BookingService:
     def complete_venue_booking(
         self, db: Session, user_id: str, booking_id: UUID
     ) -> Booking:
-        venue = self.get_venue_profile(db, user_id)
-        booking = booking_crud.get(db, booking_id)
-        if not booking or booking.venue_id != venue.id:
-            raise NotFoundException("Booking request not found.")
-
-        if booking.status != "accepted":
-            raise BadRequestException(
-                f"Cannot mark booking as completed: Current status is {booking.status}."
-            )
-
-        now_str = datetime.utcnow().isoformat()
-        timeline = list(booking.timeline or [])
-        timeline.append(
-            {
-                "status": "completed",
-                "timestamp": now_str,
-                "by": "venue",
-                "message": "Event concluded and booking marked as completed!",
-            }
+        from app.features.bookings.workflow import BookingWorkflowEngine
+        booking = BookingWorkflowEngine.transition(
+            db=db,
+            booking_id=booking_id,
+            actor_id=user_id,
+            actor_role="venue_owner",
+            action="complete",
+            target_status="completed",
         )
-
-        booking.status = "completed"
-        booking.timeline = timeline
-        db.add(booking)
-        db.commit()
-        db.refresh(booking)
         logger.info(
             f"Booking request {booking.id} marked as completed by venue owner user {user_id}"
         )
         return booking
 
     def cancel_venue_booking(
-        self, db: Session, user_id: str, booking_id: UUID
+        self, db: Session, user_id: str, booking_id: UUID, reason: Optional[str] = None
     ) -> Booking:
         booking = booking_crud.get(db, booking_id)
         if not booking:
             raise NotFoundException("Booking request not found.")
-
-        venue = self.get_venue_profile(db, user_id)
-        # Verify access: user is client or target venue owner
         is_client = str(booking.client_id) == user_id
-        is_venue = venue and booking.venue_id == venue.id
-        if not is_client and not is_venue:
-            raise BadRequestException("Access denied to cancel this booking request.")
+        
+        from app.features.auth.models import User, Role
+        user = None
+        try:
+            user_uuid = UUID(user_id) if isinstance(user_id, str) else user_id
+            user = db.query(User).filter(User.id == user_uuid).first()
+        except Exception:
+            pass
+        is_admin = any(role.name == "admin" for role in user.roles) if user else False
 
-        now_str = datetime.utcnow().isoformat()
-        timeline = list(booking.timeline or [])
-        timeline.append(
-            {
-                "status": "cancelled",
-                "timestamp": now_str,
-                "by": "client" if is_client else "venue",
-                "message": "Booking request cancelled.",
-            }
+        if is_admin:
+            role = "admin"
+        else:
+            role = "client" if is_client else "venue_owner"
+
+        from app.features.bookings.workflow import BookingWorkflowEngine
+        booking = BookingWorkflowEngine.transition(
+            db=db,
+            booking_id=booking_id,
+            actor_id=user_id,
+            actor_role=role,
+            action="cancel",
+            target_status="cancelled",
+            reason=reason,
         )
-
-        booking.status = "cancelled"
-        booking.timeline = timeline
-        db.add(booking)
-        db.commit()
-        db.refresh(booking)
-        logger.info(f"Booking request {booking.id} cancelled by user {user_id}")
+        logger.info(f"Booking request {booking.id} cancelled by user {user_id} ({role})")
         return booking
 
     # Validation helper used by tests and callers to validate incoming booking payloads.
@@ -484,6 +431,50 @@ class BookingService:
                 else None,
             ),
         }
+
+    def get_client_bookings(
+        self,
+        db: Session,
+        client_id: str,
+        status: Optional[str] = None,
+        search: Optional[str] = None,
+        page: int = 1,
+        limit: int = 10,
+    ) -> Tuple[List[Booking], int]:
+        offset = (page - 1) * limit
+        return booking_crud.get_by_client(db, UUID(client_id), status, search, offset, limit)
+
+    def get_all_bookings(
+        self,
+        db: Session,
+        status: Optional[str] = None,
+        search: Optional[str] = None,
+        page: int = 1,
+        limit: int = 10,
+    ) -> Tuple[List[Booking], int]:
+        offset = (page - 1) * limit
+        return booking_crud.get_all_bookings(db, status, search, offset, limit)
+
+    def resolve_dispute(
+        self,
+        db: Session,
+        booking_id: UUID,
+        new_status: str,
+        admin_id: str,
+        message: Optional[str] = None,
+    ) -> Booking:
+        from app.features.bookings.workflow import BookingWorkflowEngine
+        booking = BookingWorkflowEngine.transition(
+            db=db,
+            booking_id=booking_id,
+            actor_id=admin_id,
+            actor_role="admin",
+            action="override",
+            target_status=new_status,
+            reason=message,
+        )
+        logger.info(f"Booking {booking_id} status overridden to {new_status} by admin {admin_id}")
+        return booking
 
 
 booking_service = BookingService()

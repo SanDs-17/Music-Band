@@ -74,18 +74,17 @@ async def verify_payment(
 
     price = float(booking.counter_price if booking.counter_price else booking.proposed_price)
     
-    # Transition booking status to 'confirmed'
-    booking.status = "confirmed"
-    
-    # Append to booking timeline
-    timeline = list(booking.timeline or [])
-    timeline.append({
-        "status": "confirmed",
-        "timestamp": datetime.datetime.now(datetime.UTC).isoformat(),
-        "by": "client",
-        "message": "Payment verified. Booking confirmed."
-    })
-    booking.timeline = timeline
+    # Transition booking status to 'confirmed' via Workflow Engine
+    from app.features.bookings.workflow import BookingWorkflowEngine
+    booking = BookingWorkflowEngine.transition(
+        db=db,
+        booking_id=booking.id,
+        actor_id=current_user_claims["sub"],
+        actor_role="client",
+        action="confirm",
+        target_status="confirmed",
+        reason="Payment verified.",
+    )
     
     # Create escrow Transaction in earnings feature
     escrow_tx = Transaction(

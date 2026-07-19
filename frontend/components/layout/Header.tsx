@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, Sun, Moon, User, Music, Building2, ShieldCheck, ChevronDown } from "lucide-react";
+import { Menu, Sun, Moon, Music, User, Building2, ShieldCheck, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/providers/theme-provider";
 import { useDeveloperPreview } from "@/providers/developer-preview-provider";
 import { getRoleDashboard } from "@/utils/role-routes";
 import { BrandLogo } from "@/components/shared/BrandLogo";
+import { NotificationsBell } from "@/components/layout/NotificationsBell";
+import { HeaderProfileDropdown } from "@/components/layout/HeaderProfileDropdown";
 import * as React from "react";
 
 interface HeaderProps {
@@ -16,12 +17,11 @@ interface HeaderProps {
 }
 
 export function Header({ onMenuClick }: HeaderProps) {
-  const { user, logout, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { isPreviewMode, previewRole, isHydrated: previewHydrated, exitPreview } = useDeveloperPreview();
-  const pathname = usePathname();
 
-  // Component mount state to prevent Next.js hydration mismatches
+  // Prevent hydration mismatches
   const [mounted, setMounted] = React.useState(false);
   const [loginOpen, setLoginOpen] = React.useState(false);
   const [registerOpen, setRegisterOpen] = React.useState(false);
@@ -30,7 +30,7 @@ export function Header({ onMenuClick }: HeaderProps) {
     setMounted(true);
   }, []);
 
-  // Keyboard accessibility helper for dropdown close
+  // Keyboard accessibility — close dropdowns on Escape
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -46,25 +46,25 @@ export function Header({ onMenuClick }: HeaderProps) {
     };
   }, [loginOpen, registerOpen]);
 
-  const isPortalRoute =
-    pathname.startsWith("/client") ||
-    pathname.startsWith("/artist") ||
-    pathname.startsWith("/venue") ||
-    pathname.startsWith("/admin");
-
   const effectiveRole = isPreviewMode ? previewRole : user?.role;
+
+  // Admin role — hide marketplace navigation links
+  const isAdmin = effectiveRole === "admin";
 
   const handleExitPreview = () => {
     exitPreview();
     window.location.href = "/developer";
   };
 
-  const renderNavButtons = () => {
-    // During SSR or initial hydration on the client, render a stable matching space
+  // ─── Right-side controls ───────────────────────────────────────────────────
+
+  const renderRightControls = () => {
+    // Stable placeholder during SSR / hydration
     if (!mounted || authLoading || !previewHydrated) {
-      return <div className="h-9 w-20" />;
+      return <div className="h-9 w-24" />;
     }
 
+    // Developer preview banner
     if (isPreviewMode) {
       return (
         <Button
@@ -77,30 +77,27 @@ export function Header({ onMenuClick }: HeaderProps) {
       );
     }
 
-    if (user && effectiveRole) {
+    // ── Authenticated user ──────────────────────────────────────────────────
+    if (user) {
       return (
-        <div className="flex items-center gap-4">
-          {!isPortalRoute && (
-            <Link href={getRoleDashboard(effectiveRole)}>
-              <Button variant="outline" size="sm" className="font-bold">
-                Dashboard
-              </Button>
-            </Link>
-          )}
-          <Button size="sm" onClick={logout} className="font-bold">
-            Log Out
-          </Button>
+        <div className="flex items-center gap-2">
+          {/* Notifications bell (hidden for admin — admin has its own) */}
+          {!isAdmin && <NotificationsBell />}
+
+          {/* Profile dropdown */}
+          <HeaderProfileDropdown />
         </div>
       );
     }
 
+    // ── Guest / unauthenticated ─────────────────────────────────────────────
     return (
       <div className="flex items-center gap-2 relative">
         {/* LOGIN DROPDOWN */}
         <div className="relative">
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             className="font-semibold flex items-center gap-1 hover:bg-bg-elevated hover:text-text-primary px-2 sm:px-3 text-xs sm:text-sm h-9"
             onClick={() => {
               setLoginOpen(!loginOpen);
@@ -190,8 +187,8 @@ export function Header({ onMenuClick }: HeaderProps) {
 
         {/* REGISTER DROPDOWN */}
         <div className="relative">
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             className="font-bold flex items-center gap-1 bg-primary hover:bg-primary-hover text-white px-2.5 sm:px-4 text-xs sm:text-sm h-9"
             onClick={() => {
               setRegisterOpen(!registerOpen);
@@ -266,6 +263,59 @@ export function Header({ onMenuClick }: HeaderProps) {
     );
   };
 
+  // ─── Centre nav links ──────────────────────────────────────────────────────
+
+  const renderNavLinks = () => {
+    // Authenticated view: show Home (role-specific) + optional Marketplace/Find Venues
+    // Only rendered post-hydration to avoid SSR mismatch on role-specific href
+    if (mounted && !authLoading && previewHydrated && user && effectiveRole) {
+      return (
+        <nav className="hidden md:flex items-center gap-6">
+          <Link
+            href={getRoleDashboard(effectiveRole)}
+            className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
+          >
+            Home
+          </Link>
+          {!isAdmin && (
+            <>
+              <Link href="/artists" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
+                Find Artist
+              </Link>
+              <Link href="/venues" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
+                Find Venues
+              </Link>
+            </>
+          )}
+        </nav>
+      );
+    }
+
+    // Default / guest / pre-hydration: always render the full public nav
+    // Static links — safe to render on SSR and during hydration
+    return (
+      <nav className="hidden md:flex items-center gap-6">
+        <Link href="/" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
+          Home
+        </Link>
+        <Link href="/artists" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
+          Find Artist
+        </Link>
+        <Link href="/venues" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
+          Find Venues
+        </Link>
+        <Link href="/about" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
+          About
+        </Link>
+        <Link href="/contact" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
+          Contact
+        </Link>
+      </nav>
+    );
+  };
+
+  // ─── Render ────────────────────────────────────────────────────────────────
+
   return (
     <header className="fixed top-0 left-0 right-0 z-40 glass-panel h-16 flex items-center justify-between px-6">
       <div className="flex items-center gap-6">
@@ -282,23 +332,16 @@ export function Header({ onMenuClick }: HeaderProps) {
         <BrandLogo />
         {mounted && isPreviewMode && previewRole && (
           <div className="px-2.5 py-1 text-[9px] font-black tracking-wider uppercase bg-amber-500/10 border border-amber-500/30 text-amber-500 rounded-full select-none whitespace-nowrap">
-            {previewRole === "venue_owner" 
-              ? "PREVIEW — VENUE OWNER" 
+            {previewRole === "venue_owner"
+              ? "PREVIEW — VENUE OWNER"
               : `PREVIEW — ${previewRole.toUpperCase()}`}
           </div>
         )}
 
-        <nav className="hidden md:flex items-center gap-6">
-          <Link href="/artists" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
-            Find Artists
-          </Link>
-          <Link href="/venues" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
-            Venues
-          </Link>
-        </nav>
+        {renderNavLinks()}
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         {/* Theme Toggle */}
         <Button
           variant="ghost"
@@ -309,9 +352,8 @@ export function Header({ onMenuClick }: HeaderProps) {
           {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>
 
-        {renderNavButtons()}
+        {renderRightControls()}
       </div>
     </header>
   );
 }
-

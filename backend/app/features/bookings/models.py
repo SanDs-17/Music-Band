@@ -29,3 +29,18 @@ class Booking(BaseModel):
     client = relationship("User", backref="client_bookings")
 
 
+class BookingAuditLog(BaseModel):
+    __tablename__ = "booking_audit_logs"
+
+    booking_id = Column(UUID(as_uuid=True), ForeignKey("bookings.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+    role = Column(String(50), nullable=False)
+    action = Column(String(100), nullable=False)
+    previous_status = Column(String(30), nullable=True)
+    new_status = Column(String(30), nullable=False)
+    reason = Column(Text, nullable=True)
+
+    # Relationships
+    booking = relationship("Booking", backref="audit_logs")
+
+

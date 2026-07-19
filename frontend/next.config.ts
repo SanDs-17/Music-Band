@@ -22,6 +22,18 @@ const nextConfig: NextConfig = {
       }
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/artist/bookings/history",
+        destination: "/artist/bookings",
+      },
+      {
+        source: "/artist/bookings/calendar",
+        destination: "/artist/bookings?tab=calendar",
+      },
+    ];
+  },
   // Ensure we can proxy API calls if required, or handle CORS on backend
 };
 

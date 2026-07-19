@@ -5,6 +5,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { Settings, User, Mail, ShieldAlert } from "lucide-react";
+import { NotificationPreferencesCard } from "@/components/notifications/NotificationPreferencesCard";
+
 
 export default function ClientSettingsPage() {
   const { user } = useAuth();
@@ -65,6 +67,9 @@ export default function ClientSettingsPage() {
           </Button>
         </CardContent>
       </Card>
+
+      <NotificationPreferencesCard />
     </div>
   );
 }
+

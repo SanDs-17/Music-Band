@@ -14,8 +14,10 @@ import { Spinner } from "@/components/ui/spinner";
 import { ErrorState } from "@/components/ui/error-state";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarRange, Search, Plus, Filter, RefreshCw } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 export default function ClientBookingsPage() {
+  const searchParams = useSearchParams();
   const [bookings, setBookings] = React.useState<BookingRequestDetail[]>([]);
   const [total, setTotal] = React.useState<number>(0);
   const [loading, setLoading] = React.useState<boolean>(true);
@@ -38,6 +40,14 @@ export default function ClientBookingsPage() {
     venueName?: string;
     proposedPrice?: number;
   } | null>(null);
+
+  React.useEffect(() => {
+    const idParam = searchParams.get("id");
+    if (idParam) {
+      setSelectedBookingId(idParam);
+      setDetailsOpen(true);
+    }
+  }, [searchParams]);
 
   React.useEffect(() => {
     const activeIntent = sessionStorage.getItem("active_booking_intent");

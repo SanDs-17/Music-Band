@@ -4,7 +4,7 @@ import * as React from "react";
 import { bookingService } from "@/services/bookingService";
 import { BookingRequestDetail } from "@/types/booking";
 import { VenueBookingDetails } from "@/components/venue/VenueBookingDetails";
-import { VenueBookingCalendarTimeline } from "@/components/venue/VenueBookingCalendarTimeline";
+import { BookingCalendar } from "@/components/bookings/BookingCalendar";
 import { Spinner } from "@/components/ui/spinner";
 import { ErrorState } from "@/components/ui/error-state";
 import { Button } from "@/components/ui/button";
@@ -23,8 +23,10 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import { useSearchParams } from "next/navigation";
 
 export default function VenueBookingsPage() {
+  const searchParams = useSearchParams();
   const [bookings, setBookings] = React.useState<BookingRequestDetail[]>([]);
   const [total, setTotal] = React.useState(0);
   const [loading, setLoading] = React.useState(true);
@@ -39,6 +41,26 @@ export default function VenueBookingsPage() {
   // Detailed selected booking inspector dialog state
   const [selectedBooking, setSelectedBooking] = React.useState<BookingRequestDetail | null>(null);
   const [dialogOpen, setDialogOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    const idParam = searchParams.get("id");
+    if (!idParam) return;
+
+    const found = bookings.find(b => b.id === idParam);
+    if (found) {
+      setSelectedBooking(found);
+      setDialogOpen(true);
+    } else {
+      bookingService.getBookingDetails(idParam)
+        .then(data => {
+          setSelectedBooking(data);
+          setDialogOpen(true);
+        })
+        .catch(err => {
+          console.error("Failed to fetch booking details for deep link:", err);
+        });
+    }
+  }, [searchParams, bookings]);
 
   const fetchBookings = React.useCallback(async () => {
     setLoading(true);
@@ -169,7 +191,7 @@ export default function VenueBookingsPage() {
           ) : error ? (
             <ErrorState title="Load Error" message={error} onRetry={fetchBookings} />
           ) : (
-            <VenueBookingCalendarTimeline bookings={bookings} onSelectBooking={openDetails} />
+            <BookingCalendar bookings={bookings} onSelectBooking={openDetails} />
           )}
         </TabsContent>
 
