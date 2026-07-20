@@ -21,6 +21,7 @@ from app.features.earnings.router import router as earnings_router
 from app.features.notifications.router import router as notifications_router
 from app.features.notifications.websocket_router import router as websocket_router
 from app.features.payment.router import router as payment_router
+from app.features.messaging.conversation.router import router as conversation_router
 
 router = APIRouter()
 
@@ -59,6 +60,9 @@ router.include_router(websocket_router, prefix="/ws")
 
 # Register payments feature router
 router.include_router(payment_router, prefix="/payments", tags=["Payments"])
+
+# Register messaging conversation feature router
+router.include_router(conversation_router, prefix="/conversations", tags=["Conversations"])
 
 # Register admin artists feature router
 router.include_router(artists_router, prefix="/admin/artists", tags=["Admin Artists"])

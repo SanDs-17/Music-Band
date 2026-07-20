@@ -30,12 +30,15 @@ from app.features.venues.models import (  # noqa: F401
     venue_categories,
 )
 
-# ── Bookings ─────────────────────────────────────────────────────────────────
+# ── Bookings & Messaging ──────────────────────────────────────────────────────
 from app.features.bookings.models import Booking, BookingAuditLog  # noqa: F401
 from app.features.reviews.models import Review  # noqa: F401
 from app.features.earnings.models import Transaction  # noqa: F401
 from app.features.notifications.models import Notification  # noqa: F401
 from app.features.notifications.preferences.models import NotificationPreference  # noqa: F401
+from app.features.messaging.conversation.models import Conversation  # noqa: F401
+from app.features.messaging.message.models import Message  # noqa: F401
+
 
 
 # ── Categories / Taxonomy ────────────────────────────────────────────────────
