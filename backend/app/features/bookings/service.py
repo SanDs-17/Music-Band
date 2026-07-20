@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Any, List, Optional, Tuple
 from uuid import UUID
 
@@ -128,7 +127,7 @@ class BookingService:
             raise NotFoundException("Booking request not found.")
 
         # Check if user is admin
-        from app.features.auth.models import User, Role
+        from app.features.auth.models import User
         user = None
         try:
             user_uuid = UUID(user_id) if isinstance(user_id, str) else user_id
@@ -203,7 +202,7 @@ class BookingService:
             raise NotFoundException("Booking request not found.")
         is_client = str(booking.client_id) == user_id
         
-        from app.features.auth.models import User, Role
+        from app.features.auth.models import User
         user = None
         try:
             user_uuid = UUID(user_id) if isinstance(user_id, str) else user_id
@@ -259,7 +258,7 @@ class BookingService:
             raise NotFoundException("Booking request not found.")
 
         # Check if user is admin
-        from app.features.auth.models import User, Role
+        from app.features.auth.models import User
         user = None
         try:
             user_uuid = UUID(user_id) if isinstance(user_id, str) else user_id
@@ -335,7 +334,7 @@ class BookingService:
             raise NotFoundException("Booking request not found.")
         is_client = str(booking.client_id) == user_id
         
-        from app.features.auth.models import User, Role
+        from app.features.auth.models import User
         user = None
         try:
             user_uuid = UUID(user_id) if isinstance(user_id, str) else user_id

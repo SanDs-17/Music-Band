@@ -1,17 +1,13 @@
 import uuid
 import datetime
 import pytest
-from concurrent.futures import ThreadPoolExecutor
 from app.features.auth.models import User
 from app.features.bookings.models import Booking, BookingAuditLog
 from app.features.artists.models import ArtistProfile
 from app.features.venues.models import Venue
 from app.features.locations.models import Country, State, City
 from app.features.bookings.workflow import BookingWorkflowEngine
-from app.core.exceptions import BadRequestException, NotFoundException
-from app.core.database import Base
-from sqlalchemy.orm import Session
-from app.tests.conftest import TestingSessionLocal, engine
+from app.core.exceptions import BadRequestException
 
 @pytest.fixture
 def workflow_setup_data(db_session):

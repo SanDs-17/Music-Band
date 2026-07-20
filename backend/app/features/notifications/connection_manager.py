@@ -11,7 +11,6 @@ Rules:
   - Thread-safe via asyncio primitives
 """
 
-import asyncio
 import logging
 from typing import Dict, Set
 from fastapi import WebSocket

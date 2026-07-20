@@ -1,10 +1,9 @@
 import uuid
 import pytest
 from app.features.auth.models import User, Role
-from app.features.notifications.models import Notification
 from app.features.notifications.service import notification_service
 from app.core.dependencies import get_current_user, require_role
-from app.core.exceptions import NotFoundException, ForbiddenException
+from app.core.exceptions import NotFoundException
 from main import app
 
 @pytest.fixture
@@ -128,7 +127,7 @@ def test_unread_count_and_patch_read(client, db_session, test_setup_data):
     user1 = test_setup_data["user1"]
 
     n1 = notification_service.create_notification(db=db_session, recipient_user_id=user1.id, title="N1", message="M1")
-    n2 = notification_service.create_notification(db=db_session, recipient_user_id=user1.id, title="N2", message="M2")
+    _n2 = notification_service.create_notification(db=db_session, recipient_user_id=user1.id, title="N2", message="M2")
 
     app.dependency_overrides[get_current_user] = lambda: {"sub": str(user1.id), "role": "client"}
 

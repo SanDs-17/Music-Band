@@ -5,7 +5,6 @@ from app.features.auth.models import User, Role
 from app.features.bookings.models import Booking
 from app.features.notifications.models import Notification
 from app.features.artists.models import ArtistProfile
-from app.features.venues.models import Venue
 from app.features.locations.models import Country, State, City
 from app.features.bookings.workflow import BookingWorkflowEngine
 from app.features.notifications.service import create_booking_notification
@@ -117,7 +116,6 @@ def test_booking_created_triggers_notification(db_session, notification_setup_da
 def test_workflow_transitions_trigger_notifications(db_session, notification_setup_data):
     b = notification_setup_data["booking"]
     artist_uid = str(notification_setup_data["artist_user"].id)
-    client_uid = str(notification_setup_data["client"].id)
 
     # Clean old notifications
     db_session.query(Notification).delete()

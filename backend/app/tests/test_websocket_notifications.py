@@ -23,9 +23,8 @@ from sqlalchemy.orm import Session
 from app.features.auth.models import User, Role
 from app.features.bookings.models import Booking
 from app.features.artists.models import ArtistProfile
-from app.features.notifications.models import Notification
 from app.features.notifications.connection_manager import connection_manager
-from app.features.notifications.publisher import publish_notification, serialize_notification
+from app.features.notifications.publisher import publish_notification
 from app.features.notifications.service import create_booking_notification, create_failed_action_notification
 from app.core.security import create_access_token
 

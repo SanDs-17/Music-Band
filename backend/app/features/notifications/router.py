@@ -7,11 +7,10 @@ from app.core.database import get_db
 from app.core.dependencies import get_current_user, require_role
 from app.common.schemas.base import SuccessResponse
 from app.features.notifications.service import notification_service
-from app.features.notifications.schemas import NotificationResponse, SystemNotificationCreateRequest
+from app.features.notifications.schemas import SystemNotificationCreateRequest
+from app.features.notifications.preferences.router import router as preferences_router
 
 router = APIRouter(tags=["Notifications"])
-
-from app.features.notifications.preferences.router import router as preferences_router
 router.include_router(preferences_router)
 
 

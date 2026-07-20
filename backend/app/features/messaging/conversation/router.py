@@ -18,11 +18,11 @@ router = APIRouter()
 def create_conversation(
     payload: ConversationCreate,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
+    current_user_claims: dict = Depends(get_current_user),
 ):
-    conversation = conversation_service.create_conversation(db, payload.booking_id, current_user.id)
+    current_user_id = UUID(current_user_claims["sub"])
+    conversation = conversation_service.create_conversation(db, payload.booking_id, current_user_id)
     
-    # Populate event_name if booking is loaded
     resp = ConversationResponse.model_validate(conversation)
     if conversation.booking:
         resp.event_name = conversation.booking.event_name
@@ -32,9 +32,10 @@ def create_conversation(
 @router.get("", response_model=SuccessResponse[list[ConversationResponse]])
 def list_conversations(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
+    current_user_claims: dict = Depends(get_current_user),
 ):
-    conversations = conversation_service.list_user_conversations(db, current_user.id)
+    current_user_id = UUID(current_user_claims["sub"])
+    conversations = conversation_service.list_user_conversations(db, current_user_id)
     data = []
     for c in conversations:
         item = ConversationResponse.model_validate(c)
@@ -47,9 +48,10 @@ def list_conversations(
 def get_conversation(
     conversation_id: UUID,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
+    current_user_claims: dict = Depends(get_current_user),
 ):
-    conversation = conversation_service.get_conversation(db, conversation_id, current_user.id)
+    current_user_id = UUID(current_user_claims["sub"])
+    conversation = conversation_service.get_conversation(db, conversation_id, current_user_id)
     resp = ConversationResponse.model_validate(conversation)
     if conversation.booking:
         resp.event_name = conversation.booking.event_name

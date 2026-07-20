@@ -13,16 +13,13 @@ Verifies:
 
 import uuid
 import datetime
-import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from app.features.auth.models import User, Role
 from app.features.bookings.models import Booking
 from app.features.artists.models import ArtistProfile
-from app.features.venues.models import Venue
 from app.features.messaging.conversation.models import Conversation
-from app.features.messaging.message.models import Message
 from app.core.security import create_access_token
 
 
@@ -197,13 +194,13 @@ def test_message_validation_and_closed_conversation(client: TestClient, db_sessi
     res_empty = client.post(f"/api/v1/conversations/{conv_id}/messages", json={"content": "   "}, headers=headers)
     assert res_empty.status_code == 400
 
-    # 2. Exceeds 2000 chars
+    # 2. Exceeds 2000 chars (Pydantic schema validation returns 422)
     long_content = "a" * 2001
     res_long = client.post(f"/api/v1/conversations/{conv_id}/messages", json={"content": long_content}, headers=headers)
-    assert res_long.status_code == 400
+    assert res_long.status_code in (400, 422)
 
     # 3. Close conversation in DB and attempt to post message
-    conv = db_session.query(Conversation).filter(Conversation.id == conv_id).first()
+    conv = db_session.query(Conversation).filter(Conversation.id == uuid.UUID(conv_id)).first()
     conv.status = "CLOSED"
     db_session.commit()
 

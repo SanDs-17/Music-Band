@@ -14,6 +14,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { IndianRupee, MessageSquare, Send, X, Check, Ban, CheckSquare } from "lucide-react";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { useMessagingStore } from "@/features/messaging/store/messaging-store";
 
 interface BookingDetailsDialogProps {
   bookingId: string;
@@ -30,6 +32,9 @@ export function BookingDetailsDialog({
   onRefresh,
   role,
 }: BookingDetailsDialogProps) {
+  const router = useRouter();
+  const createConversation = useMessagingStore((s) => s.createConversation);
+
   const [booking, setBooking] = React.useState<BookingRequestDetail | null>(null);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [actioning, setActioning] = React.useState<boolean>(false);
@@ -321,6 +326,22 @@ export function BookingDetailsDialog({
                       <span>Conclude & Complete</span>
                     </Button>
                   )}
+
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={async () => {
+                      const conv = await createConversation(booking.id);
+                      if (conv) {
+                        onClose();
+                        router.push("/messages");
+                      }
+                    }}
+                    className="border-primary/40 hover:bg-primary/10 text-primary font-bold h-9 text-xs flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    <span>Open Chat</span>
+                  </Button>
 
                   {canCancel && (
                     <Button
