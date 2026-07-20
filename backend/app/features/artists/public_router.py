@@ -109,9 +109,7 @@ async def get_current_artist_profile(
     """
     Retrieves the complete profile information for the authenticated performer.
     """
-    artist = service.crud.get_by_user_id(db, current_user_claims["sub"])
-    if not artist:
-        raise NotFoundException("Artist profile not found.")
+    artist = service.get_artist_by_user_id(db, current_user_claims["sub"])
     return SuccessResponse(
         success=True,
         data=_format_artist_profile(artist),

@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/providers/theme-provider";
 import { useDeveloperPreview } from "@/providers/developer-preview-provider";
-import { getRoleDashboard } from "@/utils/role-routes";
 import { BrandLogo } from "@/components/shared/BrandLogo";
 import { NotificationsBell } from "@/components/layout/NotificationsBell";
 import { HeaderProfileDropdown } from "@/components/layout/HeaderProfileDropdown";
@@ -266,17 +265,11 @@ export function Header({ onMenuClick }: HeaderProps) {
   // ─── Centre nav links ──────────────────────────────────────────────────────
 
   const renderNavLinks = () => {
-    // Authenticated view: show Home (role-specific) + optional Marketplace/Find Venues
+    // Authenticated view: show optional Marketplace/Find Venues
     // Only rendered post-hydration to avoid SSR mismatch on role-specific href
     if (mounted && !authLoading && previewHydrated && user && effectiveRole) {
       return (
         <nav className="hidden md:flex items-center gap-6">
-          <Link
-            href={getRoleDashboard(effectiveRole)}
-            className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
-          >
-            Home
-          </Link>
           {!isAdmin && (
             <>
               <Link href="/artists" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
@@ -291,13 +284,10 @@ export function Header({ onMenuClick }: HeaderProps) {
       );
     }
 
-    // Default / guest / pre-hydration: always render the full public nav
+    // Default / guest / pre-hydration: always render the public nav
     // Static links — safe to render on SSR and during hydration
     return (
       <nav className="hidden md:flex items-center gap-6">
-        <Link href="/" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
-          Home
-        </Link>
         <Link href="/artists" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
           Find Artist
         </Link>

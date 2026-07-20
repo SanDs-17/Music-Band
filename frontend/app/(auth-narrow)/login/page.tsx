@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginFormData } from "@/utils/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
 import { api } from "@/services/api";
@@ -28,6 +29,8 @@ function LoginContent() {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: { email: "", password: "" },
   });
 
@@ -48,7 +51,6 @@ function LoginContent() {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      // 1. Exchange credentials for tokens
       const loginResponse = await api.post("/auth/login", data);
       const { success, data: tokenData, message } = loginResponse.data;
 
@@ -58,12 +60,8 @@ function LoginContent() {
       }
 
       const { access_token } = tokenData;
-
-      // 2. Store the access token in localStorage BEFORE calling /auth/me
-      //    so the Axios request interceptor auto-attaches the Bearer header.
       localStorage.setItem("access_token", access_token);
 
-      // 3. Fetch the authenticated user profile (includes roles array)
       const meResponse = await api.get("/auth/me");
       const { data: userData } = meResponse.data;
 
@@ -72,18 +70,10 @@ function LoginContent() {
         return;
       }
 
-      // 4. Persist to Zustand store.
-      //    setAuth also mirrors the token to a cookie so Next.js middleware
-      //    allows access to protected dashboard routes.
-      //    normaliseUserRole() inside setAuth derives user.role from roles[0].name.
       setAuth(userData, access_token);
-
       toast.success(message || "Successfully logged in!");
 
-      // 5. Navigate to the correct role dashboard using the centralized resolver.
-      //    Use the first role from the backend response (canonical source).
-      const primaryRole =
-        userData.roles?.[0]?.name ?? userData.role ?? "client";
+      const primaryRole = userData.roles?.[0]?.name ?? userData.role ?? "client";
       let destination = getRoleDashboard(primaryRole);
 
       const pendingBookingIntent = sessionStorage.getItem("pending_booking_intent");
@@ -93,14 +83,12 @@ function LoginContent() {
         destination = "/client/bookings";
       }
 
-      // router.replace so the login page is not in browser history
       router.replace(destination);
     } catch (err) {
       const error = err as {
         response?: { data?: { error?: { message?: string } } };
       };
-      const errMsg =
-        error.response?.data?.error?.message ?? "Invalid login credentials.";
+      const errMsg = error.response?.data?.error?.message ?? "Invalid login credentials.";
       toast.error(errMsg);
     }
   };
@@ -116,7 +104,7 @@ function LoginContent() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         <div className="space-y-1">
           <Label htmlFor="email">Email Address</Label>
           <Input
@@ -124,10 +112,13 @@ function LoginContent() {
             type="email"
             placeholder="name@example.com"
             disabled={isSubmitting}
+            aria-invalid={!!errors.email}
+            aria-describedby={errors.email ? "email-error" : undefined}
+            className={errors.email ? "border-error focus-visible:border-error focus-visible:ring-error" : ""}
             {...register("email")}
           />
           {errors.email && (
-            <p className="text-xs text-error font-medium mt-1">
+            <p id="email-error" className="text-xs text-error font-medium mt-1">
               {errors.email.message}
             </p>
           )}
@@ -143,15 +134,17 @@ function LoginContent() {
               Forgot password?
             </Link>
           </div>
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             placeholder="••••••••"
             disabled={isSubmitting}
+            error={!!errors.password}
+            aria-invalid={!!errors.password}
+            aria-describedby={errors.password ? "password-error" : undefined}
             {...register("password")}
           />
           {errors.password && (
-            <p className="text-xs text-error font-medium mt-1">
+            <p id="password-error" className="text-xs text-error font-medium mt-1">
               {errors.password.message}
             </p>
           )}
@@ -162,7 +155,11 @@ function LoginContent() {
           className="w-full font-bold h-10 mt-2"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Logging in..." : "Log In"}
+          {isSubmitting ? (
+            <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Logging in...</>
+          ) : (
+            "Log In"
+          )}
         </Button>
       </form>
 
@@ -187,4 +184,3 @@ export default function LoginPage() {
     </React.Suspense>
   );
 }
-

@@ -10,17 +10,16 @@ from loguru import logger
 from app.core.config import settings
 
 def validate_image_file(file: UploadFile):
-    """Validate file content type and size limits."""
+    """Validate file content type and size limits for image uploads."""
     if file.content_type not in settings.ALLOWED_IMAGE_TYPES:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Unsupported file type. Allowed types: {', '.join(settings.ALLOWED_IMAGE_TYPES)}"
         )
     
-    # Read size to validate limit
     file.file.seek(0, os.SEEK_END)
     size = file.file.tell()
-    file.file.seek(0)  # Reset pointer
+    file.file.seek(0)
     
     max_bytes = settings.MAX_FILE_SIZE_MB * 1024 * 1024
     if size > max_bytes:
@@ -29,17 +28,14 @@ def validate_image_file(file: UploadFile):
             detail=f"File exceeds maximum size of {settings.MAX_FILE_SIZE_MB}MB."
         )
 
-async def upload_image(file: UploadFile, subfolder: str = "general") -> str:
+async def upload_file_generic(file: UploadFile, subfolder: str = "general") -> str:
     """
-    Validate and upload an image file.
-    Returns the file URL or local path.
+    Upload any validated file to S3 or local filesystem.
+    Returns the file access URL path.
     """
-    validate_image_file(file)
-    
-    file_ext = os.path.splitext(file.filename)[1]
+    file_ext = os.path.splitext(file.filename or "file")[1]
     unique_filename = f"{uuid.uuid4()}{file_ext}"
-    
-    # If S3 configs are enabled and configured
+
     if settings.USE_S3 and settings.AWS_BUCKET_NAME:
         try:
             s3_client = boto3.client(
@@ -53,7 +49,7 @@ async def upload_image(file: UploadFile, subfolder: str = "general") -> str:
                 file.file,
                 settings.AWS_BUCKET_NAME,
                 key,
-                ExtraArgs={"ContentType": file.content_type}
+                ExtraArgs={"ContentType": file.content_type or "application/octet-stream"}
             )
             return f"https://{settings.AWS_BUCKET_NAME}.s3.{settings.AWS_REGION}.amazonaws.com/{key}"
         except Exception as e:
@@ -63,15 +59,14 @@ async def upload_image(file: UploadFile, subfolder: str = "general") -> str:
                 detail="File upload failed on cloud storage."
             )
     else:
-        # Fallback to local file storage
         upload_path = os.path.join(settings.UPLOAD_DIR, subfolder)
         os.makedirs(upload_path, exist_ok=True)
         
         full_path = os.path.join(upload_path, unique_filename)
         try:
             with open(full_path, "wb") as buffer:
-                buffer.write(await file.read())
-            # Return relative path for FastAPI static mount path
+                content = await file.read()
+                buffer.write(content)
             return f"/{settings.UPLOAD_DIR}/{subfolder}/{unique_filename}"
         except Exception as e:
             logger.error(f"Local file write failed: {str(e)}")
@@ -79,3 +74,11 @@ async def upload_image(file: UploadFile, subfolder: str = "general") -> str:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="File upload failed on local storage."
             )
+
+async def upload_image(file: UploadFile, subfolder: str = "general") -> str:
+    """
+    Validate and upload an image file.
+    Returns the file URL or local path.
+    """
+    validate_image_file(file)
+    return await upload_file_generic(file, subfolder)

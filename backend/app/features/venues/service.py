@@ -345,14 +345,57 @@ class VenueService:
         logger.info(f"Activated venue owner credentials session access: User ID {user.id}")
         return venue
 
+    def get_venue_by_user_id(self, db: Session, user_id: str) -> Venue:
+        """Retrieves user's venue profile (read-only). Raises NotFoundException if missing."""
+        from uuid import UUID as PyUUID
+        user_uuid = PyUUID(str(user_id)) if not isinstance(user_id, PyUUID) else user_id
+        venues = self.crud.get_by_user_id(db, user_uuid)
+        if not venues or len(venues) == 0:
+            logger.error(f"Venue profile missing for user {user_id}")
+            raise NotFoundException("Venue profile not found.")
+        return venues[0]
+
+    def get_or_create_draft_venue(self, db: Session, user_id: str) -> Venue:
+        """Utility helper for migration/testing. Production GET handlers use get_venue_by_user_id."""
+        from uuid import UUID as PyUUID
+        user_uuid = PyUUID(str(user_id)) if not isinstance(user_id, PyUUID) else user_id
+        venues = self.crud.get_by_user_id(db, user_uuid)
+        if venues and len(venues) > 0:
+            return venues[0]
+
+        user = self.user_crud.get(db, user_uuid)
+        user_name = user.name if user else "Venue Owner"
+        from app.features.auth.service import auth_service
+        city = auth_service._get_or_create_default_city(db)
+        venue_num = generate_next_venue_number(db)
+        draft_venue = Venue(
+            user_id=user_uuid,
+            name=f"{user_name}'s Venue",
+            address="Pending Address",
+            city_id=city.id,
+            venue_number=venue_num,
+            verification_status="pending"
+        )
+        db.add(draft_venue)
+        db.commit()
+        db.refresh(draft_venue)
+        logger.info(f"Created draft Venue for user {user_id}")
+        return draft_venue
+
     def get_dashboard_stats(self, db: Session, user_id: str) -> dict:
-        """Fetches and prepares stats, notifications, and events for the venue dashboard."""
-        venues = self.crud.get_by_user_id(db, user_id)
+        """Fetches and prepares stats, notifications, and events for the venue dashboard (Read-Only)."""
+        from uuid import UUID as PyUUID
+        user_uuid = PyUUID(str(user_id)) if not isinstance(user_id, PyUUID) else user_id
+        venues = self.crud.get_by_user_id(db, user_uuid)
+        if not venues or len(venues) == 0:
+            logger.error(f"Venue profile missing for user {user_id}")
+            raise NotFoundException("Venue profile not found.")
+
+        v = venues[0]
         
         # Calculate dynamic profile completion percentage
         completion = 30
-        if venues:
-            v = venues[0]
+        if v:
             if v.description:
                 completion += 15
             if v.google_map_location:

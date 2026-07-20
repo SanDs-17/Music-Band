@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { resetPasswordSchema, ResetPasswordFormData } from "@/utils/validation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/services/api";
 import toast from "react-hot-toast";
@@ -23,6 +23,8 @@ export default function ResetPasswordPage() {
     formState: { errors, isSubmitting },
   } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: { password: "", confirmPassword: "" },
   });
 
@@ -72,32 +74,36 @@ export default function ResetPasswordPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         <div className="space-y-1">
           <Label htmlFor="password">New Password</Label>
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             placeholder="••••••••"
             disabled={isSubmitting}
+            error={!!errors.password}
+            aria-invalid={!!errors.password}
+            aria-describedby={errors.password ? "password-error" : undefined}
             {...register("password")}
           />
           {errors.password && (
-            <p className="text-xs text-error font-medium mt-1">{errors.password.message}</p>
+            <p id="password-error" className="text-xs text-error font-medium mt-1">{errors.password.message}</p>
           )}
         </div>
 
         <div className="space-y-1">
           <Label htmlFor="confirmPassword">Confirm Password</Label>
-          <Input
+          <PasswordInput
             id="confirmPassword"
-            type="password"
             placeholder="••••••••"
             disabled={isSubmitting}
+            error={!!errors.confirmPassword}
+            aria-invalid={!!errors.confirmPassword}
+            aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
             {...register("confirmPassword")}
           />
           {errors.confirmPassword && (
-            <p className="text-xs text-error font-medium mt-1">{errors.confirmPassword.message}</p>
+            <p id="confirmPassword-error" className="text-xs text-error font-medium mt-1">{errors.confirmPassword.message}</p>
           )}
         </div>
 

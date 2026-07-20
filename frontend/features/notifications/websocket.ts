@@ -27,6 +27,7 @@ class NotificationWebSocket {
   private ws: WebSocket | null = null;
   private token: string | null = null;
   private callbacks: Set<NotificationCallback> = new Set();
+  private messagingCallbacks: Set<(message: any) => void> = new Set();
   private reconnectTimeout: NodeJS.Timeout | null = null;
   private reconnectDelay = 1000;
   private maxReconnectDelay = 30000;
@@ -74,6 +75,9 @@ class NotificationWebSocket {
           } else if (message.type === "notification" && message.data) {
             // Realtime notification arrived!
             this.notifyCallbacks(message.data);
+          } else if (message.type === "messaging" && message.data) {
+            // Realtime messaging event arrived!
+            this.notifyMessagingCallbacks(message);
           } else if (message.type === "connected") {
             wsLogger.log("[WS] Logged in user:", message.user_id);
           }
@@ -124,6 +128,13 @@ class NotificationWebSocket {
     };
   }
 
+  public onMessagingEvent(callback: (message: any) => void): () => void {
+    this.messagingCallbacks.add(callback);
+    return () => {
+      this.messagingCallbacks.delete(callback);
+    };
+  }
+
   public onStatusChange(callback: (connected: boolean) => void): () => void {
     this.connectionStatusCallbacks.add(callback);
     // Call immediately with current status
@@ -163,6 +174,16 @@ class NotificationWebSocket {
         callback(notification);
       } catch (err) {
         wsLogger.error("[WS] Error in notification callback:", err);
+      }
+    });
+  }
+
+  private notifyMessagingCallbacks(message: any): void {
+    this.messagingCallbacks.forEach((callback) => {
+      try {
+        callback(message);
+      } catch (err) {
+        wsLogger.error("[WS] Error in messaging callback:", err);
       }
     });
   }

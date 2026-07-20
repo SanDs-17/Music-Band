@@ -1,23 +1,10 @@
 import { api } from "./api";
-import { VenueRegisterFormData, VenueProfileUpdateFormData } from "@/utils/validation";
+import { VenueProfileUpdateFormData } from "@/utils/validation";
 import { VenueResponseData, VenueDashboardData, VenueMediaData, VenueAvailabilityData, VenueConflictCheckRequest, VenueConflictCheckResponse, VenueFacilitiesData, VenuePricingData, VenueAnalyticsData, VenueDocumentsResubmitData, VenueSettingsData } from "@/types/venue";
 import { isPreviewActive, toastMutationBlocked } from "@/utils/dev-mode";
 import { mockVenueProfile, mockVenueDashboard, mockVenueAnalytics } from "@/utils/preview-fixtures";
 
 export const venueService = {
-  register: async (data: any): Promise<VenueResponseData> => {
-    if (isPreviewActive()) return toastMutationBlocked();
-    const { acceptTerms, ...payload } = data;
-    const response = await api.post<any>("/venues/register", payload);
-    return response.data.data;
-  },
-
-  createProfile: async (data: Record<string, unknown>): Promise<VenueResponseData> => {
-    if (isPreviewActive()) return toastMutationBlocked();
-    const response = await api.post<any>("/venues/me", data);
-    return response.data.data;
-  },
-
   getDashboardStats: async (): Promise<VenueDashboardData> => {
     if (isPreviewActive()) return Promise.resolve(mockVenueDashboard);
     const response = await api.get<any>("/venues/me/dashboard");

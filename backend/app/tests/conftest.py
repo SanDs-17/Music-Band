@@ -8,9 +8,20 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+# Import all models to ensure Base.metadata contains complete schema for create_all
+import app.features.auth.models  # noqa
+import app.features.artists.models  # noqa
+import app.features.venues.models  # noqa
+import app.features.bookings.models  # noqa
+import app.features.messaging.conversation.models  # noqa
+import app.features.messaging.message.models  # noqa
+import app.features.notifications.models  # noqa
+import app.features.reviews.models  # noqa
+
 from app.core.database import Base, get_db as db_get_db
 from app.core.dependencies import get_db as dep_get_db
-from main import app
+from main import app as fastapi_app
 
 # Use synchronous sqlite database for unit testing speed
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -24,6 +35,14 @@ TestingSessionLocal = sessionmaker(
     autoflush=False,
     bind=engine
 )
+
+@pytest.fixture(autouse=True)
+def clear_connection_manager():
+    """Ensure WebSocket connection manager active connections are cleared before each test."""
+    from app.features.notifications.connection_manager import connection_manager
+    connection_manager.active_connections.clear()
+    yield
+    connection_manager.active_connections.clear()
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_db():
@@ -54,8 +73,8 @@ def client(db_session) -> Generator[TestClient, None, None]:
         finally:
             pass
             
-    app.dependency_overrides[dep_get_db] = override_get_db
-    app.dependency_overrides[db_get_db] = override_get_db
-    with TestClient(app) as test_client:
+    fastapi_app.dependency_overrides[dep_get_db] = override_get_db
+    fastapi_app.dependency_overrides[db_get_db] = override_get_db
+    with TestClient(fastapi_app) as test_client:
         yield test_client
-    app.dependency_overrides.clear()
+    fastapi_app.dependency_overrides.clear()

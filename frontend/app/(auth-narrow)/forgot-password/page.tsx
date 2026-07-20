@@ -17,6 +17,8 @@ export default function ForgotPasswordPage() {
     formState: { errors, isSubmitting },
   } = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: { email: "" },
   });
 
@@ -43,7 +45,7 @@ export default function ForgotPasswordPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         <div className="space-y-1">
           <Label htmlFor="email">Email Address</Label>
           <Input
@@ -51,10 +53,13 @@ export default function ForgotPasswordPage() {
             type="email"
             placeholder="name@example.com"
             disabled={isSubmitting}
+            aria-invalid={!!errors.email}
+            aria-describedby={errors.email ? "email-error" : undefined}
+            className={errors.email ? "border-error focus-visible:border-error focus-visible:ring-error" : ""}
             {...register("email")}
           />
           {errors.email && (
-            <p className="text-xs text-error font-medium mt-1">{errors.email.message}</p>
+            <p id="email-error" className="text-xs text-error font-medium mt-1">{errors.email.message}</p>
           )}
         </div>
 

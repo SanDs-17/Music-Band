@@ -189,15 +189,26 @@ async def reset_password(
     summary="Verify user email address"
 )
 async def verify_email(
+    response: Response,
     data: VerifyEmailRequest,
     db: Session = Depends(get_db)
 ):
-    """Verifies user email address using valid JWT token. Handles already-verified gracefully."""
+    """Verifies user email address using valid JWT token. Handles already-verified gracefully and issues auto-login tokens on first verification."""
     result = auth_service.verify_email_token(db, data.token)
     if result.get("already_verified"):
-        msg = "Email already verified. You can proceed to log in."
+        msg = "Email already verified."
     else:
-        msg = "Email successfully verified. Please log in to access your account."
+        msg = "Email successfully verified. Auto-logged in."
+        if result.get("refresh_token"):
+            response.set_cookie(
+                key="refresh_token",
+                value=result["refresh_token"],
+                httponly=True,
+                secure=True,
+                samesite="strict",
+                max_age=7 * 24 * 60 * 60
+            )
+
     return SuccessResponse(
         success=True,
         data=result,

@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, RegisterFormData } from "@/utils/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { api } from "@/services/api";
@@ -29,10 +30,11 @@ function RegisterContent() {
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: { name: "", email: "", role_name: defaultRole as any, password: "", confirmPassword: "" },
   });
 
-  // Synchronize form value with search params if they change dynamically
   React.useEffect(() => {
     if (roleParam && ["client", "artist", "venue_owner"].includes(roleParam)) {
       setValue("role_name", roleParam as any);
@@ -41,13 +43,12 @@ function RegisterContent() {
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      // Strip confirmPassword — backend does not accept this field
       const { confirmPassword: _cp, ...payload } = data;
       const response = await api.post("/auth/register", payload);
       const { success, message, email_sent } = response.data;
       if (success) {
         if (typeof window !== "undefined") {
-          sessionStorage.setItem("registration_email", data.email);
+          sessionStorage.setItem("registration_email", String(data.email));
         }
         if (email_sent === false) {
           toast.success("Account Created (Verification email failed to send)");
@@ -64,7 +65,6 @@ function RegisterContent() {
     }
   };
 
-
   return (
     <div className="flex flex-col space-y-6">
       <div className="flex flex-col space-y-2 text-center">
@@ -74,17 +74,20 @@ function RegisterContent() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         <div className="space-y-1">
           <Label htmlFor="name">Full Name / Band Name</Label>
           <Input
             id="name"
             placeholder="John Doe"
             disabled={isSubmitting}
+            aria-invalid={!!errors.name}
+            aria-describedby={errors.name ? "name-error" : undefined}
+            className={errors.name ? "border-error focus-visible:border-error focus-visible:ring-error" : ""}
             {...register("name")}
           />
           {errors.name && (
-            <p className="text-xs text-error font-medium mt-1">{errors.name.message}</p>
+            <p id="name-error" className="text-xs text-error font-medium mt-1">{errors.name.message}</p>
           )}
         </div>
 
@@ -95,10 +98,13 @@ function RegisterContent() {
             type="email"
             placeholder="name@example.com"
             disabled={isSubmitting}
+            aria-invalid={!!errors.email}
+            aria-describedby={errors.email ? "email-error" : undefined}
+            className={errors.email ? "border-error focus-visible:border-error focus-visible:ring-error" : ""}
             {...register("email")}
           />
           {errors.email && (
-            <p className="text-xs text-error font-medium mt-1">{errors.email.message}</p>
+            <p id="email-error" className="text-xs text-error font-medium mt-1">{errors.email.message}</p>
           )}
         </div>
 
@@ -126,35 +132,39 @@ function RegisterContent() {
             )}
           />
           {errors.role_name && (
-            <p className="text-xs text-error font-medium mt-1">{errors.role_name.message}</p>
+            <p id="role_name-error" className="text-xs text-error font-medium mt-1">{errors.role_name.message}</p>
           )}
         </div>
 
         <div className="space-y-1">
           <Label htmlFor="password">Password</Label>
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             placeholder="Min 8 chars, uppercase, number, symbol"
             disabled={isSubmitting}
+            error={!!errors.password}
+            aria-invalid={!!errors.password}
+            aria-describedby={errors.password ? "password-error" : undefined}
             {...register("password")}
           />
           {errors.password && (
-            <p className="text-xs text-error font-medium mt-1">{errors.password.message}</p>
+            <p id="password-error" className="text-xs text-error font-medium mt-1">{errors.password.message}</p>
           )}
         </div>
 
         <div className="space-y-1">
           <Label htmlFor="confirmPassword">Confirm Password</Label>
-          <Input
+          <PasswordInput
             id="confirmPassword"
-            type="password"
             placeholder="Re-enter your password"
             disabled={isSubmitting}
+            error={!!errors.confirmPassword}
+            aria-invalid={!!errors.confirmPassword}
+            aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
             {...register("confirmPassword")}
           />
           {errors.confirmPassword && (
-            <p className="text-xs text-error font-medium mt-1">{errors.confirmPassword.message}</p>
+            <p id="confirmPassword-error" className="text-xs text-error font-medium mt-1">{errors.confirmPassword.message}</p>
           )}
         </div>
 
@@ -193,4 +203,3 @@ export default function RegisterPage() {
     </React.Suspense>
   );
 }
-

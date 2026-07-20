@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { User, Settings, LogOut, ChevronDown } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/utils/cn";
@@ -28,8 +27,7 @@ function getRoleProfileRoutes(role: string | undefined | null): {
 }
 
 export function HeaderProfileDropdown() {
-  const { user, clearAuth } = useAuth();
-  const router = useRouter();
+  const { user, logout } = useAuth();
   const [open, setOpen] = React.useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
@@ -44,7 +42,7 @@ export function HeaderProfileDropdown() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
-  // Close on Escape
+  // Close on Escape key
   React.useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") setOpen(false);
@@ -57,19 +55,8 @@ export function HeaderProfileDropdown() {
 
   const handleLogout = () => {
     setOpen(false);
-    
-    // Clear auth token, session & local storage, reset auth state
-    clearAuth();
-    if (typeof window !== "undefined") {
-      localStorage.clear();
-      sessionStorage.clear();
-    }
-    
-    // Display a success toast
     toast.success("Successfully logged out!");
-    
-    // Redirect to the public landing page
-    router.push("/");
+    logout();
   };
 
   const initials = user?.name

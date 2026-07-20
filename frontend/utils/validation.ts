@@ -1,25 +1,42 @@
 import * as z from "zod";
 
-// ─── Shared password strength validator (mirrors MASTER.md §9.5 + backend validators.py) ───
-const passwordStrengthSchema = z
-  .string()
-  .min(8, "Password must be at least 8 characters long")
-  .refine((val) => /[A-Z]/.test(val), {
-    message: "Password must contain at least one uppercase letter",
+// ─── Shared Email Validator ───────────────────────────
+export const emailSchema = z
+  .string({ required_error: "Email is required." })
+  .min(1, "Email is required.")
+  .min(5, "Please enter a valid email address.")
+  .max(254, "Please enter a valid email address.")
+  .refine((val: string) => !/\s/.test(val), {
+    message: "Email cannot contain spaces.",
   })
-  .refine((val) => /[a-z]/.test(val), {
-    message: "Password must contain at least one lowercase letter",
+  .refine((val: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
+    message: "Please enter a valid email address.",
+  });
+
+// ─── Shared Password Strength Validator ────────────────
+export const passwordStrengthSchema = z
+  .string({ required_error: "Password is required." })
+  .min(1, "Password is required.")
+  .min(8, "Password must be at least 8 characters.")
+  .max(64, "Password cannot exceed 64 characters.")
+  .refine((val: string) => /[A-Z]/.test(val), {
+    message: "Password must contain at least one uppercase letter.",
   })
-  .refine((val) => /[0-9]/.test(val), {
-    message: "Password must contain at least one number",
+  .refine((val: string) => /[a-z]/.test(val), {
+    message: "Password must contain at least one lowercase letter.",
   })
-  .refine((val) => /[!@#$%^&*()_+\-=\[\]{}|;':",./<>?]/.test(val), {
-    message: "Password must contain at least one special character",
+  .refine((val: string) => /\d/.test(val), {
+    message: "Password must contain at least one number.",
+  })
+  .refine((val: string) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?`~]/.test(val), {
+    message: "Password must contain at least one special character.",
   });
 
 export const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
+  email: emailSchema,
+  password: z
+    .string({ required_error: "Password is required." })
+    .min(1, "Password is required."),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
@@ -27,20 +44,20 @@ export type LoginFormData = z.infer<typeof loginSchema>;
 export const registerSchema = z
   .object({
     name: z.string().min(2, "Name must be at least 2 characters"),
-    email: z.string().email("Invalid email address"),
+    email: emailSchema,
     role_name: z.enum(["client", "artist", "venue_owner"]),
     password: passwordStrengthSchema,
-    confirmPassword: z.string().min(1, "Please confirm your password"),
+    confirmPassword: z.string().min(1, "Please confirm your password."),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
+    message: "Passwords do not match.",
     path: ["confirmPassword"],
   });
 
 export type RegisterFormData = z.infer<typeof registerSchema>;
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: emailSchema,
 });
 
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
@@ -48,10 +65,10 @@ export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 export const resetPasswordSchema = z
   .object({
     password: passwordStrengthSchema,
-    confirmPassword: z.string().min(1, "Please confirm your password"),
+    confirmPassword: z.string().min(1, "Please confirm your password."),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
+    message: "Passwords do not match.",
     path: ["confirmPassword"],
   });
 

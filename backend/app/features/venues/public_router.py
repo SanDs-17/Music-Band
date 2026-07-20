@@ -269,12 +269,10 @@ async def get_current_venue_profile(
     """
     Retrieves the complete profile information for the authenticated venue owner.
     """
-    venues = service.crud.get_by_user_id(db, current_user_claims["sub"])
-    if not venues:
-        raise NotFoundException("Venue profile not found.")
+    venue = service.get_venue_by_user_id(db, current_user_claims["sub"])
     return SuccessResponse(
         success=True,
-        data=_format_venue_profile(venues[0]),
+        data=_format_venue_profile(venue),
         message="Venue profile retrieved successfully."
     )
 

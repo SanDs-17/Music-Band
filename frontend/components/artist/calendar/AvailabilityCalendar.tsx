@@ -44,7 +44,7 @@ export function AvailabilityCalendar({ availability, onSave }: AvailabilityCalen
       toast.error("Cannot modify availability for past dates.");
       return;
     }
-    const isoString = format(day, "yyyy-MM-DD");
+    const isoString = format(day, "yyyy-MM-dd");
     
     // Check if it's already a confirmed gig (cannot modify)
     if (confirmedGigs.includes(isoString)) {
@@ -158,7 +158,7 @@ export function AvailabilityCalendar({ availability, onSave }: AvailabilityCalen
 
           {/* Actual Month days */}
           {days.map(day => {
-            const isoString = format(day, "yyyy-MM-DD");
+            const isoString = format(day, "yyyy-MM-dd");
             
             const isGig = confirmedGigs.includes(isoString);
             const isBlocked = blockedDates.includes(isoString);

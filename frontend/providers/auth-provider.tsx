@@ -99,7 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = React.useCallback(() => {
     clearAuth();
-    window.location.href = "/login";
+    window.location.href = "/";
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

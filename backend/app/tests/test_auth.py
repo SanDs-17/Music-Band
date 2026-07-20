@@ -498,3 +498,29 @@ class TestChangePassword:
         # Verify new password works for login
         new_login = client.post("/api/v1/auth/login", json={"email": email, "password": new_pw})
         assert new_login.status_code == 200, new_login.json()
+
+    def test_registration_creates_draft_artist_profile(self, client, db_session):
+        from uuid import UUID
+        from app.features.artists.models import ArtistProfile
+        email = "artist_draft@test.com"
+        resp = register_user(client, email, "The Rockers", "artist")
+        assert resp.status_code == 201
+
+        user_id = UUID(resp.json()["data"]["id"])
+        ap = db_session.query(ArtistProfile).filter(ArtistProfile.user_id == user_id).first()
+        assert ap is not None
+        assert ap.display_name == "The Rockers"
+        assert ap.verification_status == "pending"
+
+    def test_registration_creates_draft_venue(self, client, db_session):
+        from uuid import UUID
+        from app.features.venues.models import Venue
+        email = "venue_draft@test.com"
+        resp = register_user(client, email, "Grand Palace", "venue_owner")
+        assert resp.status_code == 201
+
+        user_id = UUID(resp.json()["data"]["id"])
+        venue = db_session.query(Venue).filter(Venue.user_id == user_id).first()
+        assert venue is not None
+        assert venue.name == "Grand Palace's Venue"
+        assert venue.verification_status == "pending"

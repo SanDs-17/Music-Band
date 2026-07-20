@@ -7,7 +7,7 @@ import os
 from abc import ABC, abstractmethod
 from fastapi import UploadFile
 from app.core.config import settings
-from app.utils.image_upload import upload_image as utils_upload_image
+from app.utils.image_upload import upload_file_generic
 
 class BaseStorage(ABC):
     """Abstract storage class outlining core storage contract operations."""
@@ -36,11 +36,9 @@ class S3Storage(BaseStorage):
         self.bucket = settings.AWS_BUCKET_NAME
 
     async def upload(self, file: UploadFile, subfolder: str) -> str:
-        # Standard S3 uploader utilizing utils helper
-        return await utils_upload_image(file, subfolder)
+        return await upload_file_generic(file, subfolder)
 
     def delete(self, path: str) -> bool:
-        # Extract S3 key from full url if matching S3 pattern
         key = path.replace(f"https://{self.bucket}.s3.{settings.AWS_REGION}.amazonaws.com/", "")
         try:
             self.client.delete_object(Bucket=self.bucket, Key=key)
@@ -52,10 +50,9 @@ class S3Storage(BaseStorage):
 class LocalStorage(BaseStorage):
     """Storage client configured for local directory writes."""
     async def upload(self, file: UploadFile, subfolder: str) -> str:
-        return await utils_upload_image(file, subfolder)
+        return await upload_file_generic(file, subfolder)
 
     def delete(self, path: str) -> bool:
-        # Remove mount prefix to locate local path
         local_path = path.lstrip("/")
         if os.path.exists(local_path):
             try:

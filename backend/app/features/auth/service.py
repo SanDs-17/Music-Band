@@ -34,8 +34,27 @@ class AuthService:
         """Hash a token string to store in DB safely."""
         return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
+    def _get_or_create_default_city(self, db: Session):
+        from app.features.locations.models import Country, State, City
+        city = db.query(City).first()
+        if not city:
+            country = db.query(Country).filter(Country.code == "IN").first()
+            if not country:
+                country = Country(name="India", code="IN")
+                db.add(country)
+                db.flush()
+            state = db.query(State).filter(State.name == "Karnataka").first()
+            if not state:
+                state = State(name="Karnataka", country_id=country.id)
+                db.add(state)
+                db.flush()
+            city = City(name="Bengaluru", state_id=state.id)
+            db.add(city)
+            db.flush()
+        return city
+
     def register_user(self, db: Session, data: UserRegister) -> Tuple[User, bool]:
-        """Registers a new platform user and assigns selected roles."""
+        """Registers a new platform user, assigns selected roles, and creates draft role entity."""
         # Check if email is already taken
         existing_user = self.user_crud.get_by_email(db, data.email)
         if existing_user:
@@ -65,6 +84,39 @@ class AuthService:
 
         # Attach roles mapping relationship
         user.roles.append(role)
+        db.flush()
+
+        # Immediately create corresponding draft role entity so dashboard APIs never fail with 404
+        from uuid import UUID as PyUUID
+        user_uuid = PyUUID(str(user.id)) if not isinstance(user.id, PyUUID) else user.id
+
+        if data.role_name == "artist":
+            from app.features.artists.models import ArtistProfile
+            existing_ap = db.query(ArtistProfile).filter(ArtistProfile.user_id == user_uuid).first()
+            if not existing_ap:
+                draft_artist = ArtistProfile(
+                    user_id=user_uuid,
+                    display_name=user.name,
+                    verification_status="pending"
+                )
+                db.add(draft_artist)
+        elif data.role_name == "venue_owner":
+            from app.features.venues.models import Venue
+            from app.features.venues.service import generate_next_venue_number
+            existing_venue = db.query(Venue).filter(Venue.user_id == user_uuid).first()
+            if not existing_venue:
+                city = self._get_or_create_default_city(db)
+                venue_num = generate_next_venue_number(db)
+                draft_venue = Venue(
+                    user_id=user_uuid,
+                    name=f"{user.name}'s Venue",
+                    address="Pending Address",
+                    city_id=city.id,
+                    venue_number=venue_num,
+                    verification_status="pending"
+                )
+                db.add(draft_venue)
+
         db.commit()
         db.refresh(user)
 
@@ -248,18 +300,60 @@ class AuthService:
         if not user or not user.is_active:
             raise NotFoundException("User account not found or suspended.")
 
-        # Gracefully handle already-verified — do NOT error the account or the user.
+        role_name = user.roles[0].name if user.roles else "client"
+
+        # Gracefully handle already-verified — do NOT error the account or issue new session tokens.
         if user.is_verified:
             logger.info(f"Email already verified for user: {user.email}")
-            role_name = user.roles[0].name if user.roles else "client"
-            return {"verified": True, "already_verified": True, "role": role_name}
+            return {
+                "verified": True,
+                "already_verified": True,
+                "role": role_name,
+                "access_token": None,
+                "refresh_token": None,
+                "user": None
+            }
 
         user.is_verified = True
         db.add(user)
         db.commit()
+        db.refresh(user)
         logger.info(f"Email successfully verified for user: {user.email}")
-        role_name = user.roles[0].name if user.roles else "client"
-        return {"verified": True, "already_verified": False, "role": role_name}
+
+        # First-time auto-login: generate access & refresh tokens
+        permissions = list({perm.name for r in user.roles for perm in r.permissions})
+        access_token = create_access_token(
+            subject=user.id,
+            role=role_name,
+            email=user.email,
+            permissions=permissions
+        )
+        refresh_token = create_refresh_token(subject=user.id)
+
+        token_hash = self._hash_token(refresh_token)
+        expiry = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+        self.token_crud.revoke_user_tokens(db, user.id)
+        self.token_crud.create(
+            db,
+            obj_in={
+                "user_id": user.id,
+                "token_hash": token_hash,
+                "expires_at": expiry,
+                "is_revoked": False
+            }
+        )
+
+        from app.features.auth.schemas import UserResponse
+        user_data = UserResponse.model_validate(user).model_dump(mode="json")
+
+        return {
+            "verified": True,
+            "already_verified": False,
+            "role": role_name,
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "user": user_data
+        }
 
 
 

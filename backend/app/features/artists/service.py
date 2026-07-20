@@ -274,11 +274,38 @@ class ArtistService:
         logger.info(f"Activated performer credentials session access: User ID {user.id}")
         return artist
 
-    def get_dashboard_stats(self, db: Session, user_id: str) -> dict:
-        """Fetches and prepares stats, notifications, and events for the artist dashboard."""
-        artist = self.crud.get_by_user_id(db, user_id)
+    def get_artist_by_user_id(self, db: Session, user_id: str) -> ArtistProfile:
+        """Retrieves existing artist profile for user_id. Raises NotFoundException if missing."""
+        from uuid import UUID as PyUUID
+        user_uuid = PyUUID(str(user_id)) if not isinstance(user_id, PyUUID) else user_id
+        artist = self.crud.get_by_user_id(db, user_uuid)
         if not artist:
+            logger.error(f"Artist profile missing for user {user_id}")
             raise NotFoundException("Artist profile not found.")
+        return artist
+
+    def get_or_create_draft_artist(self, db: Session, user_id: str) -> ArtistProfile:
+        """Utility helper for migration/testing. Production GET handlers use get_artist_by_user_id."""
+        from uuid import UUID as PyUUID
+        user_uuid = PyUUID(str(user_id)) if not isinstance(user_id, PyUUID) else user_id
+        artist = self.crud.get_by_user_id(db, user_uuid)
+        if not artist:
+            user = self.user_crud.get(db, user_uuid)
+            user_name = user.name if user else "Performer"
+            artist = ArtistProfile(
+                user_id=user_uuid,
+                display_name=user_name,
+                verification_status="pending"
+            )
+            db.add(artist)
+            db.commit()
+            db.refresh(artist)
+            logger.info(f"Created draft ArtistProfile for user {user_id}")
+        return artist
+
+    def get_dashboard_stats(self, db: Session, user_id: str) -> dict:
+        """Fetches and prepares stats, notifications, and events for the artist dashboard (Read-Only)."""
+        artist = self.get_artist_by_user_id(db, user_id)
 
         # In production we would query actual bookings/reviews/notifications tables.
         # Currently we populate realistic mock metrics conforming to the specs.

@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/services/api";
 import { getRoleDashboard } from "@/utils/role-routes";
+import { useAuthStore } from "@/store/auth-store";
 import toast from "react-hot-toast";
 
 
@@ -77,13 +78,25 @@ function VerifyEmailContent() {
           if (data?.already_verified) {
             setStatus("already_verified");
             toast.success(message || "Email is already verified.");
+            if (data?.role) {
+              setAuthRole(data.role);
+            }
           } else {
             setStatus("success");
-            toast.success(message || "Email verified successfully!");
-          }
-          // If response includes role, set it
-          if (data?.role) {
-            setAuthRole(data.role);
+            const role = data?.role || "client";
+            setAuthRole(role);
+
+            // First-time verification: Auto Login
+            if (data?.access_token && data?.user) {
+              useAuthStore.getState().setAuth(data.user, data.access_token);
+              toast.success("Email verified! Redirecting to dashboard...");
+              const targetDashboard = getRoleDashboard(role);
+              setTimeout(() => {
+                router.replace(targetDashboard);
+              }, 1200);
+            } else {
+              toast.success(message || "Email verified successfully!");
+            }
           }
         }
       } catch (err: any) {
@@ -102,7 +115,7 @@ function VerifyEmailContent() {
     };
 
     performVerification();
-  }, [token]);
+  }, [token, router]);
 
   // 4. Cooldown timer for email resends
   React.useEffect(() => {

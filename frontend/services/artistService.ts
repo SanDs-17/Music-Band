@@ -1,24 +1,11 @@
 import { api } from "./api";
-import { ArtistRegisterFormData, ArtistProfileUpdateFormData } from "@/utils/validation";
+import { ArtistProfileUpdateFormData } from "@/utils/validation";
 import { ArtistProfile, ArtistDashboardData, AvailabilityData, MediaGalleryData, PricingData } from "@/types/artist";
 import { ArtistAnalytics } from "@/types/analytics";
 import { isPreviewActive, toastMutationBlocked } from "@/utils/dev-mode";
 import { mockArtistProfile, mockArtistDashboard, mockArtistAnalytics } from "@/utils/preview-fixtures";
 
 export const artistService = {
-  register: async (data: any): Promise<ArtistProfile> => {
-    if (isPreviewActive()) return toastMutationBlocked();
-    const { acceptTerms, ...payload } = data;
-    const response = await api.post<any>("/artists/register", payload);
-    return response.data.data;
-  },
-
-  createProfile: async (data: Record<string, unknown>): Promise<ArtistProfile> => {
-    if (isPreviewActive()) return toastMutationBlocked();
-    const response = await api.post<any>("/artists/me", data);
-    return response.data.data;
-  },
-
   getDashboardStats: async (): Promise<ArtistDashboardData> => {
     if (isPreviewActive()) return Promise.resolve(mockArtistDashboard);
     const response = await api.get<any>("/artists/me/dashboard");

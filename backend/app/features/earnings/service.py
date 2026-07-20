@@ -15,10 +15,7 @@ class EarningsService:
 
     def get_artist_earnings_summary(self, db: Session, user_id: str) -> dict:
         artist = self.get_artist_profile(db, user_id)
-        
-        # Seed mock data if none exists
         transaction_crud.seed_mock_transactions_if_empty(db, artist.id)
-        
         stats = transaction_crud.get_summary_stats(db, artist.id)
         tx_history = transaction_crud.get_by_artist(db, artist.id, offset=0, limit=20)
         
@@ -36,10 +33,7 @@ class EarningsService:
 
     def get_venue_earnings_summary(self, db: Session, user_id: str) -> dict:
         venue = self.get_venue_profile(db, user_id)
-        
-        # Seed mock data if none exists
         transaction_crud.seed_venue_mock_transactions_if_empty(db, venue.id)
-        
         stats = transaction_crud.get_venue_summary_stats(db, venue.id)
         tx_history = transaction_crud.get_by_venue(db, venue.id, offset=0, limit=20)
         

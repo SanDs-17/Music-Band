@@ -29,11 +29,23 @@ def test_email_verification_flow(client, db_session):
     # 3. Post verification token to endpoint
     verify_response = client.post("/api/v1/auth/verify-email", json={"token": token})
     assert verify_response.status_code == 200
-    assert verify_response.json()["success"] is True
+    res_data = verify_response.json()
+    assert res_data["success"] is True
+    assert res_data["data"]["already_verified"] is False
+    assert res_data["data"]["access_token"] is not None
+    assert res_data["data"]["user"] is not None
 
     # Confirm user is now verified
     db_session.refresh(user)
     assert user.is_verified is True
+
+    # 4. Second click on same verification link should return already_verified: True without auto-login tokens
+    reverify_response = client.post("/api/v1/auth/verify-email", json={"token": token})
+    assert reverify_response.status_code == 200
+    re_res_data = reverify_response.json()
+    assert re_res_data["success"] is True
+    assert re_res_data["data"]["already_verified"] is True
+    assert re_res_data["data"]["access_token"] is None
 
 def test_email_verification_invalid_token(client):
     # Try verifying with an invalid token
