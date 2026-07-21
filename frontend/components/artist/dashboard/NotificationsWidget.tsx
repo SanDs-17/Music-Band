@@ -17,7 +17,7 @@ export function NotificationsWidget({ notifications }: NotificationsWidgetProps)
           Inbox Alert logs
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 space-y-4 max-h-[350px] overflow-y-auto pr-1">
+      <CardContent className="p-4 space-y-4 max-h-87.5 overflow-y-auto pr-1">
         {notifications.map((notif) => {
           const isWarning = notif.title.toLowerCase().includes("warn") || notif.title.toLowerCase().includes("request");
           const Icon = isWarning ? ShieldAlert : CheckCircle;

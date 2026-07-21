@@ -4,7 +4,6 @@ import * as React from "react";
 import {
   Users,
   Music,
-  Building2,
   Calendar,
   IndianRupee,
   ShieldCheck,
@@ -13,7 +12,8 @@ import {
   Activity,
   Percent,
   CheckCircle,
-  XCircle
+  XCircle,
+  Star
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -22,14 +22,17 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AdminPageContainer } from "@/components/layout/admin/AdminPageContainer";
 import { AdminStatCard } from "@/components/layout/admin/AdminWidgets";
+import {
+  ReviewActivityChart,
+  RoleComparisonChart,
+  TopRatedProfilesWidget
+} from "@/components/reviews";
+import { useAdminReviewAnalytics } from "@/hooks/use-review-analytics";
 import toast from "react-hot-toast";
-
-// ─── Custom Responsive SVG Charts ────────────────────────────────────────────
 
 function CustomAreaChart() {
   return (
     <div className="w-full h-64 relative mt-4">
-      {/* SVG drawing a smooth Area Line for Revenue */}
       <svg className="w-full h-full" viewBox="0 0 500 200" preserveAspectRatio="none">
         <defs>
           <linearGradient id="chartGlow" x1="0" y1="0" x2="0" y2="1">
@@ -37,28 +40,23 @@ function CustomAreaChart() {
             <stop offset="100%" stopColor="#FF6B35" stopOpacity="0.0" />
           </linearGradient>
         </defs>
-        {/* Grid lines */}
         <line x1="0" y1="50" x2="500" y2="50" stroke="var(--color-border)" strokeWidth="0.5" strokeDasharray="4" />
         <line x1="0" y1="100" x2="500" y2="100" stroke="var(--color-border)" strokeWidth="0.5" strokeDasharray="4" />
         <line x1="0" y1="150" x2="500" y2="150" stroke="var(--color-border)" strokeWidth="0.5" strokeDasharray="4" />
 
-        {/* Shaded Area */}
         <path
           d="M 0 160 Q 100 120 200 140 T 400 60 T 500 40 L 500 200 L 0 200 Z"
           fill="url(#chartGlow)"
         />
-        {/* Stroke Line */}
         <path
           d="M 0 160 Q 100 120 200 140 T 400 60 T 500 40"
           fill="none"
           stroke="#FF6B35"
           strokeWidth="3"
         />
-        {/* Data points */}
         <circle cx="200" cy="140" r="4" fill="#FF6B35" stroke="#12121A" strokeWidth="2" />
         <circle cx="400" cy="60" r="4" fill="#FF6B35" stroke="#12121A" strokeWidth="2" />
       </svg>
-      {/* Labels */}
       <div className="absolute bottom-0 left-0 right-0 flex justify-between text-[10px] text-text-secondary px-2">
         <span>Jan</span>
         <span>Mar</span>
@@ -74,7 +72,6 @@ function CustomAreaChart() {
 function CustomBarChart() {
   return (
     <div className="w-full h-64 relative mt-4 flex items-end justify-between gap-2 px-4 pt-6">
-      {/* Dynamic bars for bookings */}
       {[60, 80, 45, 90, 110, 75, 120, 95, 130, 85, 140, 105].map((val, idx) => (
         <div key={idx} className="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
           <div className="text-[9px] text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity font-bold">
@@ -90,10 +87,9 @@ function CustomBarChart() {
   );
 }
 
-// ─── Main Admin Dashboard Page ───────────────────────────────────────────────
-
 export default function AdminDashboardPage() {
-  // Demo State for approvals verification list
+  const { analytics: adminAnalytics } = useAdminReviewAnalytics();
+
   const [approvals, setApprovals] = React.useState([
     { id: "1", name: "The Metal Core", type: "Band", email: "metal@core.in", time: "10 min ago" },
     { id: "2", name: "Royal Plaza Turf", type: "Venue", email: "plaza@royal.com", time: "1 hour ago" },
@@ -117,7 +113,7 @@ export default function AdminDashboardPage() {
   return (
     <AdminPageContainer
       title="Admin Home"
-      description="Real-time metric counters, escrow cash positions, system approvals queue, and performance logs."
+      description="Real-time metric counters, escrow cash positions, review analytics, system approvals queue, and performance logs."
       actions={
         <div className="flex gap-2">
           <Button size="sm" onClick={() => handleQuickAction("Generate Report")} className="flex items-center gap-1.5 font-bold">
@@ -141,18 +137,18 @@ export default function AdminDashboardPage() {
           icon={Users}
         />
         <AdminStatCard
-          title="Bands Registered"
-          value="3,240"
-          trend={{ value: "+8.2%", isPositive: true }}
-          description="Active performers listings"
-          icon={Music}
+          title="Platform Average Rating"
+          value={`${(adminAnalytics?.platform_average_rating ?? 4.85).toFixed(2)} ★`}
+          trend={{ value: "+0.3", isPositive: true }}
+          description="Across all verified reviews"
+          icon={Star}
         />
         <AdminStatCard
-          title="Venues Listed"
-          value="1,120"
-          trend={{ value: "+4.1%", isPositive: true }}
-          description="Listed event halls"
-          icon={Building2}
+          title="Total Reviews Submitted"
+          value={`${adminAnalytics?.total_reviews ?? 148}`}
+          trend={{ value: `+${adminAnalytics?.growth_percentage ?? 12.5}%`, isPositive: true }}
+          description="Platform review volume"
+          icon={Music}
         />
         <AdminStatCard
           title="Bookings Completed"
@@ -190,7 +186,34 @@ export default function AdminDashboardPage() {
         />
       </div>
 
-      {/* 2. Custom Charts Section */}
+      {/* 2. Platform Review Analytics Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <ReviewActivityChart
+          data={adminAnalytics?.activity_breakdown || [
+            { period: "Nov 2025", average_rating: 4.8, count: 20 },
+            { period: "Dec 2025", average_rating: 4.8, count: 32 },
+            { period: "Jan 2026", average_rating: 4.9, count: 45 },
+            { period: "Feb 2026", average_rating: 4.9, count: 51 }
+          ]}
+        />
+
+        <RoleComparisonChart
+          data={adminAnalytics?.role_comparison || [
+            { role: "Client Reviews", average_rating: 4.9, total_reviews: 60 },
+            { role: "Artist Reviews", average_rating: 4.8, total_reviews: 45 },
+            { role: "Venue Reviews", average_rating: 4.7, total_reviews: 43 }
+          ]}
+        />
+
+        <TopRatedProfilesWidget
+          items={adminAnalytics?.top_rated_artists || [
+            { id: "1", name: "The Metal Core", entity_type: "artist", average_rating: 5.0, total_reviews: 18 },
+            { id: "2", name: "Royal Plaza Turf", entity_type: "venue", average_rating: 4.9, total_reviews: 14 }
+          ]}
+        />
+      </div>
+
+      {/* 3. Custom Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <Card>
           <CardHeader>
@@ -219,9 +242,8 @@ export default function AdminDashboardPage() {
         </Card>
       </div>
 
-      {/* 3. Action Toggles & Lists Widgets */}
+      {/* 4. Action Toggles & Lists Widgets */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Approvals Queue */}
         <Card className="lg:col-span-2">
           <CardHeader className="border-b border-border/30">
             <CardTitle className="text-sm font-bold flex items-center gap-2">
@@ -270,7 +292,6 @@ export default function AdminDashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Latest Registered Users */}
         <Card>
           <CardHeader className="border-b border-border/30">
             <CardTitle className="text-sm font-bold flex items-center gap-2">

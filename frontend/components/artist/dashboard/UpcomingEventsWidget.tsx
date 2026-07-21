@@ -18,7 +18,7 @@ export function UpcomingEventsWidget({ events }: UpcomingEventsWidgetProps) {
           Upcoming Events
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 space-y-4 max-h-[350px] overflow-y-auto pr-1">
+      <CardContent className="p-4 space-y-4 max-h-87.5 overflow-y-auto pr-1">
         {events.map((event) => (
           <div 
             key={event.id} 

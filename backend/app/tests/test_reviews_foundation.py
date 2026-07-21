@@ -8,7 +8,11 @@ from app.features.auth.models import User
 from app.features.reviews.models import Review
 from app.features.reviews.repository import review_repository
 from app.features.reviews.service import review_service
-from app.features.reviews.schemas import CreateReviewRequest, UpdateReviewRequest, ReviewFilters
+from app.features.reviews.schemas import (
+    CreateReviewRequest,
+    UpdateReviewRequest,
+    ReviewFilters,
+)
 from app.core.exceptions import BadRequestException
 from app.core.dependencies import get_current_user
 from main import app
@@ -22,7 +26,7 @@ def test_users(db_session: Session):
         password_hash="hashed_pw",
         name="Reviewer User",
         is_active=True,
-        is_verified=True
+        is_verified=True,
     )
     user2 = User(
         id=uuid.uuid4(),
@@ -30,7 +34,7 @@ def test_users(db_session: Session):
         password_hash="hashed_pw",
         name="Reviewee User",
         is_active=True,
-        is_verified=True
+        is_verified=True,
     )
     admin = User(
         id=uuid.uuid4(),
@@ -38,7 +42,7 @@ def test_users(db_session: Session):
         password_hash="hashed_pw",
         name="Admin Review User",
         is_active=True,
-        is_verified=True
+        is_verified=True,
     )
     db_session.add_all([user1, user2, admin])
     db_session.commit()
@@ -58,7 +62,7 @@ def test_review_repository_crud(db_session: Session, test_users: dict):
         rating=5,
         review_title="Fantastic Performance",
         review_text="The live band performance was amazing!",
-        is_public=True
+        is_public=True,
     )
     db_session.add(review)
     db_session.commit()
@@ -94,7 +98,7 @@ def test_review_service_validation(db_session: Session, test_users: dict):
             reviewee_id=reviewee.id,
             rating=6,
             review_title="Invalid Rating",
-            review_text="Too high rating score"
+            review_text="Too high rating score",
         )
 
     # Valid creation via service
@@ -102,24 +106,33 @@ def test_review_service_validation(db_session: Session, test_users: dict):
         reviewee_id=reviewee.id,
         rating=4,
         review_title="Great Gig",
-        review_text="Great music and crowd engagement."
+        review_text="Great music and crowd engagement.",
     )
-    created = review_service.create_review(db_session, reviewer.id, "client", valid_request)
+    created = review_service.create_review(
+        db_session, reviewer.id, "client", valid_request
+    )
     assert created.rating == 4
     assert created.review_title == "Great Gig"
 
     # Update review
     update_req = UpdateReviewRequest(rating=5, review_title="Updated Excellent Gig")
-    updated = review_service.update_review(db_session, reviewer.id, created.id, update_req)
+    updated = review_service.update_review(
+        db_session, reviewer.id, created.id, update_req
+    )
     assert updated.rating == 5
     assert updated.review_title == "Updated Excellent Gig"
 
 
-def test_review_router_endpoints(client: TestClient, db_session: Session, test_users: dict):
+def test_review_router_endpoints(
+    client: TestClient, db_session: Session, test_users: dict
+):
     reviewer = test_users["reviewer"]
     reviewee = test_users["reviewee"]
 
-    app.dependency_overrides[get_current_user] = lambda: {"sub": str(reviewer.id), "role": "client"}
+    app.dependency_overrides[get_current_user] = lambda: {
+        "sub": str(reviewer.id),
+        "role": "client",
+    }
 
     try:
         # 1. POST /api/v1/reviews
@@ -129,7 +142,7 @@ def test_review_router_endpoints(client: TestClient, db_session: Session, test_u
             "rating": 5,
             "review_title": "Outstanding Performance",
             "review_text": "Exceeded all our expectations!",
-            "is_public": True
+            "is_public": True,
         }
         resp = client.post("/api/v1/reviews", json=payload)
         assert resp.status_code == 201
@@ -150,7 +163,10 @@ def test_review_router_endpoints(client: TestClient, db_session: Session, test_u
         assert detail_resp.json()["data"]["id"] == review_id
 
         # 4. PUT /api/v1/reviews/{id}
-        put_resp = client.put(f"/api/v1/reviews/{review_id}", json={"rating": 4, "review_title": "Revised Rating"})
+        put_resp = client.put(
+            f"/api/v1/reviews/{review_id}",
+            json={"rating": 4, "review_title": "Revised Rating"},
+        )
         assert put_resp.status_code == 200
         assert put_resp.json()["data"]["rating"] == 4
 

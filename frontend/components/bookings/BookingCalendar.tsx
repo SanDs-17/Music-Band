@@ -284,39 +284,58 @@ export function BookingCalendar({
               )}
             </div>
 
-            <div className="space-y-2 min-h-[200px]">
+            <div className="space-y-2 min-h-50">
               {getDayBookings(currentDate).map(b => (
                 <div
                   key={b.id}
                   onClick={() => onSelectBooking(b)}
                   className="p-4 border border-border bg-bg-elevated/10 hover:bg-bg-elevated/20 cursor-pointer rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all"
                 >
-                  <div className="space-y-1.5">
-                    <p className="text-sm font-black text-text-primary leading-snug">{b.event_name}</p>
-                    <div className="flex flex-wrap gap-4 text-[10px] text-text-secondary">
-                      <span className="flex items-center gap-1">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-extrabold text-sm text-text-primary">
+                        {b.event_title || b.venue_name || "Private Booking"}
+                      </span>
+                      <Badge variant={getStatusBadgeVariant(b.status)} className="text-[10px]">
+                        {b.status}
+                      </Badge>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-secondary">
+                      <div className="flex items-center gap-1">
                         <Clock className="h-3.5 w-3.5 text-text-muted" />
-                        {b.start_time} - {b.end_time}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <User className="h-3.5 w-3.5 text-text-muted" />
-                        Host: {b.client.name}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MapPin className="h-3.5 w-3.5 text-text-muted" />
-                        {b.location}
-                      </span>
+                        <span>
+                          {format(parseISO(b.start_time), "h:mm a")} - {format(parseISO(b.end_time), "h:mm a")}
+                        </span>
+                      </div>
+
+                      {b.artist_name && (
+                        <div className="flex items-center gap-1">
+                          <User className="h-3.5 w-3.5 text-text-muted" />
+                          <span>{b.artist_name}</span>
+                        </div>
+                      )}
+
+                      {b.venue_name && (
+                        <div className="flex items-center gap-1">
+                          <MapPin className="h-3.5 w-3.5 text-text-muted" />
+                          <span>{b.venue_name}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="h-8 font-bold text-[10px] shrink-0">
-                    Inspect Booking
-                  </Button>
+
+                  <div className="flex items-center gap-3 self-end sm:self-center">
+                    <span className="font-black text-sm text-text-primary">
+                      ${b.total_price.toLocaleString()}
+                    </span>
+                  </div>
                 </div>
               ))}
+
               {getDayBookings(currentDate).length === 0 && (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <Layers className="h-8 w-8 text-text-muted mb-2 animate-bounce" />
-                  <p className="text-xs text-text-muted italic">No reservations booked on this date slot.</p>
+                <div className="py-12 text-center text-xs text-text-muted italic border border-dashed border-border/60 rounded-xl">
+                  No bookings scheduled for this day.
                 </div>
               )}
             </div>
@@ -326,7 +345,7 @@ export function BookingCalendar({
         {/* Selected day preview in month view */}
         {calendarView === "month" && selectedDate && (
           <div className="mt-4 pt-4 border-t border-border/40 space-y-2 text-xs">
-            <p className="font-bold text-text-primary uppercase tracking-wider text-[10px] text-text-secondary">
+            <p className="font-bold uppercase tracking-wider text-[10px] text-text-secondary">
               Selected Day: {format(selectedDate, "do MMMM, yyyy")}
             </p>
 

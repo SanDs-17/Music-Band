@@ -68,7 +68,7 @@ export function RevenueChartWidget({ data }: RevenueChartWidgetProps) {
                     {/* Animated Bar */}
                     <div className="w-full relative rounded-t-lg overflow-hidden bg-bg-elevated/40 border border-border/50 h-44 flex items-end">
                       <div 
-                        className={`w-full rounded-t-lg bg-gradient-to-t from-primary/70 to-primary transition-all duration-500 ease-out group-hover:from-primary group-hover:to-primary-light`}
+                        className={`w-full rounded-t-lg bg-linear-to-t from-primary/70 to-primary transition-all duration-500 ease-out group-hover:from-primary group-hover:to-primary-light`}
                         style={{ height: `${percentage}%` }}
                       />
                     </div>

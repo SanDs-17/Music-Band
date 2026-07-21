@@ -9,7 +9,11 @@ from app.features.artists.models import ArtistProfile
 from app.features.bookings.models import Booking
 from app.features.reviews.service import review_service
 from app.features.reviews.schemas import CreateReviewRequest
-from app.core.exceptions import BadRequestException, ForbiddenException, ConflictException
+from app.core.exceptions import (
+    BadRequestException,
+    ForbiddenException,
+    ConflictException,
+)
 from app.core.dependencies import get_current_user
 from main import app
 
@@ -22,7 +26,7 @@ def workflow_setup(db_session: Session):
         password_hash="hashed",
         name="Client Workflow User",
         is_active=True,
-        is_verified=True
+        is_verified=True,
     )
     artist_user = User(
         id=uuid.uuid4(),
@@ -30,7 +34,7 @@ def workflow_setup(db_session: Session):
         password_hash="hashed",
         name="Artist Workflow User",
         is_active=True,
-        is_verified=True
+        is_verified=True,
     )
     outsider_user = User(
         id=uuid.uuid4(),
@@ -38,7 +42,7 @@ def workflow_setup(db_session: Session):
         password_hash="hashed",
         name="Outsider User",
         is_active=True,
-        is_verified=True
+        is_verified=True,
     )
     db_session.add_all([client_user, artist_user, outsider_user])
     db_session.commit()
@@ -47,7 +51,7 @@ def workflow_setup(db_session: Session):
         id=uuid.uuid4(),
         user_id=artist_user.id,
         display_name="Workflow Artist",
-        verification_status="approved"
+        verification_status="approved",
     )
     db_session.add(artist_profile)
     db_session.commit()
@@ -63,7 +67,7 @@ def workflow_setup(db_session: Session):
         end_time=time(21, 0),
         location="Main Stage",
         proposed_price=1000.0,
-        status="completed"
+        status="completed",
     )
 
     # Pending booking (Non-completed)
@@ -77,7 +81,7 @@ def workflow_setup(db_session: Session):
         end_time=time(21, 0),
         location="Side Stage",
         proposed_price=500.0,
-        status="pending"
+        status="pending",
     )
     db_session.add_all([completed_booking, pending_booking])
     db_session.commit()
@@ -88,7 +92,7 @@ def workflow_setup(db_session: Session):
         "outsider": outsider_user,
         "artist_profile": artist_profile,
         "completed_booking": completed_booking,
-        "pending_booking": pending_booking
+        "pending_booking": pending_booking,
     }
 
 
@@ -98,7 +102,9 @@ def test_completed_booking_review_workflow(db_session: Session, workflow_setup: 
     completed_booking = workflow_setup["completed_booking"]
 
     # 1. Eligibility Check
-    eligibility = review_service.check_eligibility(db_session, client_user.id, completed_booking.id)
+    eligibility = review_service.check_eligibility(
+        db_session, client_user.id, completed_booking.id
+    )
     assert eligibility.eligible is True
     assert eligibility.already_reviewed is False
 
@@ -109,7 +115,7 @@ def test_completed_booking_review_workflow(db_session: Session, workflow_setup: 
         reviewee_role="artist",
         rating=5,
         review_title="Superb Performance",
-        review_text="Punctual, energetic, and highly professional!"
+        review_text="Punctual, energetic, and highly professional!",
     )
     review = review_service.create_review(db_session, client_user.id, "client", req)
     assert review.id is not None
@@ -120,7 +126,9 @@ def test_completed_booking_review_workflow(db_session: Session, workflow_setup: 
         review_service.create_review(db_session, client_user.id, "client", req)
 
 
-def test_non_completed_booking_review_rejected(db_session: Session, workflow_setup: dict):
+def test_non_completed_booking_review_rejected(
+    db_session: Session, workflow_setup: dict
+):
     client_user = workflow_setup["client"]
     artist_user = workflow_setup["artist_user"]
     pending_booking = workflow_setup["pending_booking"]
@@ -130,7 +138,7 @@ def test_non_completed_booking_review_rejected(db_session: Session, workflow_set
         booking_id=pending_booking.id,
         reviewee_id=artist_user.id,
         rating=4,
-        review_text="Premature review"
+        review_text="Premature review",
     )
     with pytest.raises(BadRequestException):
         review_service.create_review(db_session, client_user.id, "client", req)
@@ -146,18 +154,23 @@ def test_non_participant_review_rejected(db_session: Session, workflow_setup: di
         booking_id=completed_booking.id,
         reviewee_id=artist_user.id,
         rating=5,
-        review_text="Fake review"
+        review_text="Fake review",
     )
     with pytest.raises(ForbiddenException):
         review_service.create_review(db_session, outsider.id, "client", req)
 
 
-def test_workflow_router_endpoints(client: TestClient, db_session: Session, workflow_setup: dict):
+def test_workflow_router_endpoints(
+    client: TestClient, db_session: Session, workflow_setup: dict
+):
     client_user = workflow_setup["client"]
     completed_booking = workflow_setup["completed_booking"]
     artist_user = workflow_setup["artist_user"]
 
-    app.dependency_overrides[get_current_user] = lambda: {"sub": str(client_user.id), "role": "client"}
+    app.dependency_overrides[get_current_user] = lambda: {
+        "sub": str(client_user.id),
+        "role": "client",
+    }
 
     try:
         # GET /api/v1/reviews/eligibility/{booking_id}
@@ -166,22 +179,28 @@ def test_workflow_router_endpoints(client: TestClient, db_session: Session, work
         assert el_resp.json()["data"]["eligible"] is True
 
         # POST /api/v1/reviews
-        post_resp = client.post("/api/v1/reviews", json={
-            "booking_id": str(completed_booking.id),
-            "reviewee_id": str(artist_user.id),
-            "rating": 5,
-            "review_title": "Top Notch Gig",
-            "review_text": "Loved the live music set!"
-        })
+        post_resp = client.post(
+            "/api/v1/reviews",
+            json={
+                "booking_id": str(completed_booking.id),
+                "reviewee_id": str(artist_user.id),
+                "rating": 5,
+                "review_title": "Top Notch Gig",
+                "review_text": "Loved the live music set!",
+            },
+        )
         assert post_resp.status_code == 201
 
         # Duplicate POST /api/v1/reviews -> HTTP 409 Conflict
-        dup_resp = client.post("/api/v1/reviews", json={
-            "booking_id": str(completed_booking.id),
-            "reviewee_id": str(artist_user.id),
-            "rating": 5,
-            "review_text": "Duplicate attempt"
-        })
+        dup_resp = client.post(
+            "/api/v1/reviews",
+            json={
+                "booking_id": str(completed_booking.id),
+                "reviewee_id": str(artist_user.id),
+                "rating": 5,
+                "review_text": "Duplicate attempt",
+            },
+        )
         assert dup_resp.status_code == 409
 
         # GET /api/v1/reviews/me

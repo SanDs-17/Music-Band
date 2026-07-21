@@ -8,6 +8,7 @@ from app.features.reviews.models import Review
 from app.core.dependencies import get_current_artist, get_current_venue_owner
 from main import app
 
+
 @pytest.fixture
 def mock_auth(db_session):
     # Create test users
@@ -17,7 +18,7 @@ def mock_auth(db_session):
         password_hash="test",
         name="Client User",
         is_active=True,
-        is_verified=True
+        is_verified=True,
     )
     artist_user = User(
         id=uuid.uuid4(),
@@ -25,7 +26,7 @@ def mock_auth(db_session):
         password_hash="test",
         name="Artist User",
         is_active=True,
-        is_verified=True
+        is_verified=True,
     )
     venue_owner_user = User(
         id=uuid.uuid4(),
@@ -33,25 +34,25 @@ def mock_auth(db_session):
         password_hash="test",
         name="Venue Owner User",
         is_active=True,
-        is_verified=True
+        is_verified=True,
     )
-    
+
     db_session.add_all([client_user, artist_user, venue_owner_user])
     db_session.commit()
-    
+
     # Create location
     country = Country(id=uuid.uuid4(), name="Test Country", code="TC")
     db_session.add(country)
     db_session.commit()
-    
+
     state = State(id=uuid.uuid4(), name="Test State", country_id=country.id)
     db_session.add(state)
     db_session.commit()
-    
+
     city = City(id=uuid.uuid4(), name="Test City", state_id=state.id)
     db_session.add(city)
     db_session.commit()
-    
+
     # Create artist profile
     artist_profile = ArtistProfile(
         id=uuid.uuid4(),
@@ -60,11 +61,11 @@ def mock_auth(db_session):
         base_rate=100.0,
         rating=5.0,
         verification_status="approved",
-        display_name="Test Artist"
+        display_name="Test Artist",
     )
     db_session.add(artist_profile)
     db_session.commit()
-    
+
     # Create venue
     venue = Venue(
         id=uuid.uuid4(),
@@ -75,7 +76,7 @@ def mock_auth(db_session):
         city_id=city.id,
         base_price=500.0,
         capacity=100,
-        verification_status="approved"
+        verification_status="approved",
     )
     db_session.add(venue)
     db_session.commit()
@@ -85,13 +86,17 @@ def mock_auth(db_session):
         "artist_user": artist_user,
         "artist_profile": artist_profile,
         "venue_owner": venue_owner_user,
-        "venue": venue
+        "venue": venue,
     }
+
 
 def test_get_artist_reviews(client, db_session, mock_auth):
     # Setup dependency overrides for auth
-    app.dependency_overrides[get_current_artist] = lambda: {"sub": str(mock_auth["artist_user"].id), "role": "artist"}
-    
+    app.dependency_overrides[get_current_artist] = lambda: {
+        "sub": str(mock_auth["artist_user"].id),
+        "role": "artist",
+    }
+
     # Add dummy reviews
     r1 = Review(
         id=uuid.uuid4(),
@@ -100,7 +105,7 @@ def test_get_artist_reviews(client, db_session, mock_auth):
         rating=5,
         comment="Amazing performance!",
         images=[],
-        videos=[]
+        videos=[],
     )
     r2 = Review(
         id=uuid.uuid4(),
@@ -109,7 +114,7 @@ def test_get_artist_reviews(client, db_session, mock_auth):
         rating=4,
         comment="Great music, but started a bit late.",
         images=[],
-        videos=[]
+        videos=[],
     )
     db_session.add_all([r1, r2])
     db_session.commit()
@@ -126,10 +131,14 @@ def test_get_artist_reviews(client, db_session, mock_auth):
     # Cleanup dependency overrides
     app.dependency_overrides.clear()
 
+
 def test_get_venue_reviews(client, db_session, mock_auth):
     # Setup dependency overrides for auth
-    app.dependency_overrides[get_current_venue_owner] = lambda: {"sub": str(mock_auth["venue_owner"].id), "role": "venue_owner"}
-    
+    app.dependency_overrides[get_current_venue_owner] = lambda: {
+        "sub": str(mock_auth["venue_owner"].id),
+        "role": "venue_owner",
+    }
+
     # Add dummy reviews
     r1 = Review(
         id=uuid.uuid4(),
@@ -138,7 +147,7 @@ def test_get_venue_reviews(client, db_session, mock_auth):
         rating=5,
         comment="Beautiful venue!",
         images=["img1.png"],
-        videos=[]
+        videos=[],
     )
     r2 = Review(
         id=uuid.uuid4(),
@@ -147,7 +156,7 @@ def test_get_venue_reviews(client, db_session, mock_auth):
         rating=3,
         comment="A bit dusty.",
         images=[],
-        videos=[]
+        videos=[],
     )
     db_session.add_all([r1, r2])
     db_session.commit()
@@ -180,10 +189,14 @@ def test_get_venue_reviews(client, db_session, mock_auth):
     # Cleanup dependency overrides
     app.dependency_overrides.clear()
 
+
 def test_reply_to_venue_review(client, db_session, mock_auth):
     # Setup dependency overrides for auth
-    app.dependency_overrides[get_current_venue_owner] = lambda: {"sub": str(mock_auth["venue_owner"].id), "role": "venue_owner"}
-    
+    app.dependency_overrides[get_current_venue_owner] = lambda: {
+        "sub": str(mock_auth["venue_owner"].id),
+        "role": "venue_owner",
+    }
+
     # Add dummy review
     r1 = Review(
         id=uuid.uuid4(),
@@ -192,13 +205,16 @@ def test_reply_to_venue_review(client, db_session, mock_auth):
         rating=5,
         comment="Perfect location",
         images=[],
-        videos=[]
+        videos=[],
     )
     db_session.add(r1)
     db_session.commit()
 
     # Reply to review
-    response = client.put(f"/api/v1/reviews/venue/{r1.id}/reply", json={"reply_comment": "Thank you so much!"})
+    response = client.put(
+        f"/api/v1/reviews/venue/{r1.id}/reply",
+        json={"reply_comment": "Thank you so much!"},
+    )
     assert response.status_code == 200
     res_data = response.json()["data"]
     assert res_data["reply_comment"] == "Thank you so much!"

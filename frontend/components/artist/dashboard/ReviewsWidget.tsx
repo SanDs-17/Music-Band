@@ -17,7 +17,7 @@ export function ReviewsWidget({ reviews }: ReviewsWidgetProps) {
           Recent Client Reviews
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 space-y-4 max-h-[350px] overflow-y-auto pr-1">
+      <CardContent className="p-4 space-y-4 max-h-87.5 overflow-y-auto pr-1">
         {reviews.map((rev) => (
           <div 
             key={rev.id} 

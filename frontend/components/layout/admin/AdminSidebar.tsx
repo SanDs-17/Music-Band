@@ -12,6 +12,7 @@ import {
   Calendar,
   IndianRupee,
   BarChart2,
+  ShieldAlert,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { useUIStore } from "@/store/ui-store";
@@ -25,17 +26,17 @@ interface MenuItem {
 /**
  * Admin sidebar navigation.
  * Links are limited strictly to routes that exist under app/admin/.
- * Existing routes: dashboard, artists, venues, users, categories, locations, settings.
  */
 const menuItems: MenuItem[] = [
-  { name: "Home",     href: "/admin/dashboard", icon: Home },
-  { name: "Users",    href: "/admin/users",     icon: Users },
-  { name: "Artists",  href: "/admin/artists",   icon: Music },
-  { name: "Venues",   href: "/admin/venues",    icon: Building2 },
-  { name: "Bookings", href: "/admin/bookings",  icon: Calendar },
-  { name: "Payments", href: "/admin/payments",  icon: IndianRupee },
-  { name: "Reports",  href: "/admin/reports",   icon: BarChart2 },
-  { name: "Settings", href: "/admin/settings",  icon: Settings },
+  { name: "Home font",  href: "/admin/dashboard", icon: Home },
+  { name: "Users",      href: "/admin/users",     icon: Users },
+  { name: "Artists",    href: "/admin/artists",   icon: Music },
+  { name: "Venues",     href: "/admin/venues",    icon: Building2 },
+  { name: "Bookings",   href: "/admin/bookings",  icon: Calendar },
+  { name: "Payments",   href: "/admin/payments",  icon: IndianRupee },
+  { name: "Moderation", href: "/admin/reviews/moderation", icon: ShieldAlert },
+  { name: "Reports",    href: "/admin/reports",   icon: BarChart2 },
+  { name: "Settings",   href: "/admin/settings",  icon: Settings },
 ];
 
 export function AdminSidebar() {

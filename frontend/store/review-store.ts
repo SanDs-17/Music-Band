@@ -4,7 +4,14 @@ import {
   CreateReviewPayload,
   UpdateReviewPayload,
   ReviewFiltersPayload,
-  ReviewEligibility
+  ReviewEligibility,
+  DashboardReviewAnalytics,
+  AdminReviewAnalytics,
+  ProfileReviewAnalytics,
+  ReviewReport,
+  ReportReviewPayload,
+  ModerationDashboardStats,
+  ReviewModerationHistory
 } from "@/types/review";
 import { reviewService } from "@/services/reviewService";
 
@@ -22,6 +29,22 @@ interface ReviewStoreState {
     pages: number;
   };
 
+  // Analytics state (Phase 4)
+  dashboardAnalytics: DashboardReviewAnalytics | null;
+  adminAnalytics: AdminReviewAnalytics | null;
+  profileAnalyticsMap: Record<string, ProfileReviewAnalytics>;
+
+  // Moderation state (Phase 5)
+  reports: ReviewReport[];
+  reportsPagination: {
+    total: number;
+    page: number;
+    limit: number;
+    pages: number;
+  };
+  moderationStats: ModerationDashboardStats | null;
+  moderationHistory: ReviewModerationHistory[];
+
   // Actions
   fetchReviews: (customFilters?: ReviewFiltersPayload) => Promise<void>;
   fetchReviewById: (id: string) => Promise<Review | null>;
@@ -29,6 +52,13 @@ interface ReviewStoreState {
   updateReview: (id: string, payload: UpdateReviewPayload) => Promise<Review | null>;
   deleteReview: (id: string) => Promise<boolean>;
   checkEligibility: (bookingId: string, targetUserId?: string) => Promise<ReviewEligibility | null>;
+  fetchDashboardAnalytics: () => Promise<void>;
+  fetchAdminAnalytics: () => Promise<void>;
+  fetchProfileAnalytics: (userId: string) => Promise<ProfileReviewAnalytics | null>;
+  fetchReports: (params?: { status?: string; reason?: string; page?: number; limit?: number }) => Promise<void>;
+  fetchModerationStats: () => Promise<void>;
+  fetchModerationHistory: (reviewId?: string) => Promise<void>;
+  reportReview: (reviewId: string, payload: ReportReviewPayload) => Promise<ReviewReport | null>;
   setFilters: (filters: Partial<ReviewFiltersPayload>) => void;
   resetFilters: () => void;
   setSelectedReview: (review: Review | null) => void;
@@ -54,6 +84,20 @@ export const useReviewStore = create<ReviewStoreState>((set, get) => ({
     limit: 20,
     pages: 0
   },
+
+  dashboardAnalytics: null,
+  adminAnalytics: null,
+  profileAnalyticsMap: {},
+
+  reports: [],
+  reportsPagination: {
+    total: 0,
+    page: 1,
+    limit: 20,
+    pages: 0
+  },
+  moderationStats: null,
+  moderationHistory: [],
 
   fetchReviews: async (customFilters?: ReviewFiltersPayload) => {
     const activeFilters = { ...get().filters, ...customFilters };
@@ -96,7 +140,6 @@ export const useReviewStore = create<ReviewStoreState>((set, get) => ({
         reviews: [created, ...state.reviews],
         loading: false
       }));
-      // If linked to booking, update eligibility cache
       if (payload.booking_id) {
         set((state) => ({
           eligibilityMap: {
@@ -169,7 +212,89 @@ export const useReviewStore = create<ReviewStoreState>((set, get) => ({
         }
       }));
       return eligibility;
+    } catch {
+      return null;
+    }
+  },
+
+  fetchDashboardAnalytics: async () => {
+    try {
+      const data = await reviewService.getDashboardAnalytics();
+      set({ dashboardAnalytics: data });
     } catch (err: any) {
+      console.error("Dashboard analytics error:", err);
+    }
+  },
+
+  fetchAdminAnalytics: async () => {
+    try {
+      const data = await reviewService.getAdminAnalytics();
+      set({ adminAnalytics: data });
+    } catch (err: any) {
+      console.error("Admin analytics error:", err);
+    }
+  },
+
+  fetchProfileAnalytics: async (userId: string) => {
+    try {
+      const data = await reviewService.getProfileAnalytics(userId);
+      set((state) => ({
+        profileAnalyticsMap: {
+          ...state.profileAnalyticsMap,
+          [userId]: data
+        }
+      }));
+      return data;
+    } catch (err: any) {
+      console.error("Profile analytics error:", err);
+      return null;
+    }
+  },
+
+  fetchReports: async (params) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await reviewService.getReports(params);
+      set({
+        reports: res.items,
+        reportsPagination: res.pagination,
+        loading: false
+      });
+    } catch (err: any) {
+      set({
+        error: err.response?.data?.message || "Failed to fetch reports.",
+        loading: false
+      });
+    }
+  },
+
+  fetchModerationStats: async () => {
+    try {
+      const stats = await reviewService.getModerationStats();
+      set({ moderationStats: stats });
+    } catch (err: any) {
+      console.error("Moderation stats error:", err);
+    }
+  },
+
+  fetchModerationHistory: async (reviewId) => {
+    try {
+      const res = await reviewService.getModerationHistory({ review_id: reviewId });
+      set({ moderationHistory: res.items });
+    } catch (err: any) {
+      console.error("Moderation history error:", err);
+    }
+  },
+
+  reportReview: async (reviewId: string, payload: ReportReviewPayload) => {
+    try {
+      const report = await reviewService.reportReview(reviewId, payload);
+      set((state) => ({
+        reports: [report, ...state.reports]
+      }));
+      return report;
+    } catch (err: any) {
+      console.error("Report review error:", err);
       return null;
     }
   },

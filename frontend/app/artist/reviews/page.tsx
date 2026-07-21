@@ -3,27 +3,24 @@
 import * as React from "react";
 import { useArtistReviews } from "@/hooks/use-artist-reviews";
 import { reviewService } from "@/services/reviewService";
-import Image from "next/image";
-import { Card } from "@/components/ui/card";
+import { useUpdateReview, useDeleteReview } from "@/hooks/use-reviews";
+import { useAuth } from "@/hooks/use-auth";
+import { ReviewHeader } from "@/components/reviews/ReviewHeader";
+import { ReviewSummaryCard } from "@/components/reviews/ReviewSummaryCard";
+import { ReviewSearch } from "@/components/reviews/ReviewSearch";
+import { ReviewSortDropdown, SortOptionValue } from "@/components/reviews/ReviewSortDropdown";
+import { ReviewList } from "@/components/reviews/ReviewList";
+import { ReviewDetailsDialog } from "@/components/reviews/ReviewDetailsDialog";
+import { EditReviewDialog } from "@/components/reviews/EditReviewDialog";
+import { DeleteReviewDialog } from "@/components/reviews/DeleteReviewDialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Spinner } from "@/components/ui/spinner";
-import { ErrorState } from "@/components/ui/error-state";
-import { 
-  Star, 
-  MessageSquare, 
-  Search, 
-  Filter, 
-  CornerDownRight, 
-  MessageCircle, 
-  RefreshCw, 
-  Play
-} from "lucide-react";
-import { format } from "date-fns";
+import { Review, UpdateReviewPayload } from "@/types/review";
 import toast from "react-hot-toast";
 
 export default function ArtistReviewsPage() {
+  const { user } = useAuth();
   const {
     reviews,
     averageRating,
@@ -41,39 +38,50 @@ export default function ArtistReviewsPage() {
     refetch
   } = useArtistReviews();
 
-  // Reply states
-  const [activeReplyId, setActiveReplyId] = React.useState<string | null>(null);
+  const { updateReview } = useUpdateReview();
+  const { deleteReview } = useDeleteReview();
+
+  // Dialog & Reply states
+  const [selectedReview, setSelectedReview] = React.useState<Review | null>(null);
+  const [detailsDialogOpen, setDetailsDialogOpen] = React.useState(false);
+  const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [replyDialogOpen, setReplyDialogOpen] = React.useState(false);
   const [replyText, setReplyText] = React.useState("");
   const [submittingReply, setSubmittingReply] = React.useState(false);
 
-  const totalPages = Math.ceil(totalReviews / limit);
+  // Sorting state
+  const [sortBy, setSortBy] = React.useState<SortOptionValue>("created_at_desc");
 
-  const renderStars = (rating: number, size = "h-4 w-4") => {
-    return (
-      <div className="flex gap-0.5">
-        {Array.from({ length: 5 }).map((_, idx) => {
-          const active = idx < rating;
-          return (
-            <Star 
-              key={idx} 
-              className={`${size} ${active ? "text-yellow-400 fill-current" : "text-border/80"}`} 
-            />
-          );
-        })}
-      </div>
-    );
-  };
+  // Adapt ReviewDetail[] to Review[] for ReviewList component
+  const reviewItems: Review[] = React.useMemo(() => {
+    return reviews.map((r) => ({
+      id: r.id,
+      rating: r.rating,
+      review_title: r.review_title,
+      review_text: r.review_text || r.comment,
+      comment: r.comment,
+      is_public: true,
+      reply_comment: r.reply_comment,
+      reply_at: r.reply_at,
+      images: r.images || [],
+      videos: r.videos || [],
+      client: r.client,
+      reviewer: { id: r.client.id, name: r.client.name },
+      created_at: r.created_at
+    }));
+  }, [reviews]);
 
-  const handleReplySubmit = async (e: React.FormEvent, reviewId: string) => {
+  const handleReplySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!replyText.trim()) return;
+    if (!selectedReview || !replyText.trim()) return;
 
     setSubmittingReply(true);
     try {
-      await reviewService.replyToReview(reviewId, replyText.trim());
+      await reviewService.replyToReview(selectedReview.id, replyText.trim());
       toast.success("Reply posted successfully!");
       setReplyText("");
-      setActiveReplyId(null);
+      setReplyDialogOpen(false);
       refetch();
     } catch {
       toast.error("Failed to post reply.");
@@ -82,273 +90,167 @@ export default function ArtistReviewsPage() {
     }
   };
 
-  if (loading && page === 1 && reviews.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <Spinner className="h-10 w-10 text-primary" />
-        <p className="text-sm text-text-secondary animate-pulse">
-          Loading performer reviews overview...
-        </p>
-      </div>
-    );
-  }
+  const handleEditSubmit = async (id: string, payload: UpdateReviewPayload) => {
+    const result = await updateReview(id, payload);
+    if (result) {
+      toast.success("Review updated.");
+      refetch();
+      return true;
+    }
+    return false;
+  };
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-[65vh] p-4">
-        <ErrorState 
-          title="Reviews Load Failure"
-          message={error} 
-          onRetry={refetch}
-        />
-      </div>
-    );
-  }
+  const handleDeleteConfirm = async (id: string) => {
+    const success = await deleteReview(id);
+    if (success) {
+      toast.success("Review deleted.");
+      refetch();
+      return true;
+    }
+    return false;
+  };
+
+  const totalPages = Math.ceil(totalReviews / limit) || 1;
 
   return (
     <div className="space-y-6">
-      {/* Header Panel */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-extrabold text-text-primary tracking-tight flex items-center gap-2">
-            <MessageSquare className="h-6 w-6 text-primary" />
-            Verified Customer Reviews
-          </h1>
-          <p className="text-xs text-text-secondary">
-            Read reviews from hosts and respond to inquiries or booking feedbacks.
-          </p>
-        </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={refetch}
-          className="flex items-center gap-1.5 self-start sm:self-center text-xs h-9"
-        >
-          <RefreshCw className="h-3.5 w-3.5" />
-          <span>Reload Feed</span>
-        </Button>
+      {/* Header */}
+      <ReviewHeader
+        title="Performer Reviews & Feedback"
+        subtitle="Manage ratings, reviews, and client responses for your artist profile."
+        onRefresh={refetch}
+      />
+
+      {/* Summary Card */}
+      <ReviewSummaryCard
+        averageRating={averageRating}
+        totalReviews={totalReviews}
+        distribution={distribution}
+        selectedRatingFilter={ratingFilter}
+        onRatingFilterSelect={(r) => {
+          setRatingFilter(r);
+          setPage(1);
+        }}
+      />
+
+      {/* Search & Sort controls */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-border/80 bg-bg-card p-4 shadow-sm">
+        <ReviewSearch
+          value={search}
+          onChange={(q) => {
+            setSearch(q);
+            setPage(1);
+          }}
+        />
+        <ReviewSortDropdown value={sortBy} onChange={setSortBy} />
       </div>
 
-      {/* Grid: Stats & distribution summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        {/* Total stats card */}
-        <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-5 rounded-2xl shadow-xl flex flex-col justify-center items-center text-center">
-          <span className="text-[10px] text-text-secondary uppercase font-bold tracking-wider mb-2">Average performer Rating</span>
-          <span className="text-5xl font-black text-text-primary tracking-tight block">
-            {averageRating.toFixed(1)}
-          </span>
-          <div className="mt-3">
-            {renderStars(Math.round(averageRating), "h-5 w-5")}
-          </div>
-          <span className="text-xs text-text-muted mt-3 block">
-            Based on {totalReviews} verified bookings.
-          </span>
-        </Card>
+      {/* Review List */}
+      <ReviewList
+        reviews={reviewItems}
+        loading={loading}
+        error={error}
+        page={page}
+        totalPages={totalPages}
+        totalCount={totalReviews}
+        onPageChange={setPage}
+        onRefresh={refetch}
+        onViewDetails={(rev) => {
+          setSelectedReview(rev);
+          setDetailsDialogOpen(true);
+        }}
+        onReply={(rev) => {
+          setSelectedReview(rev);
+          setReplyText(rev.reply_comment || "");
+          setReplyDialogOpen(true);
+        }}
+        onEdit={(rev) => {
+          setSelectedReview(rev);
+          setEditDialogOpen(true);
+        }}
+        onDelete={(rev) => {
+          setSelectedReview(rev);
+          setDeleteDialogOpen(true);
+        }}
+        currentUserId={user?.id}
+        emptyTitle="No Verified Reviews Found"
+        emptyMessage="You have no verified reviews matching your filter criteria yet."
+      />
 
-        {/* Rating distribution progress bars */}
-        <Card className="md:col-span-2 bg-bg-card/45 backdrop-blur-md border border-border/80 p-5 rounded-2xl shadow-xl space-y-3 justify-center flex flex-col">
-          {([5, 4, 3, 2, 1] as const).map(stars => {
-            const count = distribution[stars] || 0;
-            const percent = totalReviews > 0 ? (count / totalReviews) * 100 : 0;
-            return (
-              <div key={stars} className="flex items-center gap-3 text-xs">
-                <span className="w-10 text-text-primary font-bold text-right flex items-center justify-end gap-1">
-                  {stars} <Star className="h-3.5 w-3.5 text-yellow-400 fill-current" />
-                </span>
-                <div className="flex-1 h-2 rounded-full bg-border/40 overflow-hidden">
-                  <div 
-                    className="h-full bg-primary transition-all duration-500" 
-                    style={{ width: `${percent}%` }}
-                  />
-                </div>
-                <span className="w-8 text-text-muted text-left font-semibold">
-                  {count}
-                </span>
-              </div>
-            );
-          })}
-        </Card>
+      {/* Details Dialog */}
+      <ReviewDetailsDialog
+        open={detailsDialogOpen}
+        onOpenChange={setDetailsDialogOpen}
+        review={selectedReview}
+        canReply={true}
+        onReply={(rev) => {
+          setSelectedReview(rev);
+          setReplyText(rev.reply_comment || "");
+          setReplyDialogOpen(true);
+        }}
+      />
 
-      </div>
+      {/* Edit Dialog */}
+      <EditReviewDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        review={selectedReview}
+        onSubmit={handleEditSubmit}
+      />
 
-      {/* Filter and Search controls */}
-      <Card className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-4 rounded-2xl shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-2 max-w-sm flex-1">
-          <Search className="h-4.5 w-4.5 text-text-muted shrink-0" />
-          <Input
-            placeholder="Search reviews..."
-            value={search}
-            onChange={e => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            className="h-9 text-xs text-text-primary"
-          />
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-text-muted" />
-          <select
-            value={ratingFilter || ""}
-            onChange={e => {
-              const val = e.target.value;
-              setRatingFilter(val ? Number(val) : undefined);
-              setPage(1);
-            }}
-            className="h-9 px-3 rounded-lg border border-border bg-bg-card text-text-primary text-xs"
-          >
-            <option value="">All Stars</option>
-            <option value="5">5 Stars</option>
-            <option value="4">4 Stars</option>
-            <option value="3">3 Stars</option>
-            <option value="2">2 Stars</option>
-            <option value="1">1 Star</option>
-          </select>
-        </div>
-      </Card>
+      {/* Delete Dialog */}
+      <DeleteReviewDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        reviewId={selectedReview?.id}
+        onConfirm={handleDeleteConfirm}
+      />
 
-      {/* Reviews feed List */}
-      <div className="space-y-4">
-        {reviews.map(rev => (
-          <Card key={rev.id} className="bg-bg-card/45 backdrop-blur-md border border-border/80 p-5 rounded-2xl shadow-xl space-y-4 relative">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/40 pb-3">
-              <div className="space-y-0.5">
-                <span className="text-sm font-extrabold text-text-primary block">{rev.client.name}</span>
-                <span className="text-[10px] text-text-muted block">
-                  Reviewed on {format(new Date(rev.created_at), "dd MMM yyyy HH:mm")}
-                </span>
-              </div>
-              <div>{renderStars(rev.rating)}</div>
-            </div>
+      {/* Reply Modal */}
+      {selectedReview && (
+        <Dialog open={replyDialogOpen} onOpenChange={setReplyDialogOpen}>
+          <DialogContent className="max-w-md rounded-2xl bg-bg-card p-6 border border-border shadow-2xl space-y-4">
+            <DialogHeader>
+              <DialogTitle className="text-base font-bold text-text-primary">
+                Respond to Client Review
+              </DialogTitle>
+              <p className="text-xs text-text-secondary">
+                Your response will be displayed publicly on your performer profile.
+              </p>
+            </DialogHeader>
 
-            {/* Comment text */}
-            <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">
-              {rev.comment}
-            </p>
+            <form onSubmit={handleReplySubmit} className="space-y-4">
+              <Textarea
+                rows={4}
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                placeholder="E.g. Thank you for booking us! We enjoyed performing at your event."
+                className="text-xs bg-bg-card border-border/80 resize-none"
+              />
 
-            {/* Customer media uploads */}
-            {((rev.images && rev.images.length > 0) || (rev.videos && rev.videos.length > 0)) && (
-              <div className="flex flex-wrap gap-2.5 pt-2">
-                {rev.images?.map((img, i) => (
-                  <div key={i} className="w-16 h-16 rounded-lg overflow-hidden border border-border bg-bg-elevated relative group">
-                    <Image src={img} alt="Customer upload" fill className="object-cover" />
-                  </div>
-                ))}
-                {rev.videos?.map((vid, i) => (
-                  <div key={i} className="w-16 h-16 rounded-lg overflow-hidden border border-border bg-bg-elevated flex items-center justify-center relative">
-                    <video src={vid} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      <Play className="h-4.5 w-4.5 text-text-primary" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Replied block or reply form */}
-            <div className="pl-4 border-l-2 border-primary/40 space-y-3">
-              {rev.reply_comment ? (
-                <div className="space-y-1">
-                  <div className="flex items-center gap-1.5 text-xs text-primary font-bold">
-                    <CornerDownRight className="h-4 w-4" />
-                    <span>Your Response</span>
-                    {rev.reply_at && (
-                      <span className="text-[10px] text-text-muted font-normal">
-                        ({format(new Date(rev.reply_at), "dd MMM yyyy")})
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-text-secondary leading-relaxed bg-bg-elevated/10 border border-border/40 p-3 rounded-xl">
-                    {rev.reply_comment}
-                  </p>
-                </div>
-              ) : activeReplyId === rev.id ? (
-                <form onSubmit={(e) => handleReplySubmit(e, rev.id)} className="space-y-3">
-                  <div className="flex items-center gap-1 text-xs text-primary font-bold">
-                    <CornerDownRight className="h-4 w-4" />
-                    <span>Write performer reply</span>
-                  </div>
-                  <Textarea
-                    rows={2}
-                    placeholder="E.g. Thank you for booking us! We had a wonderful time playing for your wedding guests."
-                    value={replyText}
-                    onChange={e => setReplyText(e.target.value)}
-                    className="text-xs"
-                  />
-                  <div className="flex gap-2">
-                    <Button 
-                      type="submit" 
-                      disabled={submittingReply || !replyText.trim()}
-                      className="bg-primary text-white h-8 text-[11px] font-bold"
-                    >
-                      Post Response
-                    </Button>
-                    <Button 
-                      type="button" 
-                      onClick={() => {
-                        setActiveReplyId(null);
-                        setReplyText("");
-                      }}
-                      variant="outline"
-                      className="h-8 text-[11px]"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </form>
-              ) : (
-                <Button 
-                  onClick={() => {
-                    setActiveReplyId(rev.id);
-                    setReplyText("");
-                  }}
-                  variant="outline" 
-                  size="sm" 
-                  className="h-8 text-[11px] font-bold border-primary/40 text-primary hover:bg-primary/5 flex items-center gap-1.5"
+              <div className="flex justify-end gap-3 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setReplyDialogOpen(false)}
+                  className="text-xs"
                 >
-                  <MessageCircle className="h-3.5 w-3.5" />
-                  <span>Reply to this review</span>
+                  Cancel
                 </Button>
-              )}
-            </div>
-          </Card>
-        ))}
-
-        {reviews.length === 0 && (
-          <div className="py-20 text-center text-xs text-text-muted italic border border-dashed border-border rounded-2xl bg-bg-card/20">
-            No verified reviews found.
-          </div>
-        )}
-      </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-between items-center text-xs mt-4">
-          <span className="text-text-muted">Showing page {page} of {totalPages}</span>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page === 1}
-              onClick={() => setPage(p => p - 1)}
-              className="h-8"
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page === totalPages}
-              onClick={() => setPage(p => p + 1)}
-              className="h-8"
-            >
-              Next
-            </Button>
-          </div>
-        </div>
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={submittingReply || !replyText.trim()}
+                  className="text-xs font-bold bg-primary text-white hover:bg-primary-hover"
+                >
+                  {submittingReply ? "Posting..." : "Post Response"}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       )}
-
     </div>
   );
 }

@@ -39,6 +39,7 @@ export function Sidebar({ role }: SidebarProps) {
           { name: "Home",       href: "/client/dashboard",  icon: Home },
           { name: "Profile",    href: "/client/profile",    icon: User },
           { name: "Bookings",   href: "/client/bookings",   icon: Calendar },
+          { name: "Reviews",    href: "/client/reviews",    icon: MessageSquare },
           { name: "Favorites",  href: "/client/favorites",  icon: Heart },
           { name: "Inbox",      href: "/client/messages",   icon: Inbox },
           { name: "Payments",   href: "/client/payments",   icon: IndianRupee },

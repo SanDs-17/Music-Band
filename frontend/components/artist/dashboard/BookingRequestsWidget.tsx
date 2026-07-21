@@ -21,7 +21,7 @@ export function BookingRequestsWidget({ requests }: BookingRequestsWidgetProps) 
           Recent Gigs Requested
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 space-y-4 max-h-[350px] overflow-y-auto pr-1">
+      <CardContent className="p-4 space-y-4 max-h-87.5 overflow-y-auto pr-1">
         {requests.map((req) => (
           <div 
             key={req.id} 
