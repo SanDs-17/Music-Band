@@ -64,7 +64,7 @@ export function ProgressStepper({ steps, currentStep }: ProgressStepperProps) {
               </div>
               <span
                 className={cn(
-                  "text-xs font-medium max-w-[80px] text-center truncate transition-colors duration-300",
+                  "text-xs font-medium max-w-20 text-center truncate transition-colors duration-300",
                   isActive ? "text-text-primary font-bold" : isCompleted ? "text-primary font-medium" : "text-text-secondary"
                 )}
               >

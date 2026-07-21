@@ -85,7 +85,7 @@ export function HeaderProfileDropdown() {
         <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/20 text-[11px] font-black text-primary border border-primary/30">
           {initials}
         </span>
-        <span className="hidden sm:block text-xs font-semibold max-w-[80px] truncate">
+        <span className="hidden sm:block text-xs font-semibold max-w-20 truncate">
           {user?.name?.split(" ")[0] || "Account"}
         </span>
         <ChevronDown
