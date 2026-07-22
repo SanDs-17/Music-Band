@@ -13,22 +13,21 @@ from app.common.schemas.base import SuccessResponse
 
 router = APIRouter()
 
+
 @router.get(
     "/health",
     response_model=SuccessResponse[dict],
     status_code=status.HTTP_200_OK,
     summary="Complete system health check",
-    description="Validates that database and caching services are reachable and running cleanly."
+    description="Validates that database and caching services are reachable and running cleanly.",
 )
-async def system_health(
-    db: Session = Depends(get_db)
-):
+async def system_health(db: Session = Depends(get_db)):
     health_data = {
         "status": "healthy",
         "database": "unreachable",
-        "cache": "unreachable"
+        "cache": "unreachable",
     }
-    
+
     # 1. Test database ping connection
     try:
         db.execute(text("SELECT 1"))
@@ -54,7 +53,5 @@ async def system_health(
     # If the system is degraded, status can remain 200, or raise 503 depending on design.
     # We return the standard success response shape.
     return SuccessResponse(
-        success=True,
-        data=health_data,
-        message="System health check completed."
+        success=True, data=health_data, message="System health check completed."
     )

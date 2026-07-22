@@ -10,6 +10,7 @@ from app.features.bookings.workflow import BookingWorkflowEngine
 from app.features.notifications.service import create_booking_notification
 from app.core.exceptions import BadRequestException
 
+
 @pytest.fixture
 def notification_setup_data(db_session):
     # Location Setup
@@ -27,25 +28,37 @@ def notification_setup_data(db_session):
 
     # User Setup
     client_user = User(
-        id=uuid.uuid4(), email="notif_client@example.com", name="Client User",
-        password_hash="pw", is_active=True, is_verified=True
+        id=uuid.uuid4(),
+        email="notif_client@example.com",
+        name="Client User",
+        password_hash="pw",
+        is_active=True,
+        is_verified=True,
     )
     artist_user = User(
-        id=uuid.uuid4(), email="notif_artist@example.com", name="Artist User",
-        password_hash="pw", is_active=True, is_verified=True
+        id=uuid.uuid4(),
+        email="notif_artist@example.com",
+        name="Artist User",
+        password_hash="pw",
+        is_active=True,
+        is_verified=True,
     )
     admin_user = User(
-        id=uuid.uuid4(), email="notif_admin@example.com", name="Admin User",
-        password_hash="pw", is_active=True, is_verified=True
+        id=uuid.uuid4(),
+        email="notif_admin@example.com",
+        name="Admin User",
+        password_hash="pw",
+        is_active=True,
+        is_verified=True,
     )
-    
+
     # Instantiate and commit roles first
     client_role = Role(id=uuid.uuid4(), name="client", description="Client role")
     artist_role = Role(id=uuid.uuid4(), name="artist", description="Artist role")
     admin_role = Role(id=uuid.uuid4(), name="admin", description="Admin role")
     db_session.add_all([client_role, artist_role, admin_role])
     db_session.commit()
-    
+
     client_user.roles.append(client_role)
     artist_user.roles.append(artist_role)
     admin_user.roles.append(admin_role)
@@ -55,8 +68,12 @@ def notification_setup_data(db_session):
 
     # Performer setup
     artist_profile = ArtistProfile(
-        id=uuid.uuid4(), user_id=artist_user.id, bio="WF Bio", base_rate=300.0,
-        verification_status="approved", display_name="WF Performer"
+        id=uuid.uuid4(),
+        user_id=artist_user.id,
+        bio="WF Bio",
+        base_rate=300.0,
+        verification_status="approved",
+        display_name="WF Performer",
     )
     db_session.add(artist_profile)
     db_session.commit()
@@ -73,12 +90,14 @@ def notification_setup_data(db_session):
         location="Studio B",
         proposed_price=600.0,
         status="pending",
-        timeline=[{
-            "status": "pending",
-            "timestamp": datetime.datetime.utcnow().isoformat(),
-            "by": "client",
-            "message": "Initialized"
-        }]
+        timeline=[
+            {
+                "status": "pending",
+                "timestamp": datetime.datetime.utcnow().isoformat(),
+                "by": "client",
+                "message": "Initialized",
+            }
+        ],
     )
     db_session.add(booking)
     db_session.commit()
@@ -88,8 +107,9 @@ def notification_setup_data(db_session):
         "artist_user": artist_user,
         "artist_profile": artist_profile,
         "admin": admin_user,
-        "booking": booking
+        "booking": booking,
     }
+
 
 def test_booking_created_triggers_notification(db_session, notification_setup_data):
     # Retrieve the booking and execute dispatcher for created event
@@ -99,21 +119,28 @@ def test_booking_created_triggers_notification(db_session, notification_setup_da
         booking=b,
         event_type="created",
         actor_id=str(notification_setup_data["client"].id),
-        actor_role="client"
+        actor_role="client",
     )
 
     # Check notification sent to Artist
-    notif = db_session.query(Notification).filter(
-        Notification.user_id == notification_setup_data["artist_user"].id,
-        Notification.deleted_at.is_(None)
-    ).first()
+    notif = (
+        db_session.query(Notification)
+        .filter(
+            Notification.user_id == notification_setup_data["artist_user"].id,
+            Notification.deleted_at.is_(None),
+        )
+        .first()
+    )
     assert notif is not None
     assert notif.title == "New Booking Request"
     assert "Anniversary Show" in notif.message
     assert notif.notification_type == "booking_request"
     assert f"/artist/bookings?id={b.id}" == notif.link
 
-def test_workflow_transitions_trigger_notifications(db_session, notification_setup_data):
+
+def test_workflow_transitions_trigger_notifications(
+    db_session, notification_setup_data
+):
     b = notification_setup_data["booking"]
     artist_uid = str(notification_setup_data["artist_user"].id)
 
@@ -128,16 +155,19 @@ def test_workflow_transitions_trigger_notifications(db_session, notification_set
         actor_id=artist_uid,
         actor_role="artist",
         action="accept",
-        target_status="accepted"
+        target_status="accepted",
     )
 
     # Verify Client received notification
-    notif = db_session.query(Notification).filter(
-        Notification.user_id == notification_setup_data["client"].id
-    ).first()
+    notif = (
+        db_session.query(Notification)
+        .filter(Notification.user_id == notification_setup_data["client"].id)
+        .first()
+    )
     assert notif is not None
     assert notif.title == "Booking Accepted"
     assert notif.notification_type == "booking_accepted"
+
 
 def test_failed_actions_alert_admins(db_session, notification_setup_data):
     b = notification_setup_data["booking"]
@@ -155,19 +185,24 @@ def test_failed_actions_alert_admins(db_session, notification_setup_data):
             actor_id=client_uid,
             actor_role="client",
             action="complete",
-            target_status="completed"
+            target_status="completed",
         )
 
     # Check Admin received alert
-    notif = db_session.query(Notification).filter(
-        Notification.user_id == notification_setup_data["admin"].id
-    ).first()
+    notif = (
+        db_session.query(Notification)
+        .filter(Notification.user_id == notification_setup_data["admin"].id)
+        .first()
+    )
     assert notif is not None
     assert notif.title == "Failed Booking Action"
     assert "complete" in notif.message
     assert notif.notification_type == "failed_action"
 
-def test_notifications_endpoints_with_new_fields(client, db_session, notification_setup_data):
+
+def test_notifications_endpoints_with_new_fields(
+    client, db_session, notification_setup_data
+):
     # Add a mock notification with new fields
     n = Notification(
         id=uuid.uuid4(),
@@ -175,7 +210,7 @@ def test_notifications_endpoints_with_new_fields(client, db_session, notificatio
         title="Custom Notification",
         message="Alert details",
         notification_type="alert",
-        link="/some-url"
+        link="/some-url",
     )
     db_session.add(n)
     db_session.commit()
@@ -186,6 +221,7 @@ def test_notifications_endpoints_with_new_fields(client, db_session, notificatio
 
     from app.core.dependencies import get_current_user
     from main import app
+
     app.dependency_overrides[get_current_user] = override_get_current_user
 
     try:

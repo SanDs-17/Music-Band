@@ -2,8 +2,10 @@ from datetime import datetime
 from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict
 
+
 class ReactionCreate(BaseModel):
     emoji: str = Field(..., min_length=1, max_length=20)
+
 
 class ReactionResponse(BaseModel):
     id: UUID
@@ -14,17 +16,22 @@ class ReactionResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class MessageBase(BaseModel):
     content: str = Field(..., min_length=1, max_length=2000)
+
 
 class MessageCreate(MessageBase):
     reply_to_message_id: UUID | None = None
 
+
 class MessageEdit(BaseModel):
     content: str = Field(..., min_length=1, max_length=2000)
 
+
 class MessageForward(BaseModel):
     target_conversation_id: UUID
+
 
 class MessageResponse(BaseModel):
     id: UUID
@@ -47,13 +54,16 @@ class MessageResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class TypingPayload(BaseModel):
     is_typing: bool = True
+
 
 class PresenceResponse(BaseModel):
     user_id: UUID
     is_online: bool
     last_seen: datetime | None = None
+
 
 class MessageSearchResponse(BaseModel):
     total: int

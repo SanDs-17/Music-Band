@@ -14,20 +14,28 @@ from app.features.messaging.message.router import router as message_router
 
 router = APIRouter()
 
-@router.post("", response_model=SuccessResponse[ConversationResponse], status_code=status.HTTP_201_CREATED)
+
+@router.post(
+    "",
+    response_model=SuccessResponse[ConversationResponse],
+    status_code=status.HTTP_201_CREATED,
+)
 def create_conversation(
     payload: ConversationCreate,
     db: Session = Depends(get_db),
     current_user_claims: dict = Depends(get_current_user),
 ):
     current_user_id = UUID(current_user_claims["sub"])
-    conversation = conversation_service.create_conversation(db, payload.booking_id, current_user_id)
-    
+    conversation = conversation_service.create_conversation(
+        db, payload.booking_id, current_user_id
+    )
+
     resp = ConversationResponse.model_validate(conversation)
     if conversation.booking:
         resp.event_name = conversation.booking.event_name
-        
+
     return SuccessResponse(data=resp)
+
 
 @router.get("", response_model=SuccessResponse[list[ConversationResponse]])
 def list_conversations(
@@ -44,6 +52,7 @@ def list_conversations(
         data.append(item)
     return SuccessResponse(data=data)
 
+
 @router.get("/{conversation_id}", response_model=SuccessResponse[ConversationResponse])
 def get_conversation(
     conversation_id: UUID,
@@ -51,11 +60,16 @@ def get_conversation(
     current_user_claims: dict = Depends(get_current_user),
 ):
     current_user_id = UUID(current_user_claims["sub"])
-    conversation = conversation_service.get_conversation(db, conversation_id, current_user_id)
+    conversation = conversation_service.get_conversation(
+        db, conversation_id, current_user_id
+    )
     resp = ConversationResponse.model_validate(conversation)
     if conversation.booking:
         resp.event_name = conversation.booking.event_name
     return SuccessResponse(data=resp)
 
+
 # Include nested message sub-router under /{conversation_id}/messages
-router.include_router(message_router, prefix="/{conversation_id}/messages", tags=["Messages"])
+router.include_router(
+    message_router, prefix="/{conversation_id}/messages", tags=["Messages"]
+)

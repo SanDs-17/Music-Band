@@ -1,5 +1,6 @@
 from app.features.locations.models import Country, State, City
 
+
 def test_list_countries_empty(client):
     response = client.get("/api/v1/locations/countries")
     assert response.status_code == 200
@@ -7,6 +8,7 @@ def test_list_countries_empty(client):
     assert res_data["success"] is True
     assert res_data["data"] == []
     assert res_data["message"] == "Countries retrieved."
+
 
 def test_list_countries_populated(client, db_session):
     # Add a mock country
@@ -24,6 +26,7 @@ def test_list_countries_populated(client, db_session):
     assert res_data["data"][0]["code"] == "IN"
     assert "id" in res_data["data"][0]
 
+
 def test_list_states_empty(client, db_session):
     # Create a country first since states filter requires a valid country_id
     mock_country = Country(name="India", code="IN")
@@ -37,6 +40,7 @@ def test_list_states_empty(client, db_session):
     assert res_data["success"] is True
     assert res_data["data"] == []
     assert res_data["message"] == "States retrieved."
+
 
 def test_list_states_populated(client, db_session):
     mock_country = Country(name="India", code="IN")
@@ -57,6 +61,7 @@ def test_list_states_populated(client, db_session):
     assert res_data["data"][0]["name"] == "Karnataka"
     assert res_data["data"][0]["country_id"] == str(mock_country.id)
 
+
 def test_list_cities_empty(client, db_session):
     mock_country = Country(name="India", code="IN")
     db_session.add(mock_country)
@@ -74,6 +79,7 @@ def test_list_cities_empty(client, db_session):
     assert res_data["success"] is True
     assert res_data["data"] == []
     assert res_data["message"] == "Cities retrieved."
+
 
 def test_list_cities_populated(client, db_session):
     mock_country = Country(name="India", code="IN")

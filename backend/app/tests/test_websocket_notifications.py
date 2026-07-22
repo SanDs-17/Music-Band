@@ -25,11 +25,15 @@ from app.features.bookings.models import Booking
 from app.features.artists.models import ArtistProfile
 from app.features.notifications.connection_manager import connection_manager
 from app.features.notifications.publisher import publish_notification
-from app.features.notifications.service import create_booking_notification, create_failed_action_notification
+from app.features.notifications.service import (
+    create_booking_notification,
+    create_failed_action_notification,
+)
 from app.core.security import create_access_token
 
 
 # ── Test Setup / Fixture Helpers ─────────────────────────────────────────────
+
 
 def _create_test_user(db: Session, name: str, role_name: str) -> tuple[User, str]:
     role = db.query(Role).filter(Role.name == role_name).first()
@@ -44,7 +48,7 @@ def _create_test_user(db: Session, name: str, role_name: str) -> tuple[User, str
         name=name,
         password_hash="pw",
         is_active=True,
-        is_verified=True
+        is_verified=True,
     )
     user.roles.append(role)
     db.add(user)
@@ -55,6 +59,7 @@ def _create_test_user(db: Session, name: str, role_name: str) -> tuple[User, str
 
 
 # ── Tests ────────────────────────────────────────────────────────────────────
+
 
 def test_websocket_connect_success(client: TestClient, db_session: Session):
     """A user with a valid JWT can establish a WebSocket connection and gets confirmation."""
@@ -70,7 +75,9 @@ def test_websocket_connect_success(client: TestClient, db_session: Session):
 def test_websocket_connect_invalid_token(client: TestClient):
     """An invalid token is immediately rejected with close code 4001."""
     with pytest.raises(WebSocketDisconnect) as exc:
-        with client.websocket_connect("/api/v1/ws/notifications?token=invalid_jwt_token"):
+        with client.websocket_connect(
+            "/api/v1/ws/notifications?token=invalid_jwt_token"
+        ):
             pass
     assert exc.value.code == 4001
 
@@ -102,6 +109,7 @@ def test_websocket_multiple_connections_dedup(client: TestClient, db_session: Se
             }
             # Simulate publish_notification call
             from app.features.notifications.publisher import _event_loop
+
             if _event_loop:
                 publish_notification(user.id, dummy_notif)
                 # Receive in both tabs
@@ -121,7 +129,9 @@ def test_websocket_recipient_filtering(client: TestClient, db_session: Session):
     with client.websocket_connect(f"/api/v1/ws/notifications?token={token_a}") as ws_a:
         ws_a.receive_json()  # Consume connection confirmation
 
-        with client.websocket_connect(f"/api/v1/ws/notifications?token={token_b}") as ws_b:
+        with client.websocket_connect(
+            f"/api/v1/ws/notifications?token={token_b}"
+        ) as ws_b:
             ws_b.receive_json()  # Consume connection confirmation
 
             # Deliver notification to User A
@@ -131,13 +141,19 @@ def test_websocket_recipient_filtering(client: TestClient, db_session: Session):
                 "message": "For A's eyes only",
                 "is_read": False,
             }
-            
+
             # Use direct ConnectionManager sending to guarantee delivery sequence
             import asyncio
-            asyncio.run(connection_manager.send_to_user(str(user_a.id), {
-                "type": "notification",
-                "data": dummy_notif,
-            }))
+
+            asyncio.run(
+                connection_manager.send_to_user(
+                    str(user_a.id),
+                    {
+                        "type": "notification",
+                        "data": dummy_notif,
+                    },
+                )
+            )
 
             # User A receives the notification
             msg_a = ws_a.receive_json()
@@ -147,7 +163,9 @@ def test_websocket_recipient_filtering(client: TestClient, db_session: Session):
             # User B should NOT receive it (no message in buffer, timeout or close)
             # In test client, wait_for with small timeout verifies empty buffer
             with pytest.raises(asyncio.TimeoutError):
-                asyncio.run(asyncio.wait_for(asyncio.to_thread(ws_b.receive_json), timeout=0.1))
+                asyncio.run(
+                    asyncio.wait_for(asyncio.to_thread(ws_b.receive_json), timeout=0.1)
+                )
 
 
 def test_websocket_booking_notification_flow(client: TestClient, db_session: Session):
@@ -157,9 +175,12 @@ def test_websocket_booking_notification_flow(client: TestClient, db_session: Ses
 
     # Create dummy artist profile
     artist_profile = ArtistProfile(
-        id=uuid.uuid4(), user_id=artist_user.id,
-        bio="Test Artist", base_rate=2000.0,
-        verification_status="approved", display_name="WS Performer"
+        id=uuid.uuid4(),
+        user_id=artist_user.id,
+        bio="Test Artist",
+        base_rate=2000.0,
+        verification_status="approved",
+        display_name="WS Performer",
     )
     db_session.add(artist_profile)
     db_session.commit()
@@ -175,13 +196,15 @@ def test_websocket_booking_notification_flow(client: TestClient, db_session: Ses
         end_time=datetime.time(23, 0),
         location="Websocket Arena",
         proposed_price=4000.0,
-        status="pending"
+        status="pending",
     )
     db_session.add(booking)
     db_session.commit()
 
     # Connect Artist WS
-    with client.websocket_connect(f"/api/v1/ws/notifications?token={artist_token}") as ws:
+    with client.websocket_connect(
+        f"/api/v1/ws/notifications?token={artist_token}"
+    ) as ws:
         ws.receive_json()  # connection confirmed
 
         # Trigger notification generation (booking created event -> notifies artist)
@@ -190,7 +213,7 @@ def test_websocket_booking_notification_flow(client: TestClient, db_session: Ses
             booking=booking,
             event_type="created",
             actor_id=str(client_user.id),
-            actor_role="client"
+            actor_role="client",
         )
 
         # Confirm the artist received the realtime event over WebSocket
@@ -201,11 +224,15 @@ def test_websocket_booking_notification_flow(client: TestClient, db_session: Ses
         assert ws_msg["data"]["reference_id"] == str(booking.id)
 
 
-def test_websocket_failed_booking_notifies_admin(client: TestClient, db_session: Session):
+def test_websocket_failed_booking_notifies_admin(
+    client: TestClient, db_session: Session
+):
     """When a failed booking action occurs, admins receive an alert notification over WebSocket in real time."""
     admin_user, admin_token = _create_test_user(db_session, "admin_user", "admin")
 
-    with client.websocket_connect(f"/api/v1/ws/notifications?token={admin_token}") as ws:
+    with client.websocket_connect(
+        f"/api/v1/ws/notifications?token={admin_token}"
+    ) as ws:
         ws.receive_json()  # connection confirmed
 
         # Trigger failed action notification
@@ -215,7 +242,7 @@ def test_websocket_failed_booking_notifies_admin(client: TestClient, db_session:
             actor_role="client",
             action="accept",
             error_message="Invalid transition from rejected to accepted",
-            db=db_session
+            db=db_session,
         )
 
         # Confirm admin received failed action notification over WS
@@ -223,4 +250,3 @@ def test_websocket_failed_booking_notifies_admin(client: TestClient, db_session:
         assert ws_msg["type"] == "notification"
         assert ws_msg["data"]["notification_type"] == "failed_action"
         assert "Failed Booking Action" in ws_msg["data"]["title"]
-

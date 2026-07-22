@@ -8,10 +8,12 @@ import logging
 from loguru import logger
 from app.core.config import settings
 
+
 class InterceptHandler(logging.Handler):
     """
     Default handler from standard logging to intercept and route to Loguru.
     """
+
     def emit(self, record):
         # Get corresponding Loguru level if it exists
         try:
@@ -25,7 +27,9 @@ class InterceptHandler(logging.Handler):
             frame = frame.f_back
             depth += 1
 
-        logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
+        logger.opt(depth=depth, exception=record.exc_info).log(
+            level, record.getMessage()
+        )
 
 
 def setup_logging():
@@ -61,14 +65,19 @@ def setup_logging():
             retention="30 days",
             format=log_format,
             level="WARNING",
-            compression="zip"
+            compression="zip",
         )
 
     # Intercept system loggers
     logging.basicConfig(handlers=[InterceptHandler()], level=0, force=True)
-    
+
     # Force interception for uvicorn loggers
-    for logger_name in ("uvicorn", "uvicorn.error", "uvicorn.access", "sqlalchemy.engine"):
+    for logger_name in (
+        "uvicorn",
+        "uvicorn.error",
+        "uvicorn.access",
+        "sqlalchemy.engine",
+    ):
         logging_logger = logging.getLogger(logger_name)
         logging_logger.handlers = [InterceptHandler()]
         logging_logger.propagate = False

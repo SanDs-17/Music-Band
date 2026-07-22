@@ -32,6 +32,7 @@ from app.core.exceptions import BadRequestException
 
 # ── Fixtures ─────────────────────────────────────────────────────────────────
 
+
 @pytest.fixture
 def integration_data(db_session):
     """
@@ -43,31 +44,43 @@ def integration_data(db_session):
     # ── Roles ────────────────────────────────────────────────────────────────
     client_role = Role(id=uuid.uuid4(), name="integ_client", description="Client")
     artist_role = Role(id=uuid.uuid4(), name="integ_artist", description="Artist")
-    venue_role  = Role(id=uuid.uuid4(), name="integ_venue",  description="Venue")
-    admin_role  = Role(id=uuid.uuid4(), name="admin",        description="Admin")
+    venue_role = Role(id=uuid.uuid4(), name="integ_venue", description="Venue")
+    admin_role = Role(id=uuid.uuid4(), name="admin", description="Admin")
     db_session.add_all([client_role, artist_role, venue_role, admin_role])
     db_session.commit()
 
     # ── Users ────────────────────────────────────────────────────────────────
     client_user = User(
-        id=uuid.uuid4(), email=f"integ_client_{uuid.uuid4().hex[:6]}@test.dev",
-        name="Integration Client", password_hash="pw",
-        is_active=True, is_verified=True
+        id=uuid.uuid4(),
+        email=f"integ_client_{uuid.uuid4().hex[:6]}@test.dev",
+        name="Integration Client",
+        password_hash="pw",
+        is_active=True,
+        is_verified=True,
     )
     artist_user = User(
-        id=uuid.uuid4(), email=f"integ_artist_{uuid.uuid4().hex[:6]}@test.dev",
-        name="Integration Artist", password_hash="pw",
-        is_active=True, is_verified=True
+        id=uuid.uuid4(),
+        email=f"integ_artist_{uuid.uuid4().hex[:6]}@test.dev",
+        name="Integration Artist",
+        password_hash="pw",
+        is_active=True,
+        is_verified=True,
     )
     venue_owner_user = User(
-        id=uuid.uuid4(), email=f"integ_venue_{uuid.uuid4().hex[:6]}@test.dev",
-        name="Integration Venue Owner", password_hash="pw",
-        is_active=True, is_verified=True
+        id=uuid.uuid4(),
+        email=f"integ_venue_{uuid.uuid4().hex[:6]}@test.dev",
+        name="Integration Venue Owner",
+        password_hash="pw",
+        is_active=True,
+        is_verified=True,
     )
     admin_user = User(
-        id=uuid.uuid4(), email=f"integ_admin_{uuid.uuid4().hex[:6]}@test.dev",
-        name="Integration Admin", password_hash="pw",
-        is_active=True, is_verified=True
+        id=uuid.uuid4(),
+        email=f"integ_admin_{uuid.uuid4().hex[:6]}@test.dev",
+        name="Integration Admin",
+        password_hash="pw",
+        is_active=True,
+        is_verified=True,
     )
     client_user.roles.append(client_role)
     artist_user.roles.append(artist_role)
@@ -78,15 +91,22 @@ def integration_data(db_session):
 
     # ── Artist Profile ────────────────────────────────────────────────────────
     artist_profile = ArtistProfile(
-        id=uuid.uuid4(), user_id=artist_user.id,
-        bio="Integration test performer", base_rate=5000.0,
-        verification_status="approved", display_name="The Integration Band"
+        id=uuid.uuid4(),
+        user_id=artist_user.id,
+        bio="Integration test performer",
+        base_rate=5000.0,
+        verification_status="approved",
+        display_name="The Integration Band",
     )
     db_session.add(artist_profile)
     db_session.commit()
 
     # ── Location hierarchy required by Venue ─────────────────────────────────
-    country = Country(id=uuid.uuid4(), name=f"IntegLand_{uuid.uuid4().hex[:4]}", code=uuid.uuid4().hex[:2].upper())
+    country = Country(
+        id=uuid.uuid4(),
+        name=f"IntegLand_{uuid.uuid4().hex[:4]}",
+        code=uuid.uuid4().hex[:2].upper(),
+    )
     db_session.add(country)
     db_session.commit()
     state = State(id=uuid.uuid4(), name="IntegState", country_id=country.id)
@@ -98,10 +118,14 @@ def integration_data(db_session):
 
     # ── Venue ─────────────────────────────────────────────────────────────────
     venue = Venue(
-        id=uuid.uuid4(), user_id=venue_owner_user.id,
-        name="Integration Hall", description="Test venue",
-        address="123 Test St", city_id=city.id,
-        base_price=10000.0, verification_status="approved"
+        id=uuid.uuid4(),
+        user_id=venue_owner_user.id,
+        name="Integration Hall",
+        description="Test venue",
+        address="123 Test St",
+        city_id=city.id,
+        base_price=10000.0,
+        verification_status="approved",
     )
     db_session.add(venue)
     db_session.commit()
@@ -118,12 +142,14 @@ def integration_data(db_session):
         location="Integration Hall, IntegCity",
         proposed_price=5000.0,
         status="pending",
-        timeline=[{
-            "status": "pending",
-            "timestamp": datetime.datetime.utcnow().isoformat(),
-            "by": "client",
-            "message": "Booking initialised"
-        }]
+        timeline=[
+            {
+                "status": "pending",
+                "timestamp": datetime.datetime.utcnow().isoformat(),
+                "by": "client",
+                "message": "Booking initialised",
+            }
+        ],
     )
     db_session.add(booking)
     db_session.commit()
@@ -149,10 +175,7 @@ def _notifs_for(db_session, user_id):
     """Return all non-deleted notifications for a user."""
     return (
         db_session.query(Notification)
-        .filter(
-            Notification.user_id == user_id,
-            Notification.deleted_at.is_(None)
-        )
+        .filter(Notification.user_id == user_id, Notification.deleted_at.is_(None))
         .order_by(Notification.created_at.desc())
         .all()
     )
@@ -160,16 +183,18 @@ def _notifs_for(db_session, user_id):
 
 # ── Test 1: Booking Created ───────────────────────────────────────────────────
 
+
 def test_booking_created_notifies_artist(db_session, integration_data):
     """Artist receives a 'New Booking Request' when a booking is created."""
     _clear_notifications(db_session)
     b = integration_data["booking"]
 
     create_booking_notification(
-        db=db_session, booking=b,
+        db=db_session,
+        booking=b,
         event_type="created",
         actor_id=str(integration_data["client"].id),
-        actor_role="client"
+        actor_role="client",
     )
 
     notifs = _notifs_for(db_session, integration_data["artist_user"].id)
@@ -193,8 +218,11 @@ def test_booking_created_does_not_notify_client(db_session, integration_data):
     b = integration_data["booking"]
 
     create_booking_notification(
-        db=db_session, booking=b, event_type="created",
-        actor_id=str(integration_data["client"].id), actor_role="client"
+        db=db_session,
+        booking=b,
+        event_type="created",
+        actor_id=str(integration_data["client"].id),
+        actor_role="client",
     )
 
     client_notifs = _notifs_for(db_session, integration_data["client"].id)
@@ -203,6 +231,7 @@ def test_booking_created_does_not_notify_client(db_session, integration_data):
 
 # ── Test 2: Booking Accepted ──────────────────────────────────────────────────
 
+
 def test_booking_accepted_notifies_client(db_session, integration_data):
     """Client receives 'Booking Accepted' after artist accepts."""
     _clear_notifications(db_session)
@@ -210,9 +239,12 @@ def test_booking_accepted_notifies_client(db_session, integration_data):
     artist_uid = str(integration_data["artist_user"].id)
 
     BookingWorkflowEngine.transition(
-        db=db_session, booking_id=b.id,
-        actor_id=artist_uid, actor_role="artist",
-        action="accept", target_status="accepted"
+        db=db_session,
+        booking_id=b.id,
+        actor_id=artist_uid,
+        actor_role="artist",
+        action="accept",
+        target_status="accepted",
     )
 
     notifs = _notifs_for(db_session, integration_data["client"].id)
@@ -227,6 +259,7 @@ def test_booking_accepted_notifies_client(db_session, integration_data):
 
 # ── Test 3: Booking Rejected ──────────────────────────────────────────────────
 
+
 def test_booking_rejected_notifies_client(db_session, integration_data):
     """Client receives 'Booking Rejected' when artist rejects."""
     _clear_notifications(db_session)
@@ -234,9 +267,12 @@ def test_booking_rejected_notifies_client(db_session, integration_data):
     artist_uid = str(integration_data["artist_user"].id)
 
     BookingWorkflowEngine.transition(
-        db=db_session, booking_id=b.id,
-        actor_id=artist_uid, actor_role="artist",
-        action="reject", target_status="rejected"
+        db=db_session,
+        booking_id=b.id,
+        actor_id=artist_uid,
+        actor_role="artist",
+        action="reject",
+        target_status="rejected",
     )
 
     notifs = _notifs_for(db_session, integration_data["client"].id)
@@ -249,6 +285,7 @@ def test_booking_rejected_notifies_client(db_session, integration_data):
 
 # ── Test 4: Counter Offer ─────────────────────────────────────────────────────
 
+
 def test_counter_offer_notifies_client(db_session, integration_data):
     """Client receives 'Counter Offer Received' when artist sends counter."""
     _clear_notifications(db_session)
@@ -256,10 +293,14 @@ def test_counter_offer_notifies_client(db_session, integration_data):
     artist_uid = str(integration_data["artist_user"].id)
 
     BookingWorkflowEngine.transition(
-        db=db_session, booking_id=b.id,
-        actor_id=artist_uid, actor_role="artist",
-        action="counter", target_status="counter_offered",
-        counter_price=7500.0, reason="Weekend surcharge applies"
+        db=db_session,
+        booking_id=b.id,
+        actor_id=artist_uid,
+        actor_role="artist",
+        action="counter",
+        target_status="counter_offered",
+        counter_price=7500.0,
+        reason="Weekend surcharge applies",
     )
 
     notifs = _notifs_for(db_session, integration_data["client"].id)
@@ -272,6 +313,7 @@ def test_counter_offer_notifies_client(db_session, integration_data):
 
 # ── Test 5: Counter Offer Accepted ────────────────────────────────────────────
 
+
 def test_counter_offer_accepted_notifies_artist(db_session, integration_data):
     """Artist receives 'Counter Offer Accepted' when client accepts the counter."""
     _clear_notifications(db_session)
@@ -281,18 +323,24 @@ def test_counter_offer_accepted_notifies_artist(db_session, integration_data):
 
     # 1. Artist sends counter
     BookingWorkflowEngine.transition(
-        db=db_session, booking_id=b.id,
-        actor_id=artist_uid, actor_role="artist",
-        action="counter", target_status="counter_offered",
-        counter_price=7500.0
+        db=db_session,
+        booking_id=b.id,
+        actor_id=artist_uid,
+        actor_role="artist",
+        action="counter",
+        target_status="counter_offered",
+        counter_price=7500.0,
     )
     _clear_notifications(db_session)
 
     # 2. Client accepts counter (status: counter_offered → accepted)
     BookingWorkflowEngine.transition(
-        db=db_session, booking_id=b.id,
-        actor_id=client_uid, actor_role="client",
-        action="accept", target_status="accepted"
+        db=db_session,
+        booking_id=b.id,
+        actor_id=client_uid,
+        actor_role="client",
+        action="accept",
+        target_status="accepted",
     )
 
     notifs = _notifs_for(db_session, integration_data["artist_user"].id)
@@ -303,6 +351,7 @@ def test_counter_offer_accepted_notifies_artist(db_session, integration_data):
 
 
 # ── Test 6: Counter Offer Rejected ────────────────────────────────────────────
+
 
 def test_counter_offer_rejected_notifies_artist(db_session, integration_data):
     """
@@ -322,19 +371,23 @@ def test_counter_offer_rejected_notifies_artist(db_session, integration_data):
 
     # Artist sends counter
     BookingWorkflowEngine.transition(
-        db=db_session, booking_id=b.id,
-        actor_id=artist_uid, actor_role="artist",
-        action="counter", target_status="counter_offered",
-        counter_price=8000.0
+        db=db_session,
+        booking_id=b.id,
+        actor_id=artist_uid,
+        actor_role="artist",
+        action="counter",
+        target_status="counter_offered",
+        counter_price=8000.0,
     )
     _clear_notifications(db_session)
 
     # Directly call service to verify counter_rejected notification content
     create_booking_notification(
-        db=db_session, booking=b,
+        db=db_session,
+        booking=b,
         event_type="counter_rejected",
         actor_id=artist_uid,
-        actor_role="artist"
+        actor_role="artist",
     )
 
     notifs = _notifs_for(db_session, integration_data["artist_user"].id)
@@ -347,6 +400,7 @@ def test_counter_offer_rejected_notifies_artist(db_session, integration_data):
 
 # ── Test 7: Booking Confirmed ─────────────────────────────────────────────────
 
+
 def test_booking_confirmed_notifies_all_parties(db_session, integration_data):
     """Client and Artist both receive 'Booking Confirmed'."""
     _clear_notifications(db_session)
@@ -355,29 +409,39 @@ def test_booking_confirmed_notifies_all_parties(db_session, integration_data):
 
     # pending → accepted
     BookingWorkflowEngine.transition(
-        db=db_session, booking_id=b.id,
-        actor_id=artist_uid, actor_role="artist",
-        action="accept", target_status="accepted"
+        db=db_session,
+        booking_id=b.id,
+        actor_id=artist_uid,
+        actor_role="artist",
+        action="accept",
+        target_status="accepted",
     )
     _clear_notifications(db_session)
 
     # accepted → confirmed (admin override to bypass payment gate in tests)
     BookingWorkflowEngine.transition(
-        db=db_session, booking_id=b.id,
-        actor_id=artist_uid, actor_role="admin",
-        action="confirm", target_status="confirmed"
+        db=db_session,
+        booking_id=b.id,
+        actor_id=artist_uid,
+        actor_role="admin",
+        action="confirm",
+        target_status="confirmed",
     )
 
     # Client notification
     client_notifs = _notifs_for(db_session, integration_data["client"].id)
-    client_n = next(x for x in client_notifs if x.notification_type == "booking_confirmed")
+    client_n = next(
+        x for x in client_notifs if x.notification_type == "booking_confirmed"
+    )
     assert client_n.title == "Booking Confirmed"
     assert client_n.reference_type == "BOOKING"
     assert str(client_n.reference_id) == str(b.id)
 
     # Artist notification
     artist_notifs = _notifs_for(db_session, integration_data["artist_user"].id)
-    artist_n = next(x for x in artist_notifs if x.notification_type == "booking_confirmed")
+    artist_n = next(
+        x for x in artist_notifs if x.notification_type == "booking_confirmed"
+    )
     assert artist_n.title == "Booking Confirmed"
     assert artist_n.reference_type == "BOOKING"
     assert str(artist_n.reference_id) == str(b.id)
@@ -385,7 +449,10 @@ def test_booking_confirmed_notifies_all_parties(db_session, integration_data):
 
 # ── Test 8: Booking Cancelled ─────────────────────────────────────────────────
 
-def test_booking_cancelled_notifies_affected_parties_not_canceller(db_session, integration_data):
+
+def test_booking_cancelled_notifies_affected_parties_not_canceller(
+    db_session, integration_data
+):
     """
     When artist cancels, client receives notification.
     The canceller (artist) should NOT receive a cancellation notification.
@@ -396,18 +463,24 @@ def test_booking_cancelled_notifies_affected_parties_not_canceller(db_session, i
 
     # pending → accepted first
     BookingWorkflowEngine.transition(
-        db=db_session, booking_id=b.id,
-        actor_id=artist_uid, actor_role="artist",
-        action="accept", target_status="accepted"
+        db=db_session,
+        booking_id=b.id,
+        actor_id=artist_uid,
+        actor_role="artist",
+        action="accept",
+        target_status="accepted",
     )
     _clear_notifications(db_session)
 
     # Artist cancels
     BookingWorkflowEngine.transition(
-        db=db_session, booking_id=b.id,
-        actor_id=artist_uid, actor_role="artist",
-        action="cancel", target_status="cancelled",
-        reason="Scheduling conflict"
+        db=db_session,
+        booking_id=b.id,
+        actor_id=artist_uid,
+        actor_role="artist",
+        action="cancel",
+        target_status="cancelled",
+        reason="Scheduling conflict",
     )
 
     # Client must receive cancellation
@@ -419,11 +492,14 @@ def test_booking_cancelled_notifies_affected_parties_not_canceller(db_session, i
 
     # Artist (canceller) must NOT receive cancellation notification
     artist_notifs = _notifs_for(db_session, integration_data["artist_user"].id)
-    artist_cancel = [x for x in artist_notifs if x.notification_type == "booking_cancelled"]
+    artist_cancel = [
+        x for x in artist_notifs if x.notification_type == "booking_cancelled"
+    ]
     assert len(artist_cancel) == 0
 
 
 # ── Test 9: Booking Completed ─────────────────────────────────────────────────
+
 
 def test_booking_completed_notifies_all_parties(db_session, integration_data):
     """Client and Artist both receive 'Booking Completed'. Admin gets report."""
@@ -433,21 +509,30 @@ def test_booking_completed_notifies_all_parties(db_session, integration_data):
 
     # pending → accepted → confirmed → completed
     BookingWorkflowEngine.transition(
-        db=db_session, booking_id=b.id,
-        actor_id=artist_uid, actor_role="artist",
-        action="accept", target_status="accepted"
+        db=db_session,
+        booking_id=b.id,
+        actor_id=artist_uid,
+        actor_role="artist",
+        action="accept",
+        target_status="accepted",
     )
     BookingWorkflowEngine.transition(
-        db=db_session, booking_id=b.id,
-        actor_id=artist_uid, actor_role="admin",
-        action="confirm", target_status="confirmed"
+        db=db_session,
+        booking_id=b.id,
+        actor_id=artist_uid,
+        actor_role="admin",
+        action="confirm",
+        target_status="confirmed",
     )
     _clear_notifications(db_session)
 
     BookingWorkflowEngine.transition(
-        db=db_session, booking_id=b.id,
-        actor_id=artist_uid, actor_role="artist",
-        action="complete", target_status="completed"
+        db=db_session,
+        booking_id=b.id,
+        actor_id=artist_uid,
+        actor_role="artist",
+        action="complete",
+        target_status="completed",
     )
 
     # Client
@@ -465,7 +550,9 @@ def test_booking_completed_notifies_all_parties(db_session, integration_data):
 
     # Admin receives booking_report
     admin_notifs = _notifs_for(db_session, integration_data["admin"].id)
-    admin_report = next(x for x in admin_notifs if x.notification_type == "booking_report")
+    admin_report = next(
+        x for x in admin_notifs if x.notification_type == "booking_report"
+    )
     assert "Completed" in admin_report.title
     assert admin_report.reference_type == "BOOKING"
     assert str(admin_report.reference_id) == str(b.id)
@@ -473,16 +560,19 @@ def test_booking_completed_notifies_all_parties(db_session, integration_data):
 
 # ── Test 10: RBAC — Wrong Actor Cannot Transition ─────────────────────────────
 
+
 def test_rbac_wrong_actor_is_rejected(db_session, integration_data):
     """A random client cannot accept a booking on behalf of an artist."""
     b = integration_data["booking"]
     # Use client_id as actor but with artist role — RBAC should reject
     with pytest.raises(BadRequestException):
         BookingWorkflowEngine.transition(
-            db=db_session, booking_id=b.id,
+            db=db_session,
+            booking_id=b.id,
             actor_id=str(integration_data["client"].id),
             actor_role="artist",
-            action="accept", target_status="accepted"
+            action="accept",
+            target_status="accepted",
         )
 
 
@@ -494,10 +584,12 @@ def test_rbac_failed_action_alerts_admin(db_session, integration_data):
     # Client tries to complete a pending booking — invalid both by RBAC and transition matrix
     with pytest.raises(BadRequestException):
         BookingWorkflowEngine.transition(
-            db=db_session, booking_id=b.id,
+            db=db_session,
+            booking_id=b.id,
             actor_id=str(integration_data["client"].id),
             actor_role="client",
-            action="complete", target_status="completed"
+            action="complete",
+            target_status="completed",
         )
 
     admin_notifs = _notifs_for(db_session, integration_data["admin"].id)
@@ -511,16 +603,22 @@ def test_rbac_failed_action_alerts_admin(db_session, integration_data):
 
 # ── Test 11: reference_type and reference_id on All Direct Events ─────────────
 
-@pytest.mark.parametrize("event_type,expected_type", [
-    ("created",   "booking_request"),
-    ("accepted",  "booking_accepted"),
-    ("rejected",  "booking_rejected"),
-    ("counter",   "counter_offer"),
-    ("confirmed", "booking_confirmed"),
-    ("completed", "booking_completed"),
-    ("cancelled", "booking_cancelled"),
-])
-def test_reference_fields_present_for_event(db_session, integration_data, event_type, expected_type):
+
+@pytest.mark.parametrize(
+    "event_type,expected_type",
+    [
+        ("created", "booking_request"),
+        ("accepted", "booking_accepted"),
+        ("rejected", "booking_rejected"),
+        ("counter", "counter_offer"),
+        ("confirmed", "booking_confirmed"),
+        ("completed", "booking_completed"),
+        ("cancelled", "booking_cancelled"),
+    ],
+)
+def test_reference_fields_present_for_event(
+    db_session, integration_data, event_type, expected_type
+):
     """Every booking event notification carries reference_type='BOOKING' and reference_id=booking.id."""
     _clear_notifications(db_session)
     b = integration_data["booking"]
@@ -529,30 +627,30 @@ def test_reference_fields_present_for_event(db_session, integration_data, event_
     # We call create_booking_notification directly to test the service layer
     # rather than chaining state transitions (which have ordering constraints).
     create_booking_notification(
-        db=db_session, booking=b,
+        db=db_session,
+        booking=b,
         event_type=event_type,
         actor_id=str(integration_data["client"].id),
-        actor_role="client"
+        actor_role="client",
     )
 
     # At least one notification must exist with the correct reference fields
     all_notifs = (
-        db_session.query(Notification)
-        .filter(Notification.deleted_at.is_(None))
-        .all()
+        db_session.query(Notification).filter(Notification.deleted_at.is_(None)).all()
     )
     assert len(all_notifs) >= 1, f"No notifications created for event_type={event_type}"
 
     for n in all_notifs:
-        assert n.reference_type == "BOOKING", (
-            f"Expected reference_type='BOOKING' for event '{event_type}', got '{n.reference_type}'"
-        )
-        assert str(n.reference_id) == str(b.id), (
-            f"Expected reference_id={b.id} for event '{event_type}', got {n.reference_id}"
-        )
+        assert (
+            n.reference_type == "BOOKING"
+        ), f"Expected reference_type='BOOKING' for event '{event_type}', got '{n.reference_type}'"
+        assert (
+            str(n.reference_id) == str(b.id)
+        ), f"Expected reference_id={b.id} for event '{event_type}', got {n.reference_id}"
 
 
 # ── Test 12: Notification Metadata Contains Booking Context ───────────────────
+
 
 def test_notification_metadata_contains_booking_context(db_session, integration_data):
     """Notification metadata must contain event_name, booking_status, event_type, actor_role."""
@@ -560,16 +658,15 @@ def test_notification_metadata_contains_booking_context(db_session, integration_
     b = integration_data["booking"]
 
     create_booking_notification(
-        db=db_session, booking=b,
+        db=db_session,
+        booking=b,
         event_type="created",
         actor_id=str(integration_data["client"].id),
-        actor_role="client"
+        actor_role="client",
     )
 
     notif = (
-        db_session.query(Notification)
-        .filter(Notification.deleted_at.is_(None))
-        .first()
+        db_session.query(Notification).filter(Notification.deleted_at.is_(None)).first()
     )
     assert notif is not None
     meta = notif.notification_metadata

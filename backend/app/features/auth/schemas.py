@@ -4,10 +4,12 @@ from pydantic import EmailStr, Field, field_validator
 from app.common.schemas.base import BaseSchema
 from app.utils.validators import validate_password_strength
 
+
 class PermissionResponse(BaseSchema):
     id: UUID
     name: str
     description: Optional[str] = None
+
 
 class RoleResponse(BaseSchema):
     id: UUID
@@ -15,11 +17,16 @@ class RoleResponse(BaseSchema):
     description: Optional[str] = None
     permissions: List[PermissionResponse] = []
 
+
 class UserRegister(BaseSchema):
     email: EmailStr
-    password: str = Field(..., min_length=8, description="Password must meet complexity requirements")
+    password: str = Field(
+        ..., min_length=8, description="Password must meet complexity requirements"
+    )
     name: str = Field(..., min_length=2, max_length=150)
-    role_name: str = Field(..., description="Role to assign: client, artist, or venue_owner")
+    role_name: str = Field(
+        ..., description="Role to assign: client, artist, or venue_owner"
+    )
 
     @field_validator("password")
     @classmethod
@@ -35,20 +42,25 @@ class UserRegister(BaseSchema):
             raise ValueError("Admin registration via public endpoint is not permitted.")
         return v
 
+
 class UserLogin(BaseSchema):
     email: EmailStr
     password: str
+
 
 class TokenResponse(BaseSchema):
     access_token: str
     refresh_token: str
     token_type: str = "Bearer"
 
+
 class RefreshTokenRequest(BaseSchema):
     refresh_token: str
 
+
 class ForgotPasswordRequest(BaseSchema):
     email: EmailStr
+
 
 class ResetPasswordRequest(BaseSchema):
     token: str
@@ -80,12 +92,15 @@ class UserResponse(BaseSchema):
     is_verified: bool
     roles: List[RoleResponse] = []
 
+
 class UserStatusUpdate(BaseSchema):
     is_active: bool
+
 
 class BulkStatusUpdate(BaseSchema):
     user_ids: List[UUID]
     is_active: bool
+
 
 class PaginatedUserList(BaseSchema):
     items: List[UserResponse]

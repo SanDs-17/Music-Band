@@ -25,6 +25,7 @@ from app.core.security import create_access_token
 
 # ── Helpers & Fixtures ────────────────────────────────────────────────────────
 
+
 def _create_user(db: Session, name: str, role_name: str) -> tuple[User, str]:
     role = db.query(Role).filter(Role.name == role_name).first()
     if not role:
@@ -38,7 +39,7 @@ def _create_user(db: Session, name: str, role_name: str) -> tuple[User, str]:
         name=name,
         password_hash="pw",
         is_active=True,
-        is_verified=True
+        is_verified=True,
     )
     user.roles.append(role)
     db.add(user)
@@ -55,7 +56,7 @@ def _create_test_booking(db: Session, client_user: User, artist_user: User) -> B
         bio="Test Artist Bio",
         base_rate=5000.0,
         verification_status="approved",
-        display_name=artist_user.name
+        display_name=artist_user.name,
     )
     db.add(artist_profile)
     db.commit()
@@ -70,7 +71,7 @@ def _create_test_booking(db: Session, client_user: User, artist_user: User) -> B
         end_time=datetime.time(22, 0),
         location="Grand Ballroom",
         proposed_price=15000.0,
-        status="accepted"
+        status="accepted",
     )
     db.add(booking)
     db.commit()
@@ -79,7 +80,10 @@ def _create_test_booking(db: Session, client_user: User, artist_user: User) -> B
 
 # ── Tests ────────────────────────────────────────────────────────────────────
 
-def test_conversation_creation_and_duplicate_prevention(client: TestClient, db_session: Session):
+
+def test_conversation_creation_and_duplicate_prevention(
+    client: TestClient, db_session: Session
+):
     """Participant can create a conversation; duplicate requests are rejected."""
     client_user, client_token = _create_user(db_session, "msg_client", "client")
     artist_user, artist_token = _create_user(db_session, "msg_artist", "artist")
@@ -103,7 +107,9 @@ def test_conversation_creation_and_duplicate_prevention(client: TestClient, db_s
     assert "already exists" in res_dup.json()["detail"]
 
 
-def test_conversation_rbac_and_participant_isolation(client: TestClient, db_session: Session):
+def test_conversation_rbac_and_participant_isolation(
+    client: TestClient, db_session: Session
+):
     """Non-participants cannot create or view conversations."""
     client_user, client_token = _create_user(db_session, "part_client", "client")
     artist_user, _ = _create_user(db_session, "part_artist", "artist")
@@ -114,7 +120,7 @@ def test_conversation_rbac_and_participant_isolation(client: TestClient, db_sess
     res_outsider = client.post(
         "/api/v1/conversations",
         json={"booking_id": str(booking.id)},
-        headers={"Authorization": f"Bearer {outsider_token}"}
+        headers={"Authorization": f"Bearer {outsider_token}"},
     )
     assert res_outsider.status_code == 403
 
@@ -122,7 +128,7 @@ def test_conversation_rbac_and_participant_isolation(client: TestClient, db_sess
     res_valid = client.post(
         "/api/v1/conversations",
         json={"booking_id": str(booking.id)},
-        headers={"Authorization": f"Bearer {client_token}"}
+        headers={"Authorization": f"Bearer {client_token}"},
     )
     assert res_valid.status_code == 201
     conv_id = res_valid.json()["data"]["id"]
@@ -130,7 +136,7 @@ def test_conversation_rbac_and_participant_isolation(client: TestClient, db_sess
     # Outsider attempts to view conversation details
     res_view = client.get(
         f"/api/v1/conversations/{conv_id}",
-        headers={"Authorization": f"Bearer {outsider_token}"}
+        headers={"Authorization": f"Bearer {outsider_token}"},
     )
     assert res_view.status_code == 403
 
@@ -145,7 +151,7 @@ def test_send_message_and_history_pagination(client: TestClient, db_session: Ses
     res_conv = client.post(
         "/api/v1/conversations",
         json={"booking_id": str(booking.id)},
-        headers={"Authorization": f"Bearer {client_token}"}
+        headers={"Authorization": f"Bearer {client_token}"},
     )
     conv_id = res_conv.json()["data"]["id"]
 
@@ -154,7 +160,7 @@ def test_send_message_and_history_pagination(client: TestClient, db_session: Ses
     res_msg1 = client.post(
         f"/api/v1/conversations/{conv_id}/messages",
         json={"content": "Hello! Looking forward to the show."},
-        headers=headers_client
+        headers=headers_client,
     )
     assert res_msg1.status_code == 201
     msg1_data = res_msg1.json()["data"]
@@ -167,12 +173,14 @@ def test_send_message_and_history_pagination(client: TestClient, db_session: Ses
     res_msg2 = client.post(
         f"/api/v1/conversations/{conv_id}/messages",
         json={"content": "Hi there! We are excited to perform."},
-        headers=headers_artist
+        headers=headers_artist,
     )
     assert res_msg2.status_code == 201
 
     # 4. Get message history
-    res_hist = client.get(f"/api/v1/conversations/{conv_id}/messages", headers=headers_client)
+    res_hist = client.get(
+        f"/api/v1/conversations/{conv_id}/messages", headers=headers_client
+    )
     assert res_hist.status_code == 200
     messages = res_hist.json()["data"]
     assert len(messages) == 2
@@ -180,30 +188,50 @@ def test_send_message_and_history_pagination(client: TestClient, db_session: Ses
     assert messages[1]["content"] == "Hi there! We are excited to perform."
 
 
-def test_message_validation_and_closed_conversation(client: TestClient, db_session: Session):
+def test_message_validation_and_closed_conversation(
+    client: TestClient, db_session: Session
+):
     """Empty messages, over-length messages, and messaging closed conversations fail validation."""
     client_user, client_token = _create_user(db_session, "val_client", "client")
     artist_user, _ = _create_user(db_session, "val_artist", "artist")
     booking = _create_test_booking(db_session, client_user, artist_user)
 
     headers = {"Authorization": f"Bearer {client_token}"}
-    res_conv = client.post("/api/v1/conversations", json={"booking_id": str(booking.id)}, headers=headers)
+    res_conv = client.post(
+        "/api/v1/conversations", json={"booking_id": str(booking.id)}, headers=headers
+    )
     conv_id = res_conv.json()["data"]["id"]
 
     # 1. Empty message
-    res_empty = client.post(f"/api/v1/conversations/{conv_id}/messages", json={"content": "   "}, headers=headers)
+    res_empty = client.post(
+        f"/api/v1/conversations/{conv_id}/messages",
+        json={"content": "   "},
+        headers=headers,
+    )
     assert res_empty.status_code == 400
 
     # 2. Exceeds 2000 chars (Pydantic schema validation returns 422)
     long_content = "a" * 2001
-    res_long = client.post(f"/api/v1/conversations/{conv_id}/messages", json={"content": long_content}, headers=headers)
+    res_long = client.post(
+        f"/api/v1/conversations/{conv_id}/messages",
+        json={"content": long_content},
+        headers=headers,
+    )
     assert res_long.status_code in (400, 422)
 
     # 3. Close conversation in DB and attempt to post message
-    conv = db_session.query(Conversation).filter(Conversation.id == uuid.UUID(conv_id)).first()
+    conv = (
+        db_session.query(Conversation)
+        .filter(Conversation.id == uuid.UUID(conv_id))
+        .first()
+    )
     conv.status = "CLOSED"
     db_session.commit()
 
-    res_closed = client.post(f"/api/v1/conversations/{conv_id}/messages", json={"content": "Are you there?"}, headers=headers)
+    res_closed = client.post(
+        f"/api/v1/conversations/{conv_id}/messages",
+        json={"content": "Are you there?"},
+        headers=headers,
+    )
     assert res_closed.status_code == 400
     assert "read-only" in res_closed.json()["detail"]

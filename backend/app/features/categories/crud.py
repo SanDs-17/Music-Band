@@ -21,15 +21,15 @@ class CategoryCRUD(BaseRepository[Category]):
         type_filter: Optional[str] = None,
         is_active: Optional[bool] = None,
         limit: int = 10,
-        offset: int = 0
+        offset: int = 0,
     ) -> Tuple[List[Category], int]:
         """Fetch categories matching search criteria, type discriminator, active toggle, and offsets pagination."""
         query = db.query(Category).filter(Category.deleted_at.is_(None))
 
         if search:
             query = query.filter(
-                (Category.name.ilike(f"%{search}%")) |
-                (Category.description.ilike(f"%{search}%"))
+                (Category.name.ilike(f"%{search}%"))
+                | (Category.description.ilike(f"%{search}%"))
             )
 
         if type_filter and type_filter != "all":

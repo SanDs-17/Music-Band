@@ -119,13 +119,13 @@ class Settings(BaseSettings):
                 raise ValueError(
                     "[SECURITY] SECRET_KEY is missing or empty. "
                     "Production backend cannot start without a strong SECRET_KEY. "
-                    "Generate one: python -c \"import secrets; print(secrets.token_hex(32))\""
+                    'Generate one: python -c "import secrets; print(secrets.token_hex(32))"'
                 )
             if key == _DEV_SECRET_FALLBACK:
                 raise ValueError(
                     "[SECURITY] SECRET_KEY is set to the dev fallback value. "
                     "Production backend refuses to start with a known-insecure key. "
-                    "Generate one: python -c \"import secrets; print(secrets.token_hex(32))\""
+                    'Generate one: python -c "import secrets; print(secrets.token_hex(32))"'
                 )
             return key
 

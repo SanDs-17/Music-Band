@@ -40,7 +40,6 @@ from app.features.messaging.conversation.models import Conversation  # noqa: F40
 from app.features.messaging.message.models import Message  # noqa: F401
 
 
-
 # ── Categories / Taxonomy ────────────────────────────────────────────────────
 from app.features.categories.models import Category  # noqa: F401
 

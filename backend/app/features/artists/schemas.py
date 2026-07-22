@@ -19,22 +19,30 @@ class UserBriefResponse(BaseSchema):
 class ArtistRegisterRequest(BaseSchema):
     email: EmailStr
     mobile_number: str = Field(..., min_length=10, max_length=20)
-    password: str = Field(..., min_length=8, description="Password must be at least 8 char long")
-    name: str = Field(..., min_length=2, max_length=150, description="Band or artist legal name")
-    
+    password: str = Field(
+        ..., min_length=8, description="Password must be at least 8 char long"
+    )
+    name: str = Field(
+        ..., min_length=2, max_length=150, description="Band or artist legal name"
+    )
+
     # Step 2
     display_name: str = Field(..., min_length=2, max_length=150)
     description: Optional[str] = Field(None, max_length=2000)
     years_of_experience: int = Field(0, ge=0)
     profile_image: Optional[str] = None
     cover_image: Optional[str] = None
-    
+
     # Step 3
     band_type: str = Field("Solo", description="Solo, Duo, Trio, 4 Members, 5+ Members")
     total_members: int = Field(1, ge=1)
-    languages: List[str] = Field(..., description="List of language names, e.g. ['Tamil', 'English']")
-    genres: List[str] = Field(..., description="List of genre names, e.g. ['Melody', 'Rock']")
-    
+    languages: List[str] = Field(
+        ..., description="List of language names, e.g. ['Tamil', 'English']"
+    )
+    genres: List[str] = Field(
+        ..., description="List of genre names, e.g. ['Melody', 'Rock']"
+    )
+
     # Step 4
     base_rate: float = Field(0.0, ge=0.0)
     currency: str = Field("INR", max_length=10)
@@ -42,15 +50,15 @@ class ArtistRegisterRequest(BaseSchema):
     travel_charges: float = Field(0.0, ge=0.0)
     min_booking_hours: float = Field(0.0, ge=0.0)
     max_booking_hours: float = Field(0.0, ge=0.0)
-    
+
     # Step 5
     equipment: Dict[str, bool] = Field(default_factory=dict)
-    
+
     # Step 6
     gallery: List[str] = Field(default_factory=list)
     videos: List[str] = Field(default_factory=list)
     youtube_links: List[str] = Field(default_factory=list)
-    
+
     # Step 7
     availability: Dict[str, Any] = Field(default_factory=dict)
 
@@ -58,9 +66,10 @@ class ArtistRegisterRequest(BaseSchema):
 class ArtistProfileCreateRequest(BaseSchema):
     """
     Used by an already-authenticated artist user (registered via /auth/register)
-    to create their initial Artist/Band profile. No email/password needed — 
+    to create their initial Artist/Band profile. No email/password needed —
     the user account already exists. user_id is taken from JWT claims.
     """
+
     # Identity
     display_name: str = Field(..., min_length=2, max_length=150)
     mobile_number: str = Field(..., min_length=10, max_length=20)
@@ -109,7 +118,7 @@ class ArtistProfileResponse(BaseSchema):
     rating: float
     verification_status: str
     verification_notes: Optional[str] = None
-    
+
     display_name: Optional[str] = None
     mobile_number: Optional[str] = None
     years_of_experience: int
@@ -128,7 +137,7 @@ class ArtistProfileResponse(BaseSchema):
     availability: Dict[str, Any] = {}
     social_links: Dict[str, str] = {}
     achievements: List[str] = []
-    
+
     documents: Optional[Dict[str, Any]] = None
     gallery: List[Any] = []
     videos: List[Any] = []
@@ -213,7 +222,9 @@ class ArtistProfileUpdate(BaseSchema):
 
 
 class ArtistVerificationUpdate(BaseSchema):
-    verification_status: str = Field(..., description="Statuses: approved, rejected, pending")
+    verification_status: str = Field(
+        ..., description="Statuses: approved, rejected, pending"
+    )
     verification_notes: Optional[str] = Field(None, max_length=255)
 
 

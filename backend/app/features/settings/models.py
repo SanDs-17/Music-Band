@@ -12,6 +12,7 @@ from app.core.database import Base
 
 class SystemSetting(Base):
     """Dynamic key-value configuration setting store."""
+
     __tablename__ = "system_settings"
 
     key = Column(String(100), primary_key=True, index=True)
@@ -22,15 +23,23 @@ class SystemSetting(Base):
 
 class AuditLog(BaseModel):
     """System auditing logs tracker recording administrative actions."""
+
     __tablename__ = "audit_logs"
 
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
     action = Column(String(100), nullable=False, index=True)
     ip_address = Column(String(45), nullable=True)
     user_agent = Column(String(255), nullable=True)
     payload = Column(JSON, default=dict, nullable=False)  # Before/After changes
 
     user = relationship("User", backref="audit_logs")
+
+
 ZOOM_NOTE = """
 AuditLog inherits created_at timestamp from BaseModel representing event occurrence.
 """

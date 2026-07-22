@@ -12,7 +12,7 @@ from app.features.artists.schemas import (
     ArtistVerificationUpdate,
     ArtistProfileResponse,
     PaginatedArtistList,
-    UserBriefResponse
+    UserBriefResponse,
 )
 from app.features.artists.service import ArtistService
 from app.features.artists.crud import ArtistProfileCRUD
@@ -34,7 +34,7 @@ def _format_artist_profile(artist) -> ArtistProfileResponse:
             id=artist.user.id,
             name=artist.user.name,
             email=artist.user.email,
-            is_active=artist.user.is_active
+            is_active=artist.user.is_active,
         ),
         bio=artist.bio,
         base_rate=float(artist.base_rate),
@@ -72,8 +72,9 @@ def _format_artist_profile(artist) -> ArtistProfileResponse:
                 type=c.type,
                 description=c.description,
                 is_active=c.is_active,
-                created_at=c.created_at.isoformat()
-            ) for c in artist.genres
+                created_at=c.created_at.isoformat(),
+            )
+            for c in artist.genres
         ],
         languages=[
             CategoryResponse(
@@ -82,10 +83,11 @@ def _format_artist_profile(artist) -> ArtistProfileResponse:
                 type=c.type,
                 description=c.description,
                 is_active=c.is_active,
-                created_at=c.created_at.isoformat()
-            ) for c in artist.languages
+                created_at=c.created_at.isoformat(),
+            )
+            for c in artist.languages
         ],
-        created_at=artist.created_at.isoformat()
+        created_at=artist.created_at.isoformat(),
     )
 
 
@@ -93,25 +95,31 @@ def _format_artist_profile(artist) -> ArtistProfileResponse:
     "",
     response_model=SuccessResponse[PaginatedArtistList],
     status_code=status.HTTP_200_OK,
-    summary="List all artists (Admin only)"
+    summary="List all artists (Admin only)",
 )
 async def list_admin_artists(
     search: Optional[str] = Query(None, description="Search artist name or bio"),
-    verification_status: Optional[str] = Query(None, description="Filter by status: pending, approved, rejected"),
+    verification_status: Optional[str] = Query(
+        None, description="Filter by status: pending, approved, rejected"
+    ),
     limit: int = Query(10, ge=1, le=100),
     offset: int = Query(0, ge=0),
     current_admin_claims: dict = Depends(get_current_admin),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Admin-only route returning all performer profiles with verification and search parameters."""
     artists, total = crud.get_filtered_artists(
-        db, search=search, verification_status=verification_status, limit=limit, offset=offset
+        db,
+        search=search,
+        verification_status=verification_status,
+        limit=limit,
+        offset=offset,
     )
     formatted = [_format_artist_profile(a) for a in artists]
     return SuccessResponse(
         success=True,
         data=PaginatedArtistList(items=formatted, total=total),
-        message="Artists list retrieved successfully."
+        message="Artists list retrieved successfully.",
     )
 
 
@@ -119,12 +127,12 @@ async def list_admin_artists(
     "/{artist_id}",
     response_model=SuccessResponse[ArtistProfileResponse],
     status_code=status.HTTP_200_OK,
-    summary="Get artist details (Admin only)"
+    summary="Get artist details (Admin only)",
 )
 async def get_admin_artist_detail(
     artist_id: UUID,
     current_admin_claims: dict = Depends(get_current_admin),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Admin-only route to inspect complete profile fields of a performer."""
     artist = crud.get(db, artist_id)
@@ -133,7 +141,7 @@ async def get_admin_artist_detail(
     return SuccessResponse(
         success=True,
         data=_format_artist_profile(artist),
-        message="Artist details retrieved successfully."
+        message="Artist details retrieved successfully.",
     )
 
 
@@ -141,20 +149,20 @@ async def get_admin_artist_detail(
     "/{artist_id}/verify",
     response_model=SuccessResponse[ArtistProfileResponse],
     status_code=status.HTTP_200_OK,
-    summary="Update artist verification status (Admin only)"
+    summary="Update artist verification status (Admin only)",
 )
 async def update_artist_verification(
     artist_id: UUID,
     data: ArtistVerificationUpdate,
     current_admin_claims: dict = Depends(get_current_admin),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Admin-only pipeline path to Approve, Reject, or Flag a performer profile verification."""
     artist = service.update_verification_status(db, artist_id, data)
     return SuccessResponse(
         success=True,
         data=_format_artist_profile(artist),
-        message="Verification status successfully updated."
+        message="Verification status successfully updated.",
     )
 
 
@@ -162,19 +170,19 @@ async def update_artist_verification(
     "/{artist_id}/suspend",
     response_model=SuccessResponse[ArtistProfileResponse],
     status_code=status.HTTP_200_OK,
-    summary="Suspend artist account access (Admin only)"
+    summary="Suspend artist account access (Admin only)",
 )
 async def suspend_admin_artist(
     artist_id: UUID,
     current_admin_claims: dict = Depends(get_current_admin),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Admin-only endpoint to toggle account credentials activity to inactive (suspend)."""
     artist = service.suspend_artist(db, artist_id)
     return SuccessResponse(
         success=True,
         data=_format_artist_profile(artist),
-        message="Artist credentials suspended successfully."
+        message="Artist credentials suspended successfully.",
     )
 
 
@@ -182,17 +190,17 @@ async def suspend_admin_artist(
     "/{artist_id}/activate",
     response_model=SuccessResponse[ArtistProfileResponse],
     status_code=status.HTTP_200_OK,
-    summary="Activate artist account access (Admin only)"
+    summary="Activate artist account access (Admin only)",
 )
 async def activate_admin_artist(
     artist_id: UUID,
     current_admin_claims: dict = Depends(get_current_admin),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Admin-only endpoint to toggle account credentials activity to active."""
     artist = service.activate_artist(db, artist_id)
     return SuccessResponse(
         success=True,
         data=_format_artist_profile(artist),
-        message="Artist credentials activated successfully."
+        message="Artist credentials activated successfully.",
     )

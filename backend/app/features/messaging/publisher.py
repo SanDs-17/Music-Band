@@ -43,6 +43,7 @@ def publish_messaging_event(
 
     async def _deliver() -> None:
         from app.features.notifications.connection_manager import connection_manager
+
         try:
             await connection_manager.send_to_user(
                 uid,

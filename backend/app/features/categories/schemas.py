@@ -10,7 +10,10 @@ from app.common.schemas.base import BaseSchema
 
 class CategoryCreate(BaseSchema):
     name: str = Field(..., min_length=2, max_length=100)
-    type: str = Field(..., description="Discriminator: music_genre, language, event_type, band_type, equipment_category, venue_category")
+    type: str = Field(
+        ...,
+        description="Discriminator: music_genre, language, event_type, band_type, equipment_category, venue_category",
+    )
     description: Optional[str] = Field(None, max_length=255)
     is_active: bool = True
 

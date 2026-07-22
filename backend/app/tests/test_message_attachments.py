@@ -34,9 +34,13 @@ async def test_upload_image_attachment_success(db_session: Session):
     db_session.add(conv)
     db_session.commit()
 
-    file_content = b"\xFF\xD8\xFF\xE0\x00\x10JFIF"
+    file_content = b"\xff\xd8\xff\xe0\x00\x10JFIF"
     file_obj = BytesIO(file_content)
-    upload_file = UploadFile(filename="stage_setup.jpg", file=file_obj, headers={"content-type": "image/jpeg"})
+    upload_file = UploadFile(
+        filename="stage_setup.jpg",
+        file=file_obj,
+        headers={"content-type": "image/jpeg"},
+    )
 
     msg = await message_service.send_attachment_message(
         db=db_session,
@@ -71,7 +75,11 @@ async def test_upload_document_attachment_success(db_session: Session):
 
     file_content = b"%PDF-1.4 sample pdf content"
     file_obj = BytesIO(file_content)
-    upload_file = UploadFile(filename="event_rider.pdf", file=file_obj, headers={"content-type": "application/pdf"})
+    upload_file = UploadFile(
+        filename="event_rider.pdf",
+        file=file_obj,
+        headers={"content-type": "application/pdf"},
+    )
 
     msg = await message_service.send_attachment_message(
         db=db_session,
@@ -104,7 +112,11 @@ async def test_reject_executable_file(db_session: Session):
 
     file_content = b"MZ\x90\x00\x03\x00\x00\x00"
     file_obj = BytesIO(file_content)
-    upload_file = UploadFile(filename="malware.exe", file=file_obj, headers={"content-type": "application/x-msdownload"})
+    upload_file = UploadFile(
+        filename="malware.exe",
+        file=file_obj,
+        headers={"content-type": "application/x-msdownload"},
+    )
 
     with pytest.raises(HTTPException) as exc_info:
         await message_service.send_attachment_message(
@@ -136,7 +148,9 @@ async def test_download_attachment_authorization(db_session: Session):
 
     file_content = b"sample text contract"
     file_obj = BytesIO(file_content)
-    upload_file = UploadFile(filename="contract.txt", file=file_obj, headers={"content-type": "text/plain"})
+    upload_file = UploadFile(
+        filename="contract.txt", file=file_obj, headers={"content-type": "text/plain"}
+    )
 
     msg = await message_service.send_attachment_message(
         db=db_session,
@@ -146,9 +160,13 @@ async def test_download_attachment_authorization(db_session: Session):
     )
 
     # Participant download works
-    info = message_service.download_attachment(db=db_session, message_id=msg.id, user_id=client_id)
+    info = message_service.download_attachment(
+        db=db_session, message_id=msg.id, user_id=client_id
+    )
     assert info["attachment_name"] == "contract.txt"
 
     # Non-participant download is forbidden (404/403)
     with pytest.raises(HTTPException):
-        message_service.download_attachment(db=db_session, message_id=msg.id, user_id=unauthorized_id)
+        message_service.download_attachment(
+            db=db_session, message_id=msg.id, user_id=unauthorized_id
+        )

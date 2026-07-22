@@ -2,19 +2,22 @@ from datetime import timedelta
 from app.features.auth.models import User
 from app.core.security import create_access_token
 
+
 def test_email_verification_flow(client, db_session):
     # 1. Create an unverified user
     payload = {
         "email": "verify_test@example.com",
         "name": "Verify Tester",
         "password": "TestPassword123!",
-        "role_name": "client"
+        "role_name": "client",
     }
     response = client.post("/api/v1/auth/register", json=payload)
     assert response.status_code == 201
-    
+
     # Query database to confirm user is unverified
-    user = db_session.query(User).filter(User.email == "verify_test@example.com").first()
+    user = (
+        db_session.query(User).filter(User.email == "verify_test@example.com").first()
+    )
     assert user is not None
     assert user.is_verified is False
 
@@ -23,7 +26,7 @@ def test_email_verification_flow(client, db_session):
         subject=str(user.id),
         role="verify",
         email=user.email,
-        expires_delta=timedelta(hours=1)
+        expires_delta=timedelta(hours=1),
     )
 
     # 3. Post verification token to endpoint
@@ -47,11 +50,18 @@ def test_email_verification_flow(client, db_session):
     assert re_res_data["data"]["already_verified"] is True
     assert re_res_data["data"]["access_token"] is None
 
+
 def test_email_verification_invalid_token(client):
     # Try verifying with an invalid token
-    response = client.post("/api/v1/auth/verify-email", json={"token": "invalidtokenvalue"})
+    response = client.post(
+        "/api/v1/auth/verify-email", json={"token": "invalidtokenvalue"}
+    )
     assert response.status_code == 401
-    assert "invalid" in response.json()["error"]["message"].lower() or "malformed" in response.json()["error"]["message"].lower()
+    assert (
+        "invalid" in response.json()["error"]["message"].lower()
+        or "malformed" in response.json()["error"]["message"].lower()
+    )
+
 
 def test_email_verification_expired_token(client, db_session):
     # 1. Create user
@@ -60,7 +70,7 @@ def test_email_verification_expired_token(client, db_session):
         name="Expired Tester",
         password_hash="hashedpwd",
         is_active=True,
-        is_verified=False
+        is_verified=False,
     )
     db_session.add(user)
     db_session.commit()
@@ -70,7 +80,7 @@ def test_email_verification_expired_token(client, db_session):
         subject=str(user.id),
         role="verify",
         email=user.email,
-        expires_delta=timedelta(seconds=-1)
+        expires_delta=timedelta(seconds=-1),
     )
 
     # 3. Request verification

@@ -12,28 +12,32 @@ export default function LandingPage() {
       <section className="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-24 flex flex-col items-center justify-center text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full border border-primary/20 text-primary text-sm font-semibold mb-6 animate-fade-in">
           <Sparkles className="h-4 w-4" />
-          <span>The Future of Event Entertainment</span>
+          <span>India&apos;s Trusted Live Entertainment Marketplace</span>
         </div>
         
-        <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight leading-none text-balance">
-          Book The Perfect <span className="text-primary">Live Band</span> For Your Event
+        <h1 className="text-5xl md:text-7xl font-black mb-4 tracking-tight leading-none text-balance">
+          Book the Perfect Artist for Every Event
         </h1>
+
+        <p className="text-xl md:text-2xl font-bold text-primary mb-6 tracking-wide">
+          Find. Book. Celebrate.
+        </p>
         
         <p className="text-lg md:text-xl text-text-secondary max-w-3xl mb-10 leading-relaxed text-balance">
-          Direct bookings, real-time availability, secure escrow payments, and verified reviews. Hire world-class solo musicians and music bands in just a few clicks.
+          Discover verified artists, live bands, DJs, and performers for weddings, corporate events, birthdays, concerts, and private celebrations—all in one place.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-md mb-16">
-          <Link href="/artists" className="w-full sm:w-auto">
-            <Button size="lg" className="w-full text-base font-bold h-12 px-8">
-              Explore Live Bands
-            </Button>
-          </Link>
-          <Link href="/register" className="w-full sm:w-auto">
-            <Button size="lg" variant="secondary" className="w-full text-base font-bold h-12 px-8">
-              Join as Performer
-            </Button>
-          </Link>
+          <Button asChild size="lg" className="w-full sm:w-auto text-base font-bold h-12 px-8">
+            <Link href="/find-artists">
+              Find Artists
+            </Link>
+          </Button>
+          <Button asChild size="lg" variant="secondary" className="w-full sm:w-auto text-base font-bold h-12 px-8">
+            <Link href="/register/artist">
+              Become a Performer
+            </Link>
+          </Button>
         </div>
 
         {/* Feature Cards Grid */}

@@ -28,7 +28,7 @@ export function Footer() {
       </div>
       <div className="max-w-7xl mx-auto border-t border-border/30 mt-8 pt-6 text-center">
         <p className="text-xs text-text-muted">
-          &copy; {new Date().getFullYear()} BandConnect. All rights reserved. Made for professional artists.
+          &copy; {new Date().getFullYear()} BandConnect. All rights reserved.
         </p>
       </div>
     </footer>

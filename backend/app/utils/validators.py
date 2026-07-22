@@ -5,14 +5,45 @@ Common Pydantic validation helpers.
 import re
 
 # Reserved usernames that cannot be claimed by any artist
-_RESERVED_USERNAMES = frozenset({
-    "admin", "administrator", "bandconnect", "support", "help",
-    "api", "login", "register", "developer", "marketplace",
-    "artist", "artists", "venue", "venues", "client", "clients",
-    "booking", "bookings", "payment", "payments", "review", "reviews",
-    "notification", "notifications", "report", "reports", "system",
-    "null", "undefined", "root", "test", "info", "contact", "me",
-})
+_RESERVED_USERNAMES = frozenset(
+    {
+        "admin",
+        "administrator",
+        "bandconnect",
+        "support",
+        "help",
+        "api",
+        "login",
+        "register",
+        "developer",
+        "marketplace",
+        "artist",
+        "artists",
+        "venue",
+        "venues",
+        "client",
+        "clients",
+        "booking",
+        "bookings",
+        "payment",
+        "payments",
+        "review",
+        "reviews",
+        "notification",
+        "notifications",
+        "report",
+        "reports",
+        "system",
+        "null",
+        "undefined",
+        "root",
+        "test",
+        "info",
+        "contact",
+        "me",
+    }
+)
+
 
 def validate_phone_number(value: str) -> str:
     """Validate standard phone format."""
@@ -20,6 +51,7 @@ def validate_phone_number(value: str) -> str:
     if not pattern.match(value):
         raise ValueError("Invalid phone number format. Must be E.164 compliant.")
     return value
+
 
 def validate_password_strength(value: str) -> str:
     """Ensure passwords meet minimal security strength requirements."""
@@ -34,6 +66,7 @@ def validate_password_strength(value: str) -> str:
     if not any(char in "!@#$%^&*()_+-=[]{}|;':\",./<>?" for char in value):
         raise ValueError("Password must contain at least one special character.")
     return value
+
 
 def validate_username(value: str) -> str:
     """

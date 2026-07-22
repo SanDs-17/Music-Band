@@ -27,22 +27,20 @@ from main import app as fastapi_app
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False}
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
-TestingSessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
 
 @pytest.fixture(autouse=True)
 def clear_connection_manager():
     """Ensure WebSocket connection manager active connections are cleared before each test."""
     from app.features.notifications.connection_manager import connection_manager
+
     connection_manager.active_connections.clear()
     yield
     connection_manager.active_connections.clear()
+
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_db():
@@ -51,28 +49,31 @@ def setup_test_db():
     yield
     Base.metadata.drop_all(bind=engine)
 
+
 @pytest.fixture
 def db_session() -> Generator:
     """Yield database session for test isolation."""
     connection = engine.connect()
     transaction = connection.begin()
     session = TestingSessionLocal(bind=connection)
-    
+
     yield session
-    
+
     session.close()
     transaction.rollback()
     connection.close()
 
+
 @pytest.fixture
 def client(db_session) -> Generator[TestClient, None, None]:
     """TestClient yielding endpoint test calls with mocked DB dependency."""
+
     def override_get_db():
         try:
             yield db_session
         finally:
             pass
-            
+
     fastapi_app.dependency_overrides[dep_get_db] = override_get_db
     fastapi_app.dependency_overrides[db_get_db] = override_get_db
     with TestClient(fastapi_app) as test_client:

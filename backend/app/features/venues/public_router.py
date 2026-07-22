@@ -22,7 +22,7 @@ from app.features.venues.schemas import (
     VenueDocumentsResubmitRequest,
     VenueSettingsUpdateRequest,
     VenueProfileCreateRequest,
-    PaginatedVenueList
+    PaginatedVenueList,
 )
 from app.features.venues.service import VenueService
 from app.common.schemas.base import SuccessResponse
@@ -39,20 +39,17 @@ service = VenueService()
     "/me/media",
     response_model=SuccessResponse[VenueMediaResponse],
     status_code=status.HTTP_200_OK,
-    summary="Get authenticated venue gallery and media configurations"
+    summary="Get authenticated venue gallery and media configurations",
 )
 async def get_current_venue_media(
-    current_user_claims: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user_claims: dict = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
     Retrieves cover images, gallery photos list, videos list, Matterport placeholders, and YouTube walkthrough links.
     """
     media = service.get_media(db, current_user_claims["sub"])
     return SuccessResponse(
-        success=True,
-        data=media,
-        message="Venue media settings retrieved successfully."
+        success=True, data=media, message="Venue media settings retrieved successfully."
     )
 
 
@@ -60,21 +57,19 @@ async def get_current_venue_media(
     "/me/media",
     response_model=SuccessResponse[VenueMediaResponse],
     status_code=status.HTTP_200_OK,
-    summary="Update authenticated venue gallery and media configurations"
+    summary="Update authenticated venue gallery and media configurations",
 )
 async def update_current_venue_media(
     data: VenueMediaUpdateRequest,
     current_user_claims: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """
     Updates cover image, gallery photos list, videos list, Matterport placeholders, and YouTube walkthrough links.
     """
     media = service.update_media(db, current_user_claims["sub"], data)
     return SuccessResponse(
-        success=True,
-        data=media,
-        message="Venue media settings updated successfully."
+        success=True, data=media, message="Venue media settings updated successfully."
     )
 
 
@@ -82,11 +77,10 @@ async def update_current_venue_media(
     "/me/availability",
     response_model=SuccessResponse[VenueAvailabilityResponse],
     status_code=status.HTTP_200_OK,
-    summary="Get authenticated venue calendar rules and bookings"
+    summary="Get authenticated venue calendar rules and bookings",
 )
 async def get_current_venue_availability(
-    current_user_claims: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user_claims: dict = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
     Retrieves weekly hours schedule, blocked dates list, maintenance lists, public holidays, and booked events.
@@ -95,7 +89,7 @@ async def get_current_venue_availability(
     return SuccessResponse(
         success=True,
         data=avail,
-        message="Venue availability settings retrieved successfully."
+        message="Venue availability settings retrieved successfully.",
     )
 
 
@@ -103,12 +97,12 @@ async def get_current_venue_availability(
     "/me/availability",
     response_model=SuccessResponse[VenueAvailabilityResponse],
     status_code=status.HTTP_200_OK,
-    summary="Update authenticated venue calendar rules and bookings"
+    summary="Update authenticated venue calendar rules and bookings",
 )
 async def update_current_venue_availability(
     data: VenueAvailabilityUpdateRequest,
     current_user_claims: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """
     Updates operational schedule, blocks dates, registers maintenance days, and schedules holidays.
@@ -117,7 +111,7 @@ async def update_current_venue_availability(
     return SuccessResponse(
         success=True,
         data=avail,
-        message="Venue availability settings updated successfully."
+        message="Venue availability settings updated successfully.",
     )
 
 
@@ -125,12 +119,12 @@ async def update_current_venue_availability(
     "/me/availability/check-conflict",
     response_model=SuccessResponse[CheckConflictResponse],
     status_code=status.HTTP_200_OK,
-    summary="Checks if a proposed slot conflicts with the venue schedule"
+    summary="Checks if a proposed slot conflicts with the venue schedule",
 )
 async def check_venue_slot_conflict(
     data: CheckConflictRequest,
     current_user_claims: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """
     Validates if a given date and time range overlaps with any blocked, maintenance, holiday, or booked slots.
@@ -141,7 +135,7 @@ async def check_venue_slot_conflict(
     return SuccessResponse(
         success=True,
         data=conflict_info,
-        message="Booking slot conflict evaluation complete."
+        message="Booking slot conflict evaluation complete.",
     )
 
 
@@ -149,11 +143,10 @@ async def check_venue_slot_conflict(
     "/me/facilities",
     response_model=SuccessResponse[VenueFacilitiesResponse],
     status_code=status.HTTP_200_OK,
-    summary="Get authenticated venue facilities and details"
+    summary="Get authenticated venue facilities and details",
 )
 async def get_current_venue_facilities(
-    current_user_claims: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user_claims: dict = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
     Retrieves core active facilities list and custom parameters (AC slots, parking count).
@@ -162,7 +155,7 @@ async def get_current_venue_facilities(
     return SuccessResponse(
         success=True,
         data=facs,
-        message="Venue facilities configuration retrieved successfully."
+        message="Venue facilities configuration retrieved successfully.",
     )
 
 
@@ -170,12 +163,12 @@ async def get_current_venue_facilities(
     "/me/facilities",
     response_model=SuccessResponse[VenueFacilitiesResponse],
     status_code=status.HTTP_200_OK,
-    summary="Update authenticated venue facilities and details"
+    summary="Update authenticated venue facilities and details",
 )
 async def update_current_venue_facilities(
     data: VenueFacilitiesUpdateRequest,
     current_user_claims: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """
     Updates core facilities list and sets specification parameter details inside metadata.
@@ -184,7 +177,7 @@ async def update_current_venue_facilities(
     return SuccessResponse(
         success=True,
         data=facs,
-        message="Venue facilities configuration updated successfully."
+        message="Venue facilities configuration updated successfully.",
     )
 
 
@@ -192,11 +185,10 @@ async def update_current_venue_facilities(
     "/me/pricing",
     response_model=SuccessResponse[VenuePricingResponse],
     status_code=status.HTTP_200_OK,
-    summary="Get authenticated venue pricing packages and details"
+    summary="Get authenticated venue pricing packages and details",
 )
 async def get_current_venue_pricing(
-    current_user_claims: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user_claims: dict = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
     Retrieves base rates, hourly pricing, discount packages, security deposits, and cleaning charges.
@@ -205,7 +197,7 @@ async def get_current_venue_pricing(
     return SuccessResponse(
         success=True,
         data=pricing,
-        message="Venue pricing configuration retrieved successfully."
+        message="Venue pricing configuration retrieved successfully.",
     )
 
 
@@ -213,12 +205,12 @@ async def get_current_venue_pricing(
     "/me/pricing",
     response_model=SuccessResponse[VenuePricingResponse],
     status_code=status.HTTP_200_OK,
-    summary="Update authenticated venue pricing packages and details"
+    summary="Update authenticated venue pricing packages and details",
 )
 async def update_current_venue_pricing(
     data: VenuePricingUpdateRequest,
     current_user_claims: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """
     Updates base rate, packages (half-day/full-day), surcharges, cancellations, and active discounts.
@@ -227,7 +219,7 @@ async def update_current_venue_pricing(
     return SuccessResponse(
         success=True,
         data=pricing,
-        message="Venue pricing configuration updated successfully."
+        message="Venue pricing configuration updated successfully.",
     )
 
 
@@ -235,12 +227,12 @@ async def update_current_venue_pricing(
     "/me",
     response_model=SuccessResponse[VenueResponse],
     status_code=status.HTTP_201_CREATED,
-    summary="Create venue profile for an already-authenticated venue owner"
+    summary="Create venue profile for an already-authenticated venue owner",
 )
 async def create_venue_profile(
     data: VenueProfileCreateRequest,
     current_user_claims: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """
     Creates the Venue domain profile for a user who was registered via the standard
@@ -252,7 +244,7 @@ async def create_venue_profile(
     return SuccessResponse(
         success=True,
         data=_format_venue_profile(venue),
-        message="Venue profile created successfully."
+        message="Venue profile created successfully.",
     )
 
 
@@ -260,11 +252,10 @@ async def create_venue_profile(
     "/me",
     response_model=SuccessResponse[VenueResponse],
     status_code=status.HTTP_200_OK,
-    summary="Get currently authenticated venue profile details"
+    summary="Get currently authenticated venue profile details",
 )
 async def get_current_venue_profile(
-    current_user_claims: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user_claims: dict = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
     Retrieves the complete profile information for the authenticated venue owner.
@@ -273,7 +264,7 @@ async def get_current_venue_profile(
     return SuccessResponse(
         success=True,
         data=_format_venue_profile(venue),
-        message="Venue profile retrieved successfully."
+        message="Venue profile retrieved successfully.",
     )
 
 
@@ -281,12 +272,12 @@ async def get_current_venue_profile(
     "/me",
     response_model=SuccessResponse[VenueResponse],
     status_code=status.HTTP_200_OK,
-    summary="Update authenticated venue profile details"
+    summary="Update authenticated venue profile details",
 )
 async def update_current_venue_profile(
     data: VenueProfileUpdateRequest,
     current_user_claims: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """
     Updates basic details, capacity, and operational parameters for the logged-in venue.
@@ -295,29 +286,25 @@ async def update_current_venue_profile(
     return SuccessResponse(
         success=True,
         data=_format_venue_profile(venue),
-        message="Venue profile updated successfully."
+        message="Venue profile updated successfully.",
     )
-
 
 
 @router.get(
     "/me/dashboard",
     response_model=SuccessResponse[VenueDashboardResponse],
     status_code=status.HTTP_200_OK,
-    summary="Get logged-in venue owner dashboard metrics and widgets"
+    summary="Get logged-in venue owner dashboard metrics and widgets",
 )
 async def get_venue_dashboard(
-    current_user_claims: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user_claims: dict = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
     Returns dashboard stats, recent reviews, upcoming events, notifications, and monthly performance.
     """
     stats = service.get_dashboard_stats(db, current_user_claims["sub"])
     return SuccessResponse(
-        success=True,
-        data=stats,
-        message="Venue dashboard data retrieved successfully."
+        success=True, data=stats, message="Venue dashboard data retrieved successfully."
     )
 
 
@@ -325,12 +312,9 @@ async def get_venue_dashboard(
     "/upload",
     response_model=SuccessResponse[str],
     status_code=status.HTTP_200_OK,
-    summary="Upload a venue document or media file"
+    summary="Upload a venue document or media file",
 )
-async def upload_venue_file(
-    file: UploadFile = File(...),
-    subfolder: str = "venues"
-):
+async def upload_venue_file(file: UploadFile = File(...), subfolder: str = "venues"):
     """
     Uploads a file (image, video, document) using the configured storage backend (local/S3).
     Returns the access URL of the uploaded file.
@@ -338,9 +322,7 @@ async def upload_venue_file(
     storage = get_storage()
     file_url = await storage.upload(file, subfolder)
     return SuccessResponse(
-        success=True,
-        data=file_url,
-        message="File uploaded successfully."
+        success=True, data=file_url, message="File uploaded successfully."
     )
 
 
@@ -348,11 +330,10 @@ async def upload_venue_file(
     "/register",
     response_model=SuccessResponse[VenueResponse],
     status_code=status.HTTP_201_CREATED,
-    summary="Register a new Venue and Owner account"
+    summary="Register a new Venue and Owner account",
 )
 async def register_venue_owner(
-    data: VenueRegisterRequest,
-    db: Session = Depends(get_db)
+    data: VenueRegisterRequest, db: Session = Depends(get_db)
 ):
     """
     Submits a 10-step wizard form to register a new Venue Owner credentials and space details.
@@ -361,7 +342,7 @@ async def register_venue_owner(
     return SuccessResponse(
         success=True,
         data=_format_venue_profile(venue),
-        message="Venue and owner registered successfully. Awaiting administration review."
+        message="Venue and owner registered successfully. Awaiting administration review.",
     )
 
 
@@ -369,11 +350,10 @@ async def register_venue_owner(
     "/me/analytics",
     response_model=SuccessResponse[VenueAnalyticsResponse],
     status_code=status.HTTP_200_OK,
-    summary="Get authenticated venue analytics, occupancy rates, and distributions"
+    summary="Get authenticated venue analytics, occupancy rates, and distributions",
 )
 async def get_current_venue_analytics(
-    current_user_claims: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user_claims: dict = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
     Returns total statistics, revenue/booking charts, occupancy charts, and top clients, cities, and seasons datasets.
@@ -382,7 +362,7 @@ async def get_current_venue_analytics(
     return SuccessResponse(
         success=True,
         data=analytics,
-        message="Venue analytics insights retrieved successfully."
+        message="Venue analytics insights retrieved successfully.",
     )
 
 
@@ -390,21 +370,23 @@ async def get_current_venue_analytics(
     "/me/verification/resubmit",
     response_model=SuccessResponse[VenueResponse],
     status_code=status.HTTP_200_OK,
-    summary="Resubmit verification documents for audit (Venue Owner only)"
+    summary="Resubmit verification documents for audit (Venue Owner only)",
 )
 async def resubmit_venue_documents(
     data: VenueDocumentsResubmitRequest,
     current_user_claims: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """
     Allows venue owners to update verification documents and reset verification status back to pending.
     """
-    venue = service.resubmit_verification_documents(db, current_user_claims["sub"], data)
+    venue = service.resubmit_verification_documents(
+        db, current_user_claims["sub"], data
+    )
     return SuccessResponse(
         success=True,
         data=_format_venue_profile(venue),
-        message="Verification documents successfully resubmitted. Profile status reset to pending."
+        message="Verification documents successfully resubmitted. Profile status reset to pending.",
     )
 
 
@@ -412,12 +394,12 @@ async def resubmit_venue_documents(
     "/me/settings",
     response_model=SuccessResponse[VenueResponse],
     status_code=status.HTTP_200_OK,
-    summary="Update venue custom configuration settings (Venue Owner only)"
+    summary="Update venue custom configuration settings (Venue Owner only)",
 )
 async def update_venue_configuration_settings(
     data: VenueSettingsUpdateRequest,
     current_user_claims: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """
     Updates notification, deactivation, and visibility configurations.
@@ -426,7 +408,7 @@ async def update_venue_configuration_settings(
     return SuccessResponse(
         success=True,
         data=_format_venue_profile(venue),
-        message="Venue configuration settings updated successfully."
+        message="Venue configuration settings updated successfully.",
     )
 
 
@@ -441,11 +423,15 @@ def _format_public_venue_profile(venue) -> VenueResponse:
     "",
     response_model=SuccessResponse[PaginatedVenueList],
     status_code=status.HTTP_200_OK,
-    summary="Public marketplace search and filter for approved venues"
+    summary="Public marketplace search and filter for approved venues",
 )
 async def list_marketplace_venues(
-    search: Optional[str] = Query(None, description="Search venue name, address, or description"),
-    venue_type: Optional[str] = Query(None, description="E.g. Banquet Hall, Concert Arena"),
+    search: Optional[str] = Query(
+        None, description="Search venue name, address, or description"
+    ),
+    venue_type: Optional[str] = Query(
+        None, description="E.g. Banquet Hall, Concert Arena"
+    ),
     city: Optional[str] = Query(None, description="Filter by city name"),
     city_id: Optional[UUID] = Query(None, description="Filter by city ID"),
     capacity: Optional[int] = Query(None, description="Minimum capacity required"),
@@ -453,7 +439,7 @@ async def list_marketplace_venues(
     max_price: Optional[float] = Query(None, description="Maximum base price"),
     limit: int = Query(10, ge=1, le=100),
     offset: int = Query(0, ge=0),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     from app.features.venues.models import Venue
     from app.features.locations.models import City
@@ -467,15 +453,15 @@ async def list_marketplace_venues(
         .filter(
             Venue.verification_status == "approved",
             User.is_active.is_(True),
-            Venue.deleted_at.is_(None)
+            Venue.deleted_at.is_(None),
         )
     )
 
     if search:
         query = query.filter(
-            (Venue.name.ilike(f"%{search}%")) |
-            (Venue.address.ilike(f"%{search}%")) |
-            (Venue.description.ilike(f"%{search}%"))
+            (Venue.name.ilike(f"%{search}%"))
+            | (Venue.address.ilike(f"%{search}%"))
+            | (Venue.description.ilike(f"%{search}%"))
         )
 
     if venue_type:
@@ -502,7 +488,7 @@ async def list_marketplace_venues(
     return SuccessResponse(
         success=True,
         data=PaginatedVenueList(items=formatted, total=total),
-        message="Marketplace venues retrieved successfully."
+        message="Marketplace venues retrieved successfully.",
     )
 
 
@@ -510,12 +496,9 @@ async def list_marketplace_venues(
     "/{venue_id}",
     response_model=SuccessResponse[VenueResponse],
     status_code=status.HTTP_200_OK,
-    summary="Get venue details publicly by ID"
+    summary="Get venue details publicly by ID",
 )
-async def get_public_venue_detail(
-    venue_id: UUID,
-    db: Session = Depends(get_db)
-):
+async def get_public_venue_detail(venue_id: UUID, db: Session = Depends(get_db)):
     """
     Retrieves the complete profile information for a venue by its ID publicly (no authentication required).
     """
@@ -525,5 +508,5 @@ async def get_public_venue_detail(
     return SuccessResponse(
         success=True,
         data=_format_public_venue_profile(venue),
-        message="Venue profile retrieved successfully."
+        message="Venue profile retrieved successfully.",
     )

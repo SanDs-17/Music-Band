@@ -21,13 +21,18 @@ from app.features.bookings.models import Booking
 from app.features.artists.models import ArtistProfile
 from app.features.notifications.models import Notification
 from app.features.notifications.preferences.models import NotificationPreference
-from app.features.notifications.preferences.repository import notification_preference_repository
-from app.features.notifications.preferences.service import notification_preference_service
+from app.features.notifications.preferences.repository import (
+    notification_preference_repository,
+)
+from app.features.notifications.preferences.service import (
+    notification_preference_service,
+)
 from app.features.notifications.service import create_booking_notification
 from app.core.security import create_access_token
 
 
 # ── Fixtures & Setup Helpers ──────────────────────────────────────────────────
+
 
 def _create_ws_test_user(db: Session, name: str, role_name: str) -> tuple[User, str]:
     role = db.query(Role).filter(Role.name == role_name).first()
@@ -42,7 +47,7 @@ def _create_ws_test_user(db: Session, name: str, role_name: str) -> tuple[User, 
         name=name,
         password_hash="pw",
         is_active=True,
-        is_verified=True
+        is_verified=True,
     )
     user.roles.append(role)
     db.add(user)
@@ -59,6 +64,7 @@ def _clear_notifications_and_prefs(db: Session):
 
 
 # ── Tests ────────────────────────────────────────────────────────────────────
+
 
 def test_default_preferences_created_on_get(db_session: Session):
     """Retrieving preferences when none exist automatically creates a default set (all True)."""
@@ -91,11 +97,10 @@ def test_get_and_patch_preferences_endpoints(client: TestClient, db_session: Ses
     assert data["realtime_enabled"] is True
 
     # 2. Patch preferences (turn off booking and realtime)
-    patch_payload = {
-        "booking_enabled": False,
-        "realtime_enabled": False
-    }
-    patch_res = client.patch("/api/v1/notifications/preferences", json=patch_payload, headers=headers)
+    patch_payload = {"booking_enabled": False, "realtime_enabled": False}
+    patch_res = client.patch(
+        "/api/v1/notifications/preferences", json=patch_payload, headers=headers
+    )
     assert patch_res.status_code == 200
     updated_data = patch_res.json()["data"]
     assert updated_data["booking_enabled"] is False
@@ -115,7 +120,9 @@ def test_preferences_endpoint_requires_auth(client: TestClient):
     response_get = client.get("/api/v1/notifications/preferences")
     assert response_get.status_code == 401
 
-    response_patch = client.patch("/api/v1/notifications/preferences", json={"booking_enabled": False})
+    response_patch = client.patch(
+        "/api/v1/notifications/preferences", json={"booking_enabled": False}
+    )
     assert response_patch.status_code == 401
 
 
@@ -129,14 +136,17 @@ def test_notification_delivery_suppression(db_session: Session):
     notification_preference_service.update_preferences(
         db=db_session,
         user_id=artist_user.id,
-        obj_in=NotificationPreference(booking_enabled=False)
+        obj_in=NotificationPreference(booking_enabled=False),
     )
 
     # Setup dummy artist and booking
     artist_profile = ArtistProfile(
-        id=uuid.uuid4(), user_id=artist_user.id,
-        bio="Test Bio", base_rate=1000.0,
-        verification_status="approved", display_name="Prefs Artist"
+        id=uuid.uuid4(),
+        user_id=artist_user.id,
+        bio="Test Bio",
+        base_rate=1000.0,
+        verification_status="approved",
+        display_name="Prefs Artist",
     )
     db_session.add(artist_profile)
     db_session.commit()
@@ -151,7 +161,7 @@ def test_notification_delivery_suppression(db_session: Session):
         end_time=datetime.time(23, 0),
         location="Quiet Room",
         proposed_price=4000.0,
-        status="pending"
+        status="pending",
     )
     db_session.add(booking)
     db_session.commit()
@@ -162,7 +172,7 @@ def test_notification_delivery_suppression(db_session: Session):
         booking=booking,
         event_type="created",
         actor_id=str(client_user.id),
-        actor_role="client"
+        actor_role="client",
     )
 
     # Check that NO notification was created for the artist (delivery allowed = False)
@@ -184,14 +194,17 @@ def test_websocket_delivery_suppression(client: TestClient, db_session: Session)
     notification_preference_service.update_preferences(
         db=db_session,
         user_id=artist_user.id,
-        obj_in=NotificationPreference(booking_enabled=True, realtime_enabled=False)
+        obj_in=NotificationPreference(booking_enabled=True, realtime_enabled=False),
     )
 
     # Setup dummy artist and booking
     artist_profile = ArtistProfile(
-        id=uuid.uuid4(), user_id=artist_user.id,
-        bio="Test Bio", base_rate=1000.0,
-        verification_status="approved", display_name="Prefs Artist 2"
+        id=uuid.uuid4(),
+        user_id=artist_user.id,
+        bio="Test Bio",
+        base_rate=1000.0,
+        verification_status="approved",
+        display_name="Prefs Artist 2",
     )
     db_session.add(artist_profile)
     db_session.commit()
@@ -206,18 +219,21 @@ def test_websocket_delivery_suppression(client: TestClient, db_session: Session)
         end_time=datetime.time(23, 0),
         location="Database Room",
         proposed_price=4000.0,
-        status="pending"
+        status="pending",
     )
     db_session.add(booking)
     db_session.commit()
 
     # Connect WebSocket
-    with client.websocket_connect(f"/api/v1/ws/notifications?token={artist_token}") as ws:
+    with client.websocket_connect(
+        f"/api/v1/ws/notifications?token={artist_token}"
+    ) as ws:
         ws.receive_json()  # Consume connection confirmation
 
         # Setup loop
         import asyncio
         from app.features.notifications.publisher import set_publisher_event_loop
+
         set_publisher_event_loop(asyncio.get_event_loop())
 
         # Trigger notification
@@ -226,7 +242,7 @@ def test_websocket_delivery_suppression(client: TestClient, db_session: Session)
             booking=booking,
             event_type="created",
             actor_id=str(client_user.id),
-            actor_role="client"
+            actor_role="client",
         )
 
         # Check DB: The notification IS stored successfully
@@ -240,4 +256,6 @@ def test_websocket_delivery_suppression(client: TestClient, db_session: Session)
 
         # Check WebSocket buffer: It is EMPTY (timeout indicates no message sent)
         with pytest.raises(asyncio.TimeoutError):
-            asyncio.run(asyncio.wait_for(asyncio.to_thread(ws.receive_json), timeout=0.1))
+            asyncio.run(
+                asyncio.wait_for(asyncio.to_thread(ws.receive_json), timeout=0.1)
+            )

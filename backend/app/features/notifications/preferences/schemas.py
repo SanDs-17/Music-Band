@@ -3,6 +3,7 @@ from uuid import UUID
 from datetime import datetime
 from typing import Optional
 
+
 class NotificationPreferenceBase(BaseModel):
     booking_enabled: bool = True
     payment_enabled: bool = True
@@ -11,8 +12,10 @@ class NotificationPreferenceBase(BaseModel):
     system_enabled: bool = True
     realtime_enabled: bool = True
 
+
 class NotificationPreferenceCreate(NotificationPreferenceBase):
     user_id: UUID
+
 
 class NotificationPreferenceUpdate(BaseModel):
     booking_enabled: Optional[bool] = None
@@ -21,6 +24,7 @@ class NotificationPreferenceUpdate(BaseModel):
     message_enabled: Optional[bool] = None
     system_enabled: Optional[bool] = None
     realtime_enabled: Optional[bool] = None
+
 
 class NotificationPreferenceResponse(NotificationPreferenceBase):
     id: UUID

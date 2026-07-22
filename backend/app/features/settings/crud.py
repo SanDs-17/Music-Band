@@ -17,7 +17,9 @@ class SystemSettingCRUD:
     def get_all(self, db: Session) -> List[SystemSetting]:
         return db.query(SystemSetting).all()
 
-    def upsert(self, db: Session, key: str, value: any, description: Optional[str] = None) -> SystemSetting:
+    def upsert(
+        self, db: Session, key: str, value: any, description: Optional[str] = None
+    ) -> SystemSetting:
         setting = self.get(db, key)
         if setting:
             setting.value = value
@@ -40,14 +42,18 @@ class AuditLogCRUD(BaseRepository[AuditLog]):
         db: Session,
         action: Optional[str] = None,
         limit: int = 20,
-        offset: int = 0
+        offset: int = 0,
     ) -> Tuple[List[AuditLog], int]:
         """Fetch audit logs details with pagination and action filtering."""
-        query = db.query(AuditLog).join(AuditLog.user).options(joinedload(AuditLog.user))
+        query = (
+            db.query(AuditLog).join(AuditLog.user).options(joinedload(AuditLog.user))
+        )
 
         if action:
             query = query.filter(AuditLog.action.ilike(f"%{action}%"))
 
         total_count = query.count()
-        results = query.order_by(AuditLog.created_at.desc()).offset(offset).limit(limit).all()
+        results = (
+            query.order_by(AuditLog.created_at.desc()).offset(offset).limit(limit).all()
+        )
         return results, total_count

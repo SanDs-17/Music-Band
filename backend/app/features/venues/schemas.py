@@ -26,7 +26,7 @@ class VenueResponse(BaseSchema):
     address: str
     city_id: UUID
     city: CityBriefResponse
-    
+
     # Newly added fields
     venue_type: Optional[str] = None
     business_name: Optional[str] = None
@@ -51,9 +51,10 @@ class VenueResponse(BaseSchema):
     created_at: str
 
 
-
 class VenueVerificationUpdate(BaseSchema):
-    verification_status: str = Field(..., description="Statuses: approved, rejected, pending")
+    verification_status: str = Field(
+        ..., description="Statuses: approved, rejected, pending"
+    )
     verification_notes: Optional[str] = Field(None, max_length=255)
 
 
@@ -408,11 +409,11 @@ class VenueAnalyticsResponse(BaseSchema):
     venue_views: int
     occupancy_rate: float
     monthly_growth_rate: float
-    
+
     revenue_chart: List[VenueChartDataPoint] = []
     booking_chart: List[VenueChartDataPoint] = []
     occupancy_chart: List[VenueChartDataPoint] = []
-    
+
     popular_event_types: List[KeyValuePair] = []
     top_clients: List[KeyValuePair] = []
     top_cities: List[KeyValuePair] = []
@@ -432,10 +433,3 @@ class VenueSettingsUpdateRequest(BaseSchema):
     email_alerts: bool
     sms_alerts: bool
     profile_visible: bool
-
-
-
-
-
-
-

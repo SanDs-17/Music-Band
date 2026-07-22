@@ -3,6 +3,7 @@ from uuid import UUID
 from datetime import date, time, datetime
 from app.common.schemas.base import BaseSchema
 
+
 class ClientBriefResponse(BaseSchema):
     id: UUID
     name: str

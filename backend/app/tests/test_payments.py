@@ -7,6 +7,7 @@ from app.features.notifications.models import Notification
 from app.core.dependencies import get_current_user
 from main import app
 
+
 def test_payment_flow(client, db_session):
     # 1. Create client and artist user
     client_user = User(
@@ -15,7 +16,7 @@ def test_payment_flow(client, db_session):
         password_hash="test",
         name="Payment Client",
         is_active=True,
-        is_verified=True
+        is_verified=True,
     )
     artist_user = User(
         id=uuid.uuid4(),
@@ -23,7 +24,7 @@ def test_payment_flow(client, db_session):
         password_hash="test",
         name="Payment Artist",
         is_active=True,
-        is_verified=True
+        is_verified=True,
     )
     db_session.add(client_user)
     db_session.add(artist_user)
@@ -39,7 +40,7 @@ def test_payment_flow(client, db_session):
         end_time=datetime.time(22, 0),
         location="Gachibowli Stadium, Hyderabad",
         proposed_price=15000.0,
-        status="accepted" # Client can pay for accepted/counter_offered
+        status="accepted",  # Client can pay for accepted/counter_offered
     )
     db_session.add(booking)
     db_session.commit()
@@ -52,7 +53,9 @@ def test_payment_flow(client, db_session):
 
     try:
         # Create order
-        response = client.post("/api/v1/payments/create-order", json={"booking_id": str(booking.id)})
+        response = client.post(
+            "/api/v1/payments/create-order", json={"booking_id": str(booking.id)}
+        )
         assert response.status_code == 200
         order_data = response.json()["data"]
         assert order_data["booking_id"] == str(booking.id)
@@ -64,7 +67,7 @@ def test_payment_flow(client, db_session):
             "booking_id": str(booking.id),
             "razorpay_order_id": order_data["razorpay_order_id"],
             "razorpay_payment_id": "pay_mock_112233",
-            "razorpay_signature": "sig_mock_445566"
+            "razorpay_signature": "sig_mock_445566",
         }
         verify_response = client.post("/api/v1/payments/verify", json=verify_payload)
         assert verify_response.status_code == 200
@@ -74,15 +77,25 @@ def test_payment_flow(client, db_session):
         assert booking.status == "confirmed"
 
         # Check transaction created
-        tx = db_session.query(Transaction).filter(Transaction.booking_id == booking.id).first()
+        tx = (
+            db_session.query(Transaction)
+            .filter(Transaction.booking_id == booking.id)
+            .first()
+        )
         assert tx is not None
         assert tx.amount == 15000.0
         assert tx.status == "completed"
 
         # Check notifications created
-        notif = db_session.query(Notification).filter(Notification.user_id == client_user.id).first()
+        notif = (
+            db_session.query(Notification)
+            .filter(Notification.user_id == client_user.id)
+            .first()
+        )
         assert notif is not None
-        assert "Booking Confirmed" in notif.title  # notification_type=booking_confirmed emits this title
+        assert (
+            "Booking Confirmed" in notif.title
+        )  # notification_type=booking_confirmed emits this title
 
     finally:
         app.dependency_overrides.pop(get_current_user, None)
