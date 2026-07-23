@@ -45,9 +45,7 @@ def _create_stress_user(db: Session, idx: int) -> tuple[User, str]:
 
 
 @pytest.mark.asyncio
-async def test_websocket_100_concurrent_connections_stress(
-    client: TestClient, db_session: Session
-):
+async def test_websocket_100_concurrent_connections_stress(client: TestClient, db_session: Session):
     """Establishes 100 concurrent WebSocket connections to ConnectionManager and verifies zero leaks."""
     tokens_and_users = []
 
@@ -73,10 +71,7 @@ async def test_websocket_100_concurrent_connections_stress(
 
         # Broadcast notification event to one of the connected stress users
         target_usr, _ = tokens_and_users[50]
-        test_payload = {
-            "type": "notification",
-            "data": {"title": "Stress Broadcast Test"},
-        }
+        test_payload = {"type": "notification", "data": {"title": "Stress Broadcast Test"}}
         await connection_manager.send_to_user(str(target_usr.id), test_payload)
 
         # Target socket in opened_sockets has already entered context in loop
@@ -112,9 +107,7 @@ async def test_concurrent_reaction_and_pinning(db_session: Session):
     db_session.add(conv)
     db_session.commit()
 
-    msg = message_service.send_message(
-        db_session, conv.id, client_id, "Stress test message content"
-    )
+    msg = message_service.send_message(db_session, conv.id, client_id, "Stress test message content")
 
     emojis = ["👍", "❤️", "😂", "😮", "😢", "👏"]
 

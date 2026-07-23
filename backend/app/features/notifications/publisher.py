@@ -45,9 +45,7 @@ def set_publisher_event_loop(loop: asyncio.AbstractEventLoop) -> None:
     logger.info("[WS Publisher] Event loop registered.")
 
 
-def publish_notification(
-    user_id: UUID | str, notification_data: Dict[str, Any]
-) -> None:
+def publish_notification(user_id: UUID | str, notification_data: Dict[str, Any]) -> None:
     """
     Fire-and-forget delivery of a notification payload to an authenticated user
     via their active WebSocket connection.
@@ -71,15 +69,11 @@ def publish_notification(
 
     async def _deliver() -> None:
         from app.features.notifications.connection_manager import connection_manager
-
         try:
-            await connection_manager.send_to_user(
-                uid,
-                {
-                    "type": "notification",
-                    "data": notification_data,
-                },
-            )
+            await connection_manager.send_to_user(uid, {
+                "type": "notification",
+                "data": notification_data,
+            })
         except Exception as e:
             logger.error(f"[WS Publisher] Delivery failed for user {uid}: {e}")
 

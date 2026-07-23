@@ -10,7 +10,6 @@ from app.features.venues.models import Venue
 
 logger = logging.getLogger(__name__)
 
-
 class BookingWorkflowEngine:
     VALID_TRANSITIONS = {
         "pending": ["accepted", "rejected", "counter_offered", "cancelled"],
@@ -30,19 +29,14 @@ class BookingWorkflowEngine:
         booking_id: UUID,
         actor_id: str,
         actor_role: str,  # "client", "artist", "venue", "venue_owner", "admin"
-        action: str,  # "accept", "reject", "counter", "cancel", "complete", "override", "confirm"
+        action: str,      # "accept", "reject", "counter", "cancel", "complete", "override", "confirm"
         target_status: str,
         reason: Optional[str] = None,
         counter_price: Optional[float] = None,
     ) -> Booking:
         try:
             # locking row for concurrency protection
-            booking = (
-                db.query(Booking)
-                .filter(Booking.id == booking_id)
-                .with_for_update()
-                .first()
-            )
+            booking = db.query(Booking).filter(Booking.id == booking_id).with_for_update().first()
             if not booking:
                 raise NotFoundException("Booking request not found.")
 
@@ -50,13 +44,11 @@ class BookingWorkflowEngine:
 
             # 1. Concurrency Protection & Duplicate checks
             if current_status == target_status:
-                raise BadRequestException(
-                    f"Booking is already in {target_status} status."
-                )
+                raise BadRequestException(f"Booking is already in {target_status} status.")
 
             # RBAC Check: Ensure actor is client, artist, venue owner or admin
             is_client = str(booking.client_id) == actor_id
-
+            
             # Resolve artist
             artist_crud = ArtistProfileCRUD()
             artist = artist_crud.get_by_user_id(db, actor_id)
@@ -72,25 +64,17 @@ class BookingWorkflowEngine:
 
             # Explicit role-based checks
             if actor_role == "client" and not is_client:
-                raise BadRequestException(
-                    "Access denied: Clients can only modify their own bookings."
-                )
+                raise BadRequestException("Access denied: Clients can only modify their own bookings.")
             if actor_role == "artist" and not is_artist:
-                raise BadRequestException(
-                    "Access denied: Artists can only modify their assigned bookings."
-                )
+                raise BadRequestException("Access denied: Artists can only modify their assigned bookings.")
             if actor_role in ["venue", "venue_owner"] and not is_venue:
-                raise BadRequestException(
-                    "Access denied: Venue Owners can only modify their assigned bookings."
-                )
+                raise BadRequestException("Access denied: Venue Owners can only modify their assigned bookings.")
             if actor_role == "admin" and not is_admin:
                 raise BadRequestException("Access denied: Admin role required.")
 
             # Validate authorization permissions
             if not (is_client or is_artist or is_venue or is_admin):
-                raise BadRequestException(
-                    "Access denied: You are not authorized to perform workflow actions on this booking request."
-                )
+                raise BadRequestException("Access denied: You are not authorized to perform workflow actions on this booking request.")
 
             # Hardened Business rules (apply to all, including admin to maintain integrity)
             if current_status == "completed":
@@ -107,30 +91,18 @@ class BookingWorkflowEngine:
                 # Transition matrix validation
                 allowed = cls.VALID_TRANSITIONS.get(current_status, [])
                 if target_status not in allowed:
-                    raise BadRequestException(
-                        f"Invalid booking transition: Cannot change status from {current_status} to {target_status}."
-                    )
+                    raise BadRequestException(f"Invalid booking transition: Cannot change status from {current_status} to {target_status}.")
 
                 # Event date validation before confirmation
                 if target_status == "confirmed" and booking.event_date < date.today():
-                    raise BadRequestException(
-                        "Cannot confirm a booking for a past event date."
-                    )
+                    raise BadRequestException("Cannot confirm a booking for a past event date.")
 
                 # Permitted actions validation based on actor roles
-                if (
-                    action in ["accept", "reject", "counter"]
-                    and actor_role == "client"
-                    and target_status != "accepted"
-                ):
-                    raise BadRequestException(
-                        "Access denied: Clients cannot perform this action."
-                    )
-
+                if action in ["accept", "reject", "counter"] and actor_role == "client" and target_status != "accepted":
+                    raise BadRequestException("Access denied: Clients cannot perform this action.")
+                
                 if action == "complete" and actor_role == "client":
-                    raise BadRequestException(
-                        "Access denied: Clients cannot complete bookings."
-                    )
+                    raise BadRequestException("Access denied: Clients cannot complete bookings.")
 
             # Wrap modifications, timeline and audit log in a database transaction
             try:
@@ -143,7 +115,7 @@ class BookingWorkflowEngine:
                     # Append timeline entry automatically
                     now_str = datetime.utcnow().isoformat()
                     timeline = list(booking.timeline or [])
-
+                    
                     # Dynamic context-based timeline message
                     if action == "accept" and actor_role == "artist":
                         timeline_msg = "Booking request approved by performer! Get ready for the gig."
@@ -152,22 +124,13 @@ class BookingWorkflowEngine:
                     elif action == "counter" and actor_role == "artist":
                         timeline_msg = f"Counter offer placed by performer: {counter_price}. Note: {reason or 'No message'}"
                     elif action == "cancel":
-                        timeline_msg = (
-                            f"Booking request cancelled. Reason: {reason}"
-                            if reason
-                            else "Booking request cancelled."
-                        )
+                        timeline_msg = f"Booking request cancelled. Reason: {reason}" if reason else "Booking request cancelled."
                     elif action == "accept" and actor_role in ["venue", "venue_owner"]:
                         timeline_msg = "Booking request accepted by venue owner!"
                     elif action == "reject" and actor_role in ["venue", "venue_owner"]:
                         timeline_msg = "Booking request rejected by venue owner."
-                    elif action == "complete" and actor_role in [
-                        "venue",
-                        "venue_owner",
-                    ]:
-                        timeline_msg = (
-                            "Event concluded and booking marked as completed!"
-                        )
+                    elif action == "complete" and actor_role in ["venue", "venue_owner"]:
+                        timeline_msg = "Event concluded and booking marked as completed!"
                     elif action == "override" and actor_role == "admin":
                         timeline_msg = f"Status overridden by administrator. Resolution: {reason or 'No message'}"
                     elif action == "confirm":
@@ -177,14 +140,12 @@ class BookingWorkflowEngine:
                     else:
                         timeline_msg = f"Booking status updated to {target_status} via {action} action."
 
-                    timeline.append(
-                        {
-                            "status": target_status,
-                            "timestamp": now_str,
-                            "by": actor_role,
-                            "message": timeline_msg,
-                        }
-                    )
+                    timeline.append({
+                        "status": target_status,
+                        "timestamp": now_str,
+                        "by": actor_role,
+                        "message": timeline_msg
+                    })
                     booking.timeline = timeline
 
                     # Create Immutable Audit Log entry
@@ -201,14 +162,12 @@ class BookingWorkflowEngine:
                         action=action,
                         previous_status=current_status,
                         new_status=target_status,
-                        reason=reason,
+                        reason=reason
                     )
                     db.add(audit)
                     db.add(booking)
             except Exception as e:
-                logger.error(
-                    f"Failed to perform booking transition for booking {booking_id}: {str(e)}"
-                )
+                logger.error(f"Failed to perform booking transition for booking {booking_id}: {str(e)}")
                 raise e
 
             # Commit database transaction changes
@@ -217,10 +176,7 @@ class BookingWorkflowEngine:
 
             # Trigger successful workflow notification
             try:
-                from app.features.notifications.service import (
-                    create_booking_notification,
-                )
-
+                from app.features.notifications.service import create_booking_notification
                 notif_event = target_status
                 if action == "accept" and current_status == "counter_offered":
                     notif_event = "counter_accepted"
@@ -237,33 +193,26 @@ class BookingWorkflowEngine:
                     event_type=notif_event,
                     actor_id=actor_id,
                     actor_role=actor_role,
-                    reason=reason,
+                    reason=reason
                 )
             except Exception as notif_err:
-                logger.error(
-                    f"Failed to generate notification for transition on booking {booking_id}: {notif_err}"
-                )
+                logger.error(f"Failed to generate notification for transition on booking {booking_id}: {notif_err}")
 
             return booking
 
         except Exception as e:
             # Persistent capture of failure audits for admins
             try:
-                from app.features.notifications.service import (
-                    create_failed_action_notification,
-                )
-
+                from app.features.notifications.service import create_failed_action_notification
                 create_failed_action_notification(
                     booking_id=booking_id,
                     actor_id=actor_id,
                     actor_role=actor_role,
                     action=action,
                     error_message=str(e),
-                    db=db,
+                    db=db
                 )
             except Exception as failed_notif_err:
-                logger.error(
-                    f"Failed to log failed action notification: {failed_notif_err}"
-                )
-
+                logger.error(f"Failed to log failed action notification: {failed_notif_err}")
+            
             raise e

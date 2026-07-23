@@ -18,14 +18,16 @@ class VenueCRUD(BaseRepository[Venue]):
         """Fetch all active venues registered under the given user UUID."""
         if isinstance(user_id, str):
             from uuid import UUID as PyUUID
-
             try:
                 user_id = PyUUID(user_id)
             except ValueError:
                 pass
         return (
             db.query(Venue)
-            .filter(Venue.user_id == user_id, Venue.deleted_at.is_(None))
+            .filter(
+                Venue.user_id == user_id,
+                Venue.deleted_at.is_(None)
+            )
             .all()
         )
 
@@ -35,7 +37,7 @@ class VenueCRUD(BaseRepository[Venue]):
         search: Optional[str] = None,
         verification_status: Optional[str] = None,
         limit: int = 10,
-        offset: int = 0,
+        offset: int = 0
     ) -> Tuple[List[Venue], int]:
         """Fetch venues joining user and city tables with eager loading categories."""
         query = (
@@ -45,16 +47,16 @@ class VenueCRUD(BaseRepository[Venue]):
             .options(
                 joinedload(Venue.user),
                 joinedload(Venue.city),
-                joinedload(Venue.categories),
+                joinedload(Venue.categories)
             )
             .filter(Venue.deleted_at.is_(None))
         )
 
         if search:
             query = query.filter(
-                (Venue.name.ilike(f"%{search}%"))
-                | (City.name.ilike(f"%{search}%"))
-                | (User.name.ilike(f"%{search}%"))
+                (Venue.name.ilike(f"%{search}%")) |
+                (City.name.ilike(f"%{search}%")) |
+                (User.name.ilike(f"%{search}%"))
             )
 
         if verification_status and verification_status != "all":

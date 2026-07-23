@@ -13,13 +13,11 @@ from app.core.exceptions import NotFoundException
 ModelType = TypeVar("ModelType", bound=BaseModel)
 RepoType = TypeVar("RepoType", bound=BaseRepository)
 
-
 class BaseService(Generic[ModelType, RepoType]):
     """
     Generic Service class mapping typical CRUD methods to repositories.
     Subclasses should override these or add domain-specific business validation rules.
     """
-
     def __init__(self, repository: RepoType):
         self.repository = repository
 

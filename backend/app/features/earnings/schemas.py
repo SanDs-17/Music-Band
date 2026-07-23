@@ -3,7 +3,6 @@ from uuid import UUID
 from datetime import datetime
 from app.common.schemas.base import BaseSchema
 
-
 class TransactionResponse(BaseSchema):
     id: UUID
     booking_id: Optional[UUID] = None

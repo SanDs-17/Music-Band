@@ -49,21 +49,16 @@ class BookingService:
                 f"Booking {booking.id} created successfully by client {client_id} for venue {data.venue_id}"
             )
             try:
-                from app.features.notifications.service import (
-                    create_booking_notification,
-                )
-
+                from app.features.notifications.service import create_booking_notification
                 create_booking_notification(
                     db=db,
                     booking=booking,
                     event_type="created",
                     actor_id=str(client_id),
-                    actor_role="client",
+                    actor_role="client"
                 )
             except Exception as notif_err:
-                logger.error(
-                    f"Failed to trigger created notification for booking {booking.id}: {notif_err}"
-                )
+                logger.error(f"Failed to trigger created notification for booking {booking.id}: {notif_err}")
             return booking
 
         elif data.artist_profile_id:
@@ -95,21 +90,16 @@ class BookingService:
                 f"Booking {booking.id} created successfully by client {client_id} for artist {data.artist_profile_id}"
             )
             try:
-                from app.features.notifications.service import (
-                    create_booking_notification,
-                )
-
+                from app.features.notifications.service import create_booking_notification
                 create_booking_notification(
                     db=db,
                     booking=booking,
                     event_type="created",
                     actor_id=str(client_id),
-                    actor_role="client",
+                    actor_role="client"
                 )
             except Exception as notif_err:
-                logger.error(
-                    f"Failed to trigger created notification for booking {booking.id}: {notif_err}"
-                )
+                logger.error(f"Failed to trigger created notification for booking {booking.id}: {notif_err}")
             return booking
         else:
             raise BadRequestException(
@@ -138,7 +128,6 @@ class BookingService:
 
         # Check if user is admin
         from app.features.auth.models import User
-
         user = None
         try:
             user_uuid = UUID(user_id) if isinstance(user_id, str) else user_id
@@ -159,7 +148,6 @@ class BookingService:
 
     def accept_booking(self, db: Session, user_id: str, booking_id: UUID) -> Booking:
         from app.features.bookings.workflow import BookingWorkflowEngine
-
         booking = BookingWorkflowEngine.transition(
             db=db,
             booking_id=booking_id,
@@ -173,7 +161,6 @@ class BookingService:
 
     def reject_booking(self, db: Session, user_id: str, booking_id: UUID) -> Booking:
         from app.features.bookings.workflow import BookingWorkflowEngine
-
         booking = BookingWorkflowEngine.transition(
             db=db,
             booking_id=booking_id,
@@ -194,7 +181,6 @@ class BookingService:
         message: Optional[str],
     ) -> Booking:
         from app.features.bookings.workflow import BookingWorkflowEngine
-
         booking = BookingWorkflowEngine.transition(
             db=db,
             booking_id=booking_id,
@@ -210,16 +196,13 @@ class BookingService:
         )
         return booking
 
-    def cancel_booking(
-        self, db: Session, user_id: str, booking_id: UUID, reason: Optional[str] = None
-    ) -> Booking:
+    def cancel_booking(self, db: Session, user_id: str, booking_id: UUID, reason: Optional[str] = None) -> Booking:
         booking = booking_crud.get(db, booking_id)
         if not booking:
             raise NotFoundException("Booking request not found.")
         is_client = str(booking.client_id) == user_id
-
+        
         from app.features.auth.models import User
-
         user = None
         try:
             user_uuid = UUID(user_id) if isinstance(user_id, str) else user_id
@@ -234,7 +217,6 @@ class BookingService:
             role = "client" if is_client else "artist"
 
         from app.features.bookings.workflow import BookingWorkflowEngine
-
         booking = BookingWorkflowEngine.transition(
             db=db,
             booking_id=booking_id,
@@ -244,9 +226,7 @@ class BookingService:
             target_status="cancelled",
             reason=reason,
         )
-        logger.info(
-            f"Booking request {booking.id} cancelled by user {user_id} ({role})"
-        )
+        logger.info(f"Booking request {booking.id} cancelled by user {user_id} ({role})")
         return booking
 
     def get_venue_profile(self, db: Session, user_id: str):
@@ -279,7 +259,6 @@ class BookingService:
 
         # Check if user is admin
         from app.features.auth.models import User
-
         user = None
         try:
             user_uuid = UUID(user_id) if isinstance(user_id, str) else user_id
@@ -300,7 +279,6 @@ class BookingService:
         self, db: Session, user_id: str, booking_id: UUID
     ) -> Booking:
         from app.features.bookings.workflow import BookingWorkflowEngine
-
         booking = BookingWorkflowEngine.transition(
             db=db,
             booking_id=booking_id,
@@ -318,7 +296,6 @@ class BookingService:
         self, db: Session, user_id: str, booking_id: UUID
     ) -> Booking:
         from app.features.bookings.workflow import BookingWorkflowEngine
-
         booking = BookingWorkflowEngine.transition(
             db=db,
             booking_id=booking_id,
@@ -336,7 +313,6 @@ class BookingService:
         self, db: Session, user_id: str, booking_id: UUID
     ) -> Booking:
         from app.features.bookings.workflow import BookingWorkflowEngine
-
         booking = BookingWorkflowEngine.transition(
             db=db,
             booking_id=booking_id,
@@ -357,9 +333,8 @@ class BookingService:
         if not booking:
             raise NotFoundException("Booking request not found.")
         is_client = str(booking.client_id) == user_id
-
+        
         from app.features.auth.models import User
-
         user = None
         try:
             user_uuid = UUID(user_id) if isinstance(user_id, str) else user_id
@@ -374,7 +349,6 @@ class BookingService:
             role = "client" if is_client else "venue_owner"
 
         from app.features.bookings.workflow import BookingWorkflowEngine
-
         booking = BookingWorkflowEngine.transition(
             db=db,
             booking_id=booking_id,
@@ -384,9 +358,7 @@ class BookingService:
             target_status="cancelled",
             reason=reason,
         )
-        logger.info(
-            f"Booking request {booking.id} cancelled by user {user_id} ({role})"
-        )
+        logger.info(f"Booking request {booking.id} cancelled by user {user_id} ({role})")
         return booking
 
     # Validation helper used by tests and callers to validate incoming booking payloads.
@@ -469,9 +441,7 @@ class BookingService:
         limit: int = 10,
     ) -> Tuple[List[Booking], int]:
         offset = (page - 1) * limit
-        return booking_crud.get_by_client(
-            db, UUID(client_id), status, search, offset, limit
-        )
+        return booking_crud.get_by_client(db, UUID(client_id), status, search, offset, limit)
 
     def get_all_bookings(
         self,
@@ -493,7 +463,6 @@ class BookingService:
         message: Optional[str] = None,
     ) -> Booking:
         from app.features.bookings.workflow import BookingWorkflowEngine
-
         booking = BookingWorkflowEngine.transition(
             db=db,
             booking_id=booking_id,
@@ -503,9 +472,7 @@ class BookingService:
             target_status=new_status,
             reason=message,
         )
-        logger.info(
-            f"Booking {booking_id} status overridden to {new_status} by admin {admin_id}"
-        )
+        logger.info(f"Booking {booking_id} status overridden to {new_status} by admin {admin_id}")
         return booking
 
 

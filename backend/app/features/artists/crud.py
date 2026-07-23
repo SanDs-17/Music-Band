@@ -19,7 +19,7 @@ class ArtistProfileCRUD(BaseRepository[ArtistProfile]):
         search: Optional[str] = None,
         verification_status: Optional[str] = None,
         limit: int = 10,
-        offset: int = 0,
+        offset: int = 0
     ) -> Tuple[List[ArtistProfile], int]:
         """Fetch artist profiles joining user and eager-loading categories relationships."""
         query = (
@@ -28,22 +28,20 @@ class ArtistProfileCRUD(BaseRepository[ArtistProfile]):
             .options(
                 joinedload(ArtistProfile.user),
                 joinedload(ArtistProfile.genres),
-                joinedload(ArtistProfile.languages),
+                joinedload(ArtistProfile.languages)
             )
             .filter(ArtistProfile.deleted_at.is_(None))
         )
 
         if search:
             query = query.filter(
-                (User.name.ilike(f"%{search}%"))
-                | (User.email.ilike(f"%{search}%"))
-                | (ArtistProfile.bio.ilike(f"%{search}%"))
+                (User.name.ilike(f"%{search}%")) |
+                (User.email.ilike(f"%{search}%")) |
+                (ArtistProfile.bio.ilike(f"%{search}%"))
             )
 
         if verification_status and verification_status != "all":
-            query = query.filter(
-                ArtistProfile.verification_status == verification_status
-            )
+            query = query.filter(ArtistProfile.verification_status == verification_status)
 
         total_count = query.count()
         results = query.offset(offset).limit(limit).all()
@@ -52,7 +50,6 @@ class ArtistProfileCRUD(BaseRepository[ArtistProfile]):
     def get_by_user_id(self, db: Session, user_id: Any) -> Optional[ArtistProfile]:
         if isinstance(user_id, str):
             from uuid import UUID as PyUUID
-
             try:
                 user_id = PyUUID(user_id)
             except ValueError:
@@ -60,10 +57,12 @@ class ArtistProfileCRUD(BaseRepository[ArtistProfile]):
         return (
             db.query(ArtistProfile)
             .options(
-                joinedload(ArtistProfile.genres), joinedload(ArtistProfile.languages)
+                joinedload(ArtistProfile.genres),
+                joinedload(ArtistProfile.languages)
             )
             .filter(
-                ArtistProfile.user_id == user_id, ArtistProfile.deleted_at.is_(None)
+                ArtistProfile.user_id == user_id,
+                ArtistProfile.deleted_at.is_(None)
             )
             .first()
         )

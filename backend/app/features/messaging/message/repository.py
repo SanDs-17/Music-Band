@@ -3,13 +3,16 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 from app.features.messaging.message.models import Message
 
-
 class MessageRepository:
     def get_by_id(self, db: Session, message_id: UUID) -> Optional[Message]:
         return db.query(Message).filter(Message.id == message_id).first()
 
     def list_by_conversation_id(
-        self, db: Session, conversation_id: UUID, page: int = 1, limit: int = 50
+        self,
+        db: Session,
+        conversation_id: UUID,
+        page: int = 1,
+        limit: int = 50
     ) -> List[Message]:
         offset = (page - 1) * limit
         return (
@@ -23,7 +26,9 @@ class MessageRepository:
 
     def count_by_conversation_id(self, db: Session, conversation_id: UUID) -> int:
         return (
-            db.query(Message).filter(Message.conversation_id == conversation_id).count()
+            db.query(Message)
+            .filter(Message.conversation_id == conversation_id)
+            .count()
         )
 
     def create(self, db: Session, obj_in: Message) -> Message:
@@ -37,6 +42,5 @@ class MessageRepository:
         db.commit()
         db.refresh(obj_in)
         return obj_in
-
 
 message_repository = MessageRepository()

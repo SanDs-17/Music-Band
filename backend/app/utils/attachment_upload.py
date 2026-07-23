@@ -15,25 +15,9 @@ ALLOWED_AUDIO_EXTS = {".mp3", ".wav"}
 ALLOWED_VIDEO_EXTS = {".mp4", ".mov", ".webm"}
 
 FORBIDDEN_EXTS = {
-    ".exe",
-    ".sh",
-    ".bat",
-    ".cmd",
-    ".dll",
-    ".so",
-    ".msi",
-    ".js",
-    ".vbs",
-    ".ps1",
-    ".scr",
-    ".jar",
-    ".apk",
-    ".com",
-    ".py",
-    ".php",
-    ".pl",
-    ".bin",
-    ".app",
+    ".exe", ".sh", ".bat", ".cmd", ".dll", ".so", ".msi",
+    ".js", ".vbs", ".ps1", ".scr", ".jar", ".apk", ".com",
+    ".py", ".php", ".pl", ".bin", ".app"
 }
 
 MAX_ATTACHMENT_BYTES = 25 * 1024 * 1024  # 25MB limit
@@ -60,31 +44,15 @@ def determine_message_type_and_validate(file: UploadFile) -> tuple[str, str]:
         )
 
     message_type = None
-    if ext in ALLOWED_IMAGE_EXTS or (
-        file.content_type and file.content_type.startswith("image/")
-    ):
+    if ext in ALLOWED_IMAGE_EXTS or (file.content_type and file.content_type.startswith("image/")):
         message_type = "IMAGE"
-    elif ext in ALLOWED_DOC_EXTS or (
-        file.content_type
-        and (
-            "pdf" in file.content_type
-            or "word" in file.content_type
-            or "excel" in file.content_type
-            or "text" in file.content_type
-        )
-    ):
+    elif ext in ALLOWED_DOC_EXTS or (file.content_type and ("pdf" in file.content_type or "word" in file.content_type or "excel" in file.content_type or "text" in file.content_type)):
         message_type = "DOCUMENT"
-    elif ext in ALLOWED_AUDIO_EXTS or (
-        file.content_type and file.content_type.startswith("audio/")
-    ):
+    elif ext in ALLOWED_AUDIO_EXTS or (file.content_type and file.content_type.startswith("audio/")):
         message_type = "AUDIO"
-    elif ext in ALLOWED_VIDEO_EXTS or (
-        file.content_type and file.content_type.startswith("video/")
-    ):
+    elif ext in ALLOWED_VIDEO_EXTS or (file.content_type and file.content_type.startswith("video/")):
         message_type = "VIDEO"
-    elif ext in ALLOWED_ARCHIVE_EXTS or (
-        file.content_type and "zip" in file.content_type
-    ):
+    elif ext in ALLOWED_ARCHIVE_EXTS or (file.content_type and "zip" in file.content_type):
         message_type = "FILE"
     else:
         # Fallback for unrecognized extension
@@ -110,9 +78,7 @@ def determine_message_type_and_validate(file: UploadFile) -> tuple[str, str]:
     return message_type, ext, size
 
 
-async def upload_attachment_file(
-    file: UploadFile, subfolder: str = "attachments"
-) -> dict:
+async def upload_attachment_file(file: UploadFile, subfolder: str = "attachments") -> dict:
     """
     Validate and store an attachment file.
     Returns dict containing attachment metadata.

@@ -66,14 +66,10 @@ async def test_set_typing_status(db_session: Session):
     db_session.add(conv)
     db_session.commit()
 
-    res_started = message_service.set_typing_status(
-        db_session, conv.id, client_id, True
-    )
+    res_started = message_service.set_typing_status(db_session, conv.id, client_id, True)
     assert res_started is True
 
-    res_stopped = message_service.set_typing_status(
-        db_session, conv.id, client_id, False
-    )
+    res_stopped = message_service.set_typing_status(db_session, conv.id, client_id, False)
     assert res_stopped is True
 
 
@@ -92,20 +88,12 @@ async def test_search_messages(db_session: Session):
     db_session.add(conv)
     db_session.commit()
 
-    msg1 = message_service.send_message(
-        db_session, conv.id, client_id, "Need sound check timing for Saturday"
-    )
-    msg2 = message_service.send_message(
-        db_session, conv.id, artist_id, "We will arrive at 4 PM for setup"
-    )
-    msg3 = message_service.send_message(
-        db_session, conv.id, client_id, "Perfect, venue sound system is ready"
-    )
+    msg1 = message_service.send_message(db_session, conv.id, client_id, "Need sound check timing for Saturday")
+    msg2 = message_service.send_message(db_session, conv.id, artist_id, "We will arrive at 4 PM for setup")
+    msg3 = message_service.send_message(db_session, conv.id, client_id, "Perfect, venue sound system is ready")
 
     # Search for "sound"
-    total, results = message_service.search_messages(
-        db_session, conv.id, client_id, "sound"
-    )
+    total, results = message_service.search_messages(db_session, conv.id, client_id, "sound")
     assert total == 2
     res_ids = [m.id for m in results]
     assert msg1.id in res_ids
@@ -128,9 +116,7 @@ async def test_pin_and_unpin_message(db_session: Session):
     db_session.add(conv)
     db_session.commit()
 
-    msg = message_service.send_message(
-        db_session, conv.id, client_id, "Important contract agreement details"
-    )
+    msg = message_service.send_message(db_session, conv.id, client_id, "Important contract agreement details")
 
     # Pin message
     conv_pinned = message_service.pin_message(db_session, msg.id, client_id)
@@ -175,9 +161,7 @@ async def test_closed_conversation_read_only_rules(db_session: Session):
     db_session.add(conv)
     db_session.commit()
 
-    msg = message_service.send_message(
-        db_session, conv.id, client_id, "Before close message"
-    )
+    msg = message_service.send_message(db_session, conv.id, client_id, "Before close message")
 
     # Close conversation
     conv.status = "CLOSED"

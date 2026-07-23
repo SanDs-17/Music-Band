@@ -14,7 +14,6 @@ from app.features.notifications.connection_manager import connection_manager
 
 SUPPORTED_REACTIONS = {"👍", "❤️", "😂", "😮", "😢", "👏"}
 
-
 class MessageService:
     def send_message(
         self,
@@ -24,9 +23,7 @@ class MessageService:
         content: str,
         reply_to_message_id: UUID | None = None,
     ) -> Message:
-        conversation = conversation_service.get_conversation(
-            db, conversation_id, sender_id
-        )
+        conversation = conversation_service.get_conversation(db, conversation_id, sender_id)
 
         if conversation.status == "CLOSED":
             raise HTTPException(
@@ -86,9 +83,7 @@ class MessageService:
         content: str = "",
         reply_to_message_id: UUID | None = None,
     ) -> Message:
-        conversation = conversation_service.get_conversation(
-            db, conversation_id, sender_id
-        )
+        conversation = conversation_service.get_conversation(db, conversation_id, sender_id)
 
         if conversation.status == "CLOSED":
             raise HTTPException(
@@ -105,14 +100,9 @@ class MessageService:
                 )
 
         from app.utils.attachment_upload import upload_attachment_file
-
         attachment_data = await upload_attachment_file(file, subfolder="attachments")
 
-        default_text = (
-            content.strip()
-            if content and content.strip()
-            else f"Sent {attachment_data['filename']}"
-        )
+        default_text = content.strip() if content and content.strip() else f"Sent {attachment_data['filename']}"
 
         now_dt = datetime.now()
         message = Message(
@@ -125,9 +115,7 @@ class MessageService:
             attachment_name=attachment_data["filename"],
             attachment_size=attachment_data["size"],
             attachment_type=attachment_data["content_type"],
-            thumbnail_url=attachment_data["file_url"]
-            if attachment_data["message_type"] in ("IMAGE", "VIDEO")
-            else None,
+            thumbnail_url=attachment_data["file_url"] if attachment_data["message_type"] in ("IMAGE", "VIDEO") else None,
         )
 
         new_msg = message_repository.create(db, message)
@@ -177,9 +165,7 @@ class MessageService:
         conversation_id: UUID,
         user_id: UUID,
     ) -> list[Message]:
-        conversation = conversation_service.get_conversation(
-            db, conversation_id, user_id
-        )
+        conversation = conversation_service.get_conversation(db, conversation_id, user_id)
 
         now_dt = datetime.now()
         unread_msgs = (
@@ -283,9 +269,7 @@ class MessageService:
         msg.edited_at = now_dt
         updated_msg = message_repository.save(db, msg)
 
-        conversation = conversation_service.get_conversation(
-            db, msg.conversation_id, user_id
-        )
+        conversation = conversation_service.get_conversation(db, msg.conversation_id, user_id)
         self._dispatch_message_event(
             conversation=conversation,
             event_type="message.updated",
@@ -323,9 +307,7 @@ class MessageService:
         msg.content = "This message was deleted."
         deleted_msg = message_repository.save(db, msg)
 
-        conversation = conversation_service.get_conversation(
-            db, msg.conversation_id, user_id
-        )
+        conversation = conversation_service.get_conversation(db, msg.conversation_id, user_id)
         self._dispatch_message_event(
             conversation=conversation,
             event_type="message.deleted",
@@ -357,9 +339,7 @@ class MessageService:
 
         conversation_service.get_conversation(db, source_msg.conversation_id, sender_id)
 
-        target_conv = conversation_service.get_conversation(
-            db, target_conversation_id, sender_id
-        )
+        target_conv = conversation_service.get_conversation(db, target_conversation_id, sender_id)
         if target_conv.status == "CLOSED":
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -384,9 +364,7 @@ class MessageService:
         limit: int = 50,
     ) -> list[Message]:
         conversation_service.get_conversation(db, conversation_id, user_id)
-        return message_repository.list_by_conversation_id(
-            db, conversation_id, page, limit
-        )
+        return message_repository.list_by_conversation_id(db, conversation_id, page, limit)
 
     # ── Phase 6 Advanced Features Methods ────────────────────────────────────
 
@@ -410,9 +388,7 @@ class MessageService:
                 detail="Message not found",
             )
 
-        conversation = conversation_service.get_conversation(
-            db, msg.conversation_id, user_id
-        )
+        conversation = conversation_service.get_conversation(db, msg.conversation_id, user_id)
         if conversation.status == "CLOSED":
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -449,9 +425,7 @@ class MessageService:
                 "conversation_id": str(msg.conversation_id),
                 "user_id": str(user_id),
                 "emoji": emoji,
-                "created_at": reaction.created_at.isoformat()
-                if reaction.created_at
-                else datetime.now().isoformat(),
+                "created_at": reaction.created_at.isoformat() if reaction.created_at else datetime.now().isoformat(),
             },
         )
 
@@ -471,9 +445,7 @@ class MessageService:
                 detail="Message not found",
             )
 
-        conversation = conversation_service.get_conversation(
-            db, msg.conversation_id, user_id
-        )
+        conversation = conversation_service.get_conversation(db, msg.conversation_id, user_id)
 
         reaction = (
             db.query(MessageReaction)
@@ -512,9 +484,7 @@ class MessageService:
         user_id: UUID,
         is_typing: bool,
     ) -> bool:
-        conversation = conversation_service.get_conversation(
-            db, conversation_id, user_id
-        )
+        conversation = conversation_service.get_conversation(db, conversation_id, user_id)
 
         user = db.query(User).filter(User.id == user_id).first()
         user_name = user.name if user else "User"
@@ -559,12 +529,7 @@ class MessageService:
 
         total = base_query.count()
         offset = (page - 1) * limit
-        messages = (
-            base_query.order_by(Message.created_at.desc())
-            .offset(offset)
-            .limit(limit)
-            .all()
-        )
+        messages = base_query.order_by(Message.created_at.desc()).offset(offset).limit(limit).all()
 
         return total, messages
 
@@ -581,9 +546,7 @@ class MessageService:
                 detail="Message not found",
             )
 
-        conversation = conversation_service.get_conversation(
-            db, msg.conversation_id, user_id
-        )
+        conversation = conversation_service.get_conversation(db, msg.conversation_id, user_id)
         if conversation.status == "CLOSED":
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -595,7 +558,6 @@ class MessageService:
         db.refresh(conversation)
 
         from app.features.messaging.message.schemas import MessageResponse
-
         msg_data = MessageResponse.model_validate(msg).model_dump(mode="json")
 
         self._broadcast_conversation_event(
@@ -616,9 +578,7 @@ class MessageService:
         conversation_id: UUID,
         user_id: UUID,
     ) -> Any:
-        conversation = conversation_service.get_conversation(
-            db, conversation_id, user_id
-        )
+        conversation = conversation_service.get_conversation(db, conversation_id, user_id)
         if conversation.status == "CLOSED":
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -693,12 +653,8 @@ class MessageService:
                 "sender_id": str(message.sender_id),
                 "message_type": message.message_type,
                 "content": message.content,
-                "reply_to_message_id": str(message.reply_to_message_id)
-                if message.reply_to_message_id
-                else None,
-                "edited_at": message.edited_at.isoformat()
-                if message.edited_at
-                else None,
+                "reply_to_message_id": str(message.reply_to_message_id) if message.reply_to_message_id else None,
+                "edited_at": message.edited_at.isoformat() if message.edited_at else None,
                 "read_at": message.read_at.isoformat() if message.read_at else None,
                 "is_deleted": message.is_deleted,
                 "attachment_url": message.attachment_url,
@@ -712,41 +668,27 @@ class MessageService:
                         "message_id": str(r.message_id),
                         "user_id": str(r.user_id),
                         "emoji": r.emoji,
-                        "created_at": r.created_at.isoformat()
-                        if r.created_at
-                        else now_dt.isoformat(),
+                        "created_at": r.created_at.isoformat() if r.created_at else now_dt.isoformat(),
                     }
                     for r in (message.reactions or [])
                 ],
-                "created_at": message.created_at.isoformat()
-                if message.created_at
-                else now_dt.isoformat(),
-                "updated_at": message.updated_at.isoformat()
-                if message.updated_at
-                else now_dt.isoformat(),
+                "created_at": message.created_at.isoformat() if message.created_at else now_dt.isoformat(),
+                "updated_at": message.updated_at.isoformat() if message.updated_at else now_dt.isoformat(),
             }
 
             conv_payload = {
                 "id": str(conversation.id),
                 "booking_id": str(conversation.booking_id),
-                "event_name": conversation.booking.event_name
-                if getattr(conversation, "booking", None)
-                else None,
+                "event_name": conversation.booking.event_name if getattr(conversation, "booking", None) else None,
                 "status": conversation.status,
-                "pinned_message_id": str(conversation.pinned_message_id)
-                if conversation.pinned_message_id
-                else None,
-                "last_message_at": conversation.last_message_at.isoformat()
-                if conversation.last_message_at
-                else now_dt.isoformat(),
+                "pinned_message_id": str(conversation.pinned_message_id) if conversation.pinned_message_id else None,
+                "last_message_at": conversation.last_message_at.isoformat() if conversation.last_message_at else now_dt.isoformat(),
             }
 
             for recipient_id in set(recipients):
                 if recipient_id:
                     publish_messaging_event(recipient_id, event_type, msg_payload)
-                    publish_messaging_event(
-                        recipient_id, "conversation.updated", conv_payload
-                    )
+                    publish_messaging_event(recipient_id, "conversation.updated", conv_payload)
         except Exception:
             pass
 

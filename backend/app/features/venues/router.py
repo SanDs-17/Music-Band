@@ -12,7 +12,7 @@ from app.features.venues.schemas import (
     VenueVerificationUpdate,
     VenueResponse,
     PaginatedVenueList,
-    CityBriefResponse,
+    CityBriefResponse
 )
 from app.features.venues.service import VenueService
 from app.features.venues.crud import VenueCRUD
@@ -35,14 +35,17 @@ def _format_venue_profile(venue) -> VenueResponse:
             id=venue.user.id,
             name=venue.user.name,
             email=venue.user.email,
-            is_active=venue.user.is_active,
+            is_active=venue.user.is_active
         ),
         name=venue.name,
         venue_number=venue.venue_number,
         description=venue.description,
         address=venue.address,
         city_id=venue.city_id,
-        city=CityBriefResponse(id=venue.city.id, name=venue.city.name),
+        city=CityBriefResponse(
+            id=venue.city.id,
+            name=venue.city.name
+        ),
         venue_type=venue.venue_type,
         business_name=venue.business_name,
         contact_details=venue.contact_details,
@@ -68,11 +71,10 @@ def _format_venue_profile(venue) -> VenueResponse:
                 type=c.type,
                 description=c.description,
                 is_active=c.is_active,
-                created_at=c.created_at.isoformat(),
-            )
-            for c in venue.categories
+                created_at=c.created_at.isoformat()
+            ) for c in venue.categories
         ],
-        created_at=venue.created_at.isoformat(),
+        created_at=venue.created_at.isoformat()
     )
 
 
@@ -80,31 +82,25 @@ def _format_venue_profile(venue) -> VenueResponse:
     "",
     response_model=SuccessResponse[PaginatedVenueList],
     status_code=status.HTTP_200_OK,
-    summary="List all venues (Admin only)",
+    summary="List all venues (Admin only)"
 )
 async def list_admin_venues(
     search: Optional[str] = Query(None, description="Search venue name, city or owner"),
-    verification_status: Optional[str] = Query(
-        None, description="Filter by status: pending, approved, rejected"
-    ),
+    verification_status: Optional[str] = Query(None, description="Filter by status: pending, approved, rejected"),
     limit: int = Query(10, ge=1, le=100),
     offset: int = Query(0, ge=0),
     current_admin_claims: dict = Depends(get_current_admin),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db)
 ):
     """Admin-only route returning all venue profiles with verification and search parameters."""
     venues, total = crud.get_filtered_venues(
-        db,
-        search=search,
-        verification_status=verification_status,
-        limit=limit,
-        offset=offset,
+        db, search=search, verification_status=verification_status, limit=limit, offset=offset
     )
     formatted = [_format_venue_profile(v) for v in venues]
     return SuccessResponse(
         success=True,
         data=PaginatedVenueList(items=formatted, total=total),
-        message="Venues list retrieved successfully.",
+        message="Venues list retrieved successfully."
     )
 
 
@@ -112,12 +108,12 @@ async def list_admin_venues(
     "/{venue_id}",
     response_model=SuccessResponse[VenueResponse],
     status_code=status.HTTP_200_OK,
-    summary="Get venue details (Admin only)",
+    summary="Get venue details (Admin only)"
 )
 async def get_admin_venue_detail(
     venue_id: UUID,
     current_admin_claims: dict = Depends(get_current_admin),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db)
 ):
     """Admin-only route to inspect complete profile fields of a venue."""
     venue = crud.get(db, venue_id)
@@ -126,7 +122,7 @@ async def get_admin_venue_detail(
     return SuccessResponse(
         success=True,
         data=_format_venue_profile(venue),
-        message="Venue details retrieved successfully.",
+        message="Venue details retrieved successfully."
     )
 
 
@@ -134,20 +130,20 @@ async def get_admin_venue_detail(
     "/{venue_id}/verify",
     response_model=SuccessResponse[VenueResponse],
     status_code=status.HTTP_200_OK,
-    summary="Update venue verification status (Admin only)",
+    summary="Update venue verification status (Admin only)"
 )
 async def update_venue_verification(
     venue_id: UUID,
     data: VenueVerificationUpdate,
     current_admin_claims: dict = Depends(get_current_admin),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db)
 ):
     """Admin-only pipeline path to Approve, Reject, or Flag a venue profile verification."""
     venue = service.update_verification_status(db, venue_id, data)
     return SuccessResponse(
         success=True,
         data=_format_venue_profile(venue),
-        message="Verification status successfully updated.",
+        message="Verification status successfully updated."
     )
 
 
@@ -155,19 +151,19 @@ async def update_venue_verification(
     "/{venue_id}/suspend",
     response_model=SuccessResponse[VenueResponse],
     status_code=status.HTTP_200_OK,
-    summary="Suspend venue account access (Admin only)",
+    summary="Suspend venue account access (Admin only)"
 )
 async def suspend_admin_venue(
     venue_id: UUID,
     current_admin_claims: dict = Depends(get_current_admin),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db)
 ):
     """Admin-only endpoint to toggle account credentials activity to inactive (suspend)."""
     venue = service.suspend_venue(db, venue_id)
     return SuccessResponse(
         success=True,
         data=_format_venue_profile(venue),
-        message="Venue credentials suspended successfully.",
+        message="Venue credentials suspended successfully."
     )
 
 
@@ -175,17 +171,17 @@ async def suspend_admin_venue(
     "/{venue_id}/activate",
     response_model=SuccessResponse[VenueResponse],
     status_code=status.HTTP_200_OK,
-    summary="Activate venue account access (Admin only)",
+    summary="Activate venue account access (Admin only)"
 )
 async def activate_admin_venue(
     venue_id: UUID,
     current_admin_claims: dict = Depends(get_current_admin),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db)
 ):
     """Admin-only endpoint to toggle account credentials activity to active."""
     venue = service.activate_venue(db, venue_id)
     return SuccessResponse(
         success=True,
         data=_format_venue_profile(venue),
-        message="Venue credentials activated successfully.",
+        message="Venue credentials activated successfully."
     )

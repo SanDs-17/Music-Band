@@ -32,7 +32,7 @@ WS_CLOSE_INTERNAL_ERROR = 4500
 @router.websocket("/notifications")
 async def ws_notifications(
     websocket: WebSocket,
-    token: str = Query(..., description="JWT access token (from localStorage)"),
+    token: str = Query(..., description="JWT access token (from localStorage)")
 ) -> None:
     # ── Step 1: Authenticate ─────────────────────────────────────────────────
     user_id: str
@@ -41,9 +41,7 @@ async def ws_notifications(
         user_id = payload["sub"]
     except Exception as exc:
         logger.warning(f"[WS] Rejected unauthenticated connection: {exc}")
-        await websocket.close(
-            code=WS_CLOSE_UNAUTHORIZED, reason="Unauthorized: invalid or expired token"
-        )
+        await websocket.close(code=WS_CLOSE_UNAUTHORIZED, reason="Unauthorized: invalid or expired token")
         return
 
     was_already_online = connection_manager.is_connected(user_id)
@@ -56,18 +54,17 @@ async def ws_notifications(
 
     try:
         # ── Step 3: Send Connection Confirmation ──────────────────────────────
-        await websocket.send_json(
-            {
-                "type": "connected",
-                "user_id": user_id,
-            }
-        )
+        await websocket.send_json({
+            "type": "connected",
+            "user_id": user_id,
+        })
 
         # ── Step 4: Message Loop ──────────────────────────────────────────────
         while True:
             try:
                 raw = await asyncio.wait_for(
-                    websocket.receive_text(), timeout=float(HEARTBEAT_INTERVAL_SECONDS)
+                    websocket.receive_text(),
+                    timeout=float(HEARTBEAT_INTERVAL_SECONDS)
                 )
                 msg = json.loads(raw)
                 msg_type = msg.get("type")
@@ -78,11 +75,7 @@ async def ws_notifications(
                 elif msg_type in ("typing.started", "typing.stopped"):
                     conv_id_str = msg.get("conversation_id")
                     if conv_id_str:
-                        _handle_typing_event(
-                            user_id,
-                            conv_id_str,
-                            is_typing=(msg_type == "typing.started"),
-                        )
+                        _handle_typing_event(user_id, conv_id_str, is_typing=(msg_type == "typing.started"))
 
             except asyncio.TimeoutError:
                 try:
@@ -111,9 +104,7 @@ async def ws_notifications(
             _broadcast_user_presence(user_id, is_online=False, last_seen=last_seen_dt)
 
 
-def _broadcast_user_presence(
-    user_id: str, is_online: bool, last_seen: datetime | None = None
-) -> None:
+def _broadcast_user_presence(user_id: str, is_online: bool, last_seen: datetime | None = None) -> None:
     db = SessionLocal()
     try:
         from app.features.messaging.conversation.models import Conversation
@@ -121,17 +112,13 @@ def _broadcast_user_presence(
         from sqlalchemy import or_
 
         uid = UUID(user_id)
-        conversations = (
-            db.query(Conversation)
-            .filter(
-                or_(
-                    Conversation.client_id == uid,
-                    Conversation.band_id == uid,
-                    Conversation.venue_owner_id == uid,
-                )
+        conversations = db.query(Conversation).filter(
+            or_(
+                Conversation.client_id == uid,
+                Conversation.band_id == uid,
+                Conversation.venue_owner_id == uid,
             )
-            .all()
-        )
+        ).all()
 
         partner_ids = set()
         for c in conversations:
@@ -164,7 +151,6 @@ def _persist_last_seen(user_id: str, last_seen_dt: datetime) -> None:
     db = SessionLocal()
     try:
         from app.features.auth.models import User
-
         user = db.query(User).filter(User.id == UUID(user_id)).first()
         if user:
             user.last_seen = last_seen_dt
@@ -176,16 +162,11 @@ def _persist_last_seen(user_id: str, last_seen_dt: datetime) -> None:
         db.close()
 
 
-def _handle_typing_event(
-    user_id: str, conversation_id_str: str, is_typing: bool
-) -> None:
+def _handle_typing_event(user_id: str, conversation_id_str: str, is_typing: bool) -> None:
     db = SessionLocal()
     try:
         from app.features.messaging.message.service import message_service
-
-        message_service.set_typing_status(
-            db, UUID(conversation_id_str), UUID(user_id), is_typing
-        )
+        message_service.set_typing_status(db, UUID(conversation_id_str), UUID(user_id), is_typing)
     except Exception as e:
         logger.warning(f"[WS] Failed typing event for {user_id}: {e}")
     finally:

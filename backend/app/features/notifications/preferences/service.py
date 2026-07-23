@@ -1,11 +1,8 @@
 from uuid import UUID
 from sqlalchemy.orm import Session
-from app.features.notifications.preferences.repository import (
-    notification_preference_repository,
-)
+from app.features.notifications.preferences.repository import notification_preference_repository
 from app.features.notifications.preferences.schemas import NotificationPreferenceUpdate
 from app.features.notifications.preferences.models import NotificationPreference
-
 
 class NotificationPreferenceService:
     TYPE_TO_FIELD = {
@@ -39,9 +36,7 @@ class NotificationPreferenceService:
     ) -> NotificationPreference:
         return notification_preference_repository.update(db, user_id, obj_in)
 
-    def is_delivery_allowed(
-        self, db: Session, user_id: UUID, notification_type: str
-    ) -> bool:
+    def is_delivery_allowed(self, db: Session, user_id: UUID, notification_type: str) -> bool:
         """
         Check if the user has enabled notifications for the given type.
         """
@@ -63,7 +58,7 @@ class NotificationPreferenceService:
                 field = "booking_enabled"
             else:
                 field = "system_enabled"
-
+        
         return getattr(pref, field, True)
 
     def is_realtime_allowed(self, db: Session, user_id: UUID) -> bool:
@@ -74,6 +69,5 @@ class NotificationPreferenceService:
         if not pref:
             return True  # Default to True if no preferences are configured yet
         return pref.realtime_enabled
-
 
 notification_preference_service = NotificationPreferenceService()

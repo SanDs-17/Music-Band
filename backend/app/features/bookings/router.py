@@ -92,7 +92,9 @@ async def get_client_bookings_list(
         None,
         description="Filter by pending, accepted, rejected, counter_offered, cancelled, completed",
     ),
-    search: Optional[str] = Query(None, description="Search by event name or location"),
+    search: Optional[str] = Query(
+        None, description="Search by event name or location"
+    ),
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=100),
     current_user_claims: dict = Depends(get_current_client),
@@ -213,9 +215,7 @@ async def cancel_booking_request(
     db: Session = Depends(get_db),
 ):
     reason = data.reason if data else None
-    booking = booking_service.cancel_booking(
-        db, current_user_claims["sub"], booking_id, reason
-    )
+    booking = booking_service.cancel_booking(db, current_user_claims["sub"], booking_id, reason)
     return SuccessResponse(
         success=True,
         data=_format_booking(booking),
@@ -259,114 +259,6 @@ async def get_venue_bookings_list(
     )
 
 
-@router.get(
-    "/venue/{booking_id}",
-    response_model=SuccessResponse[BookingResponse],
-    status_code=status.HTTP_200_OK,
-    summary="Get venue booking details including timeline and client details",
-)
-async def get_venue_booking_details(
-    booking_id: UUID,
-    current_user_claims: dict = Depends(get_current_venue_owner),
-    db: Session = Depends(get_db),
-):
-    """
-    Retrieves full details of a specific venue booking. Accessible by target venue owner.
-    """
-    booking = booking_service.get_venue_booking_details(
-        db, current_user_claims["sub"], booking_id
-    )
-    return SuccessResponse(
-        success=True,
-        data=_format_booking(booking),
-        message="Venue booking details retrieved.",
-    )
-
-
-@router.put(
-    "/venue/{booking_id}/accept",
-    response_model=SuccessResponse[BookingResponse],
-    status_code=status.HTTP_200_OK,
-    summary="Accept an incoming venue booking request",
-)
-async def accept_venue_booking_request(
-    booking_id: UUID,
-    current_user_claims: dict = Depends(get_current_venue_owner),
-    db: Session = Depends(get_db),
-):
-    booking = booking_service.accept_venue_booking(
-        db, current_user_claims["sub"], booking_id
-    )
-    return SuccessResponse(
-        success=True,
-        data=_format_booking(booking),
-        message="Venue booking request accepted successfully.",
-    )
-
-
-@router.put(
-    "/venue/{booking_id}/reject",
-    response_model=SuccessResponse[BookingResponse],
-    status_code=status.HTTP_200_OK,
-    summary="Reject an incoming venue booking request",
-)
-async def reject_venue_booking_request(
-    booking_id: UUID,
-    current_user_claims: dict = Depends(get_current_venue_owner),
-    db: Session = Depends(get_db),
-):
-    booking = booking_service.reject_venue_booking(
-        db, current_user_claims["sub"], booking_id
-    )
-    return SuccessResponse(
-        success=True,
-        data=_format_booking(booking),
-        message="Venue booking request rejected successfully.",
-    )
-
-
-@router.put(
-    "/venue/{booking_id}/complete",
-    response_model=SuccessResponse[BookingResponse],
-    status_code=status.HTTP_200_OK,
-    summary="Mark a confirmed venue booking as completed",
-)
-async def complete_venue_booking_request(
-    booking_id: UUID,
-    current_user_claims: dict = Depends(get_current_venue_owner),
-    db: Session = Depends(get_db),
-):
-    booking = booking_service.complete_venue_booking(
-        db, current_user_claims["sub"], booking_id
-    )
-    return SuccessResponse(
-        success=True,
-        data=_format_booking(booking),
-        message="Venue booking marked as completed successfully.",
-    )
-
-
-@router.put(
-    "/venue/{booking_id}/cancel",
-    response_model=SuccessResponse[BookingResponse],
-    status_code=status.HTTP_200_OK,
-    summary="Cancel a venue booking request",
-)
-async def cancel_venue_booking_request(
-    booking_id: UUID,
-    data: Optional[BookingCancelRequest] = None,
-    current_user_claims: dict = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    reason = data.reason if data else None
-    booking = booking_service.cancel_venue_booking(
-        db, current_user_claims["sub"], booking_id, reason
-    )
-    return SuccessResponse(
-        success=True,
-        data=_format_booking(booking),
-        message="Venue booking request cancelled.",
-    )
 
 
 def _format_booking_brief(b) -> dict:
@@ -383,9 +275,7 @@ def _format_booking_brief(b) -> dict:
             return str(val)[:5]
 
     artist_profile = getattr(b, "artist_profile", None)
-    artist_name = (
-        getattr(artist_profile, "display_name", None) if artist_profile else None
-    )
+    artist_name = getattr(artist_profile, "display_name", None) if artist_profile else None
     venue = getattr(b, "venue", None)
     venue_name = getattr(venue, "name", None) if venue else None
 
@@ -425,9 +315,7 @@ def _timeline_entry_to_dict(entry) -> dict:
         }
     # Handle ORM models and SimpleNamespace objects via getattr
     status_val = getattr(entry, "status", None)
-    timestamp_val = getattr(entry, "created_at", None) or getattr(
-        entry, "timestamp", ""
-    )
+    timestamp_val = getattr(entry, "created_at", None) or getattr(entry, "timestamp", "")
     by_val = getattr(entry, "created_by_role", None) or getattr(entry, "by", "")
     return {
         "id": getattr(entry, "id", None),
@@ -444,9 +332,7 @@ def _timeline_entry_to_dict(entry) -> dict:
 def _format_booking(b) -> dict:
     # Resolve timeline: prefer the `timeline` JSON column (list of dicts from accept/reject methods),
     # then fall back to `timeline_events` (ORM relationship rows).
-    raw_timeline = (
-        getattr(b, "timeline", None) or getattr(b, "timeline_events", None) or []
-    )
+    raw_timeline = getattr(b, "timeline", None) or getattr(b, "timeline_events", None) or []
     timeline = [_timeline_entry_to_dict(e) for e in raw_timeline]
 
     artist_profile = getattr(b, "artist_profile", None)
@@ -457,9 +343,7 @@ def _format_booking(b) -> dict:
             "display_name": artist_profile.display_name,
             "bio": getattr(artist_profile, "bio", None),
             "base_rate": float(artist_profile.base_rate),
-            "rating": float(artist_profile.rating)
-            if getattr(artist_profile, "rating", None)
-            else 0.0,
+            "rating": float(artist_profile.rating) if getattr(artist_profile, "rating", None) else 0.0,
         }
 
     venue = getattr(b, "venue", None)

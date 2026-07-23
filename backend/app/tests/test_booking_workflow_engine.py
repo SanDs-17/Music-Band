@@ -9,19 +9,30 @@ from app.features.locations.models import Country, State, City
 from app.features.bookings.workflow import BookingWorkflowEngine
 from app.core.exceptions import BadRequestException
 
-
 @pytest.fixture
 def workflow_setup_data(db_session):
     # Create location hierarchy first
-    country = Country(id=uuid.uuid4(), name="Test Country", code="TC")
+    country = Country(
+        id=uuid.uuid4(),
+        name="Test Country",
+        code="TC"
+    )
     db_session.add(country)
     db_session.commit()
 
-    state = State(id=uuid.uuid4(), name="Test State", country_id=country.id)
+    state = State(
+        id=uuid.uuid4(),
+        name="Test State",
+        country_id=country.id
+    )
     db_session.add(state)
     db_session.commit()
 
-    city = City(id=uuid.uuid4(), name="Test City", state_id=state.id)
+    city = City(
+        id=uuid.uuid4(),
+        name="Test City",
+        state_id=state.id
+    )
     db_session.add(city)
     db_session.commit()
 
@@ -32,7 +43,7 @@ def workflow_setup_data(db_session):
         password_hash="test",
         name="WF Client",
         is_active=True,
-        is_verified=True,
+        is_verified=True
     )
     artist_user = User(
         id=uuid.uuid4(),
@@ -40,7 +51,7 @@ def workflow_setup_data(db_session):
         password_hash="test",
         name="WF Artist User",
         is_active=True,
-        is_verified=True,
+        is_verified=True
     )
     venue_user = User(
         id=uuid.uuid4(),
@@ -48,7 +59,7 @@ def workflow_setup_data(db_session):
         password_hash="test",
         name="WF Venue User",
         is_active=True,
-        is_verified=True,
+        is_verified=True
     )
     admin_user = User(
         id=uuid.uuid4(),
@@ -56,7 +67,7 @@ def workflow_setup_data(db_session):
         password_hash="test",
         name="WF Admin",
         is_active=True,
-        is_verified=True,
+        is_verified=True
     )
     db_session.add_all([client_user, artist_user, venue_user, admin_user])
     db_session.commit()
@@ -69,7 +80,7 @@ def workflow_setup_data(db_session):
         base_rate=200.0,
         rating=5.0,
         verification_status="approved",
-        display_name="WF Artist Performer",
+        display_name="WF Artist Performer"
     )
     # Create venue profile
     venue_profile = Venue(
@@ -79,7 +90,7 @@ def workflow_setup_data(db_session):
         address="123 Music Ave",
         city_id=city.id,
         capacity=500,
-        base_price=1000.0,
+        base_price=1000.0
     )
 
     db_session.add_all([artist_profile, venue_profile])
@@ -97,16 +108,14 @@ def workflow_setup_data(db_session):
         location="Grand Hall",
         proposed_price=500.0,
         status="pending",
-        timeline=[
-            {
-                "status": "pending",
-                "timestamp": datetime.datetime.utcnow().isoformat(),
-                "by": "client",
-                "message": "Booking request initialized",
-            }
-        ],
+        timeline=[{
+            "status": "pending",
+            "timestamp": datetime.datetime.utcnow().isoformat(),
+            "by": "client",
+            "message": "Booking request initialized"
+        }]
     )
-
+    
     # Create standard venue booking request
     venue_booking = Booking(
         id=uuid.uuid4(),
@@ -119,14 +128,12 @@ def workflow_setup_data(db_session):
         location="WF Club",
         proposed_price=800.0,
         status="pending",
-        timeline=[
-            {
-                "status": "pending",
-                "timestamp": datetime.datetime.utcnow().isoformat(),
-                "by": "client",
-                "message": "Venue Booking request initialized",
-            }
-        ],
+        timeline=[{
+            "status": "pending",
+            "timestamp": datetime.datetime.utcnow().isoformat(),
+            "by": "client",
+            "message": "Venue Booking request initialized"
+        }]
     )
     db_session.add_all([artist_booking, venue_booking])
     db_session.commit()
@@ -139,9 +146,8 @@ def workflow_setup_data(db_session):
         "venue_profile": venue_profile,
         "admin": admin_user,
         "artist_booking": artist_booking,
-        "venue_booking": venue_booking,
+        "venue_booking": venue_booking
     }
-
 
 def test_valid_status_transitions(db_session, workflow_setup_data):
     b = workflow_setup_data["artist_booking"]
@@ -155,7 +161,7 @@ def test_valid_status_transitions(db_session, workflow_setup_data):
         actor_id=artist_uid,
         actor_role="artist",
         action="accept",
-        target_status="accepted",
+        target_status="accepted"
     )
     assert b.status == "accepted"
 
@@ -166,7 +172,7 @@ def test_valid_status_transitions(db_session, workflow_setup_data):
         actor_id=client_uid,
         actor_role="client",
         action="confirm",
-        target_status="confirmed",
+        target_status="confirmed"
     )
     assert b.status == "confirmed"
 
@@ -179,10 +185,9 @@ def test_valid_status_transitions(db_session, workflow_setup_data):
         actor_id=str(workflow_setup_data["admin"].id),
         actor_role="admin",
         action="complete",
-        target_status="completed",
+        target_status="completed"
     )
     assert b.status == "completed"
-
 
 def test_invalid_status_transitions(db_session, workflow_setup_data):
     b = workflow_setup_data["artist_booking"]
@@ -195,7 +200,7 @@ def test_invalid_status_transitions(db_session, workflow_setup_data):
         actor_id=artist_uid,
         actor_role="artist",
         action="accept",
-        target_status="accepted",
+        target_status="accepted"
     )
 
     # Try to transition back from accepted to pending (Forbidden)
@@ -206,10 +211,9 @@ def test_invalid_status_transitions(db_session, workflow_setup_data):
             actor_id=artist_uid,
             actor_role="artist",
             action="override",
-            target_status="pending",
+            target_status="pending"
         )
     assert "pending" in str(exc_info.value).lower()
-
 
 def test_business_rule_validation(db_session, workflow_setup_data):
     b = workflow_setup_data["artist_booking"]
@@ -223,7 +227,7 @@ def test_business_rule_validation(db_session, workflow_setup_data):
         actor_id=artist_uid,
         actor_role="artist",
         action="accept",
-        target_status="accepted",
+        target_status="accepted"
     )
 
     # Prevent duplicate accept
@@ -234,7 +238,7 @@ def test_business_rule_validation(db_session, workflow_setup_data):
             actor_id=artist_uid,
             actor_role="artist",
             action="accept",
-            target_status="accepted",
+            target_status="accepted"
         )
     assert "already in accepted status" in str(exc_info.value)
 
@@ -245,7 +249,7 @@ def test_business_rule_validation(db_session, workflow_setup_data):
         actor_id=client_uid,
         actor_role="client",
         action="confirm",
-        target_status="confirmed",
+        target_status="confirmed"
     )
 
     # 3. Cancel booking
@@ -256,7 +260,7 @@ def test_business_rule_validation(db_session, workflow_setup_data):
         actor_role="client",
         action="cancel",
         target_status="cancelled",
-        reason="Sick",
+        reason="Sick"
     )
     assert b.status == "cancelled"
 
@@ -268,10 +272,9 @@ def test_business_rule_validation(db_session, workflow_setup_data):
             actor_id=artist_uid,
             actor_role="artist",
             action="accept",
-            target_status="accepted",
+            target_status="accepted"
         )
     assert "Cancelled bookings cannot be modified" in str(exc_info.value)
-
 
 def test_event_date_validation_on_confirmation(db_session, workflow_setup_data):
     b = workflow_setup_data["artist_booking"]
@@ -290,7 +293,7 @@ def test_event_date_validation_on_confirmation(db_session, workflow_setup_data):
         actor_id=artist_uid,
         actor_role="artist",
         action="accept",
-        target_status="accepted",
+        target_status="accepted"
     )
 
     # Try to confirm booking with past event date -> should raise BadRequestException
@@ -301,10 +304,9 @@ def test_event_date_validation_on_confirmation(db_session, workflow_setup_data):
             actor_id=client_uid,
             actor_role="client",
             action="confirm",
-            target_status="confirmed",
+            target_status="confirmed"
         )
     assert "past event date" in str(exc_info.value).lower()
-
 
 def test_rbac_validation(db_session, workflow_setup_data):
     b = workflow_setup_data["artist_booking"]
@@ -318,10 +320,9 @@ def test_rbac_validation(db_session, workflow_setup_data):
             actor_id=unrelated_user_id,
             actor_role="artist",
             action="accept",
-            target_status="accepted",
+            target_status="accepted"
         )
     assert "Access denied" in str(exc_info.value)
-
 
 def test_timeline_and_audit_generation(db_session, workflow_setup_data):
     b = workflow_setup_data["artist_booking"]
@@ -335,7 +336,7 @@ def test_timeline_and_audit_generation(db_session, workflow_setup_data):
         actor_role="artist",
         action="accept",
         target_status="accepted",
-        reason="Good schedule",
+        reason="Good schedule"
     )
 
     # Assert timeline updated automatically
@@ -345,11 +346,7 @@ def test_timeline_and_audit_generation(db_session, workflow_setup_data):
     assert "approved" in b.timeline[1]["message"].lower()
 
     # Assert audit log created automatically
-    audit = (
-        db_session.query(BookingAuditLog)
-        .filter(BookingAuditLog.booking_id == b.id)
-        .first()
-    )
+    audit = db_session.query(BookingAuditLog).filter(BookingAuditLog.booking_id == b.id).first()
     assert audit is not None
     assert audit.action == "accept"
     assert audit.previous_status == "pending"
@@ -357,14 +354,12 @@ def test_timeline_and_audit_generation(db_session, workflow_setup_data):
     assert audit.role == "artist"
     assert audit.reason == "Good schedule"
 
-
 def test_transaction_rollback_on_database_error(db_session, workflow_setup_data):
     b = workflow_setup_data["artist_booking"]
     artist_uid = str(workflow_setup_data["artist_user"].id)
 
     # Let's mock the session add method to raise an error when the audit log is added
     original_add = db_session.add
-
     def mock_add(instance):
         if isinstance(instance, BookingAuditLog):
             raise Exception("Mock database write error")
@@ -379,7 +374,7 @@ def test_transaction_rollback_on_database_error(db_session, workflow_setup_data)
             actor_id=artist_uid,
             actor_role="artist",
             action="accept",
-            target_status="accepted",
+            target_status="accepted"
         )
     assert "Mock database write error" in str(exc_info.value)
 
@@ -389,7 +384,6 @@ def test_transaction_rollback_on_database_error(db_session, workflow_setup_data)
     # Verify that the booking status was rolled back and is still "pending"
     db_session.refresh(b)
     assert b.status == "pending"
-
 
 def test_concurrency_protection(db_session, workflow_setup_data):
     b = workflow_setup_data["artist_booking"]
@@ -402,7 +396,7 @@ def test_concurrency_protection(db_session, workflow_setup_data):
         actor_id=artist_uid,
         actor_role="artist",
         action="accept",
-        target_status="accepted",
+        target_status="accepted"
     )
     assert b.status == "accepted"
 
@@ -415,6 +409,7 @@ def test_concurrency_protection(db_session, workflow_setup_data):
             actor_id=artist_uid,
             actor_role="artist",
             action="reject",
-            target_status="rejected",
+            target_status="rejected"
         )
     assert "Invalid booking transition" in str(exc_info.value)
+

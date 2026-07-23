@@ -12,8 +12,6 @@ def send_push_notification(user_id: str, title: str, message: str) -> bool:
     Sends a push notification to a user.
     In production, this integrates with APNS/FCM.
     """
-    logger.info(
-        f"Dispatching push notification to User: {user_id} | Title: '{title}' | Msg: '{message}'"
-    )
+    logger.info(f"Dispatching push notification to User: {user_id} | Title: '{title}' | Msg: '{message}'")
     # Simulate notification delivery
     return True

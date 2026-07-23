@@ -22,11 +22,6 @@ from app.features.notifications.router import router as notifications_router
 from app.features.notifications.websocket_router import router as websocket_router
 from app.features.payment.router import router as payment_router
 from app.features.messaging.conversation.router import router as conversation_router
-from app.features.messaging.message.router import (
-    direct_message_router,
-    user_presence_router,
-)
-from app.features.marketplace.router import router as marketplace_router
 
 router = APIRouter()
 
@@ -58,9 +53,7 @@ router.include_router(reviews_router, prefix="/reviews", tags=["Reviews"])
 router.include_router(earnings_router, prefix="/earnings", tags=["Earnings"])
 
 # Register notifications feature router
-router.include_router(
-    notifications_router, prefix="/notifications", tags=["Notifications"]
-)
+router.include_router(notifications_router, prefix="/notifications", tags=["Notifications"])
 
 # Register notifications websocket router
 router.include_router(websocket_router, prefix="/ws")
@@ -69,15 +62,7 @@ router.include_router(websocket_router, prefix="/ws")
 router.include_router(payment_router, prefix="/payments", tags=["Payments"])
 
 # Register messaging conversation feature router
-router.include_router(
-    conversation_router, prefix="/conversations", tags=["Conversations"]
-)
-
-# Register direct messaging feature router
-router.include_router(direct_message_router, prefix="/messages", tags=["Messages"])
-
-# Register user presence router
-router.include_router(user_presence_router, prefix="/users", tags=["Users Presence"])
+router.include_router(conversation_router, prefix="/conversations", tags=["Conversations"])
 
 # Register admin artists feature router
 router.include_router(artists_router, prefix="/admin/artists", tags=["Admin Artists"])
@@ -86,16 +71,7 @@ router.include_router(artists_router, prefix="/admin/artists", tags=["Admin Arti
 router.include_router(venues_router, prefix="/admin/venues", tags=["Admin Venues"])
 
 # Register admin settings feature router
-router.include_router(
-    settings_router, prefix="/admin/settings", tags=["Admin Settings"]
-)
+router.include_router(settings_router, prefix="/admin/settings", tags=["Admin Settings"])
 
 # Register admin bookings feature router
-router.include_router(
-    admin_bookings_router, prefix="/admin/bookings", tags=["Admin Bookings"]
-)
-
-# Register marketplace discovery feature router
-router.include_router(
-    marketplace_router, prefix="/marketplace", tags=["Marketplace Discovery"]
-)
+router.include_router(admin_bookings_router, prefix="/admin/bookings", tags=["Admin Bookings"])

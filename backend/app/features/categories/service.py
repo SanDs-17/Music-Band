@@ -19,20 +19,14 @@ class CategoryService:
 
     def create_category(self, db: Session, data: CategoryCreate) -> Category:
         """Create a new taxonomy category. Prevents duplicate category name under same type."""
-        existing = (
-            db.query(Category)
-            .filter(
-                Category.name.ilike(data.name),
-                Category.type == data.type,
-                Category.deleted_at.is_(None),
-            )
-            .first()
-        )
+        existing = db.query(Category).filter(
+            Category.name.ilike(data.name),
+            Category.type == data.type,
+            Category.deleted_at.is_(None)
+        ).first()
 
         if existing:
-            raise ConflictException(
-                f"Category '{data.name}' already exists for type '{data.type}'."
-            )
+            raise ConflictException(f"Category '{data.name}' already exists for type '{data.type}'.")
 
         category = self.crud.create(
             db,
@@ -40,15 +34,13 @@ class CategoryService:
                 "name": data.name,
                 "type": data.type,
                 "description": data.description,
-                "is_active": data.is_active,
-            },
+                "is_active": data.is_active
+            }
         )
         logger.info(f"Category taxonomy created: {data.type} -> {data.name}")
         return category
 
-    def update_category(
-        self, db: Session, category_id: str, data: CategoryUpdate
-    ) -> Category:
+    def update_category(self, db: Session, category_id: str, data: CategoryUpdate) -> Category:
         """Updates category name, description, or activity flags."""
         category = self.crud.get(db, category_id)
         if not category or category.deleted_at is not None:
@@ -56,19 +48,13 @@ class CategoryService:
 
         # Check name uniqueness if changed
         if data.name and data.name.lower() != category.name.lower():
-            duplicate = (
-                db.query(Category)
-                .filter(
-                    Category.name.ilike(data.name),
-                    Category.type == category.type,
-                    Category.deleted_at.is_(None),
-                )
-                .first()
-            )
+            duplicate = db.query(Category).filter(
+                Category.name.ilike(data.name),
+                Category.type == category.type,
+                Category.deleted_at.is_(None)
+            ).first()
             if duplicate:
-                raise ConflictException(
-                    f"Category name '{data.name}' conflicts with existing items."
-                )
+                raise ConflictException(f"Category name '{data.name}' conflicts with existing items.")
 
         update_dict = data.model_dump(exclude_unset=True)
         updated = self.crud.update(db, db_obj=category, obj_in=update_dict)
@@ -80,6 +66,6 @@ class CategoryService:
         category = self.crud.get(db, category_id)
         if not category or category.deleted_at is not None:
             raise NotFoundException("Category not found.")
-
+        
         self.crud.remove(db, id=category_id)
         logger.info(f"Category taxonomy soft-deleted: ID {category_id}")

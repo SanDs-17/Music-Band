@@ -13,7 +13,11 @@ celery_app = Celery(
 
 # Auto-discover tasks from the tasks module
 celery_app.autodiscover_tasks(
-    packages=["app.tasks.email_tasks", "app.tasks.notification_tasks"], force=True
+    packages=[
+        "app.tasks.email_tasks",
+        "app.tasks.notification_tasks"
+    ],
+    force=True
 )
 
 celery_app.conf.update(

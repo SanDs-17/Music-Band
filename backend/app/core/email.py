@@ -4,14 +4,13 @@ from email.mime.multipart import MIMEMultipart
 from app.core.config import settings
 from loguru import logger
 
-
 class EmailService:
     @staticmethod
     def _send(to_email: str, subject: str, body: str) -> bool:
         """Central email dispatching implementation."""
         # Clean email string
         to_email = to_email.strip().lower()
-
+        
         # If in development or SMTP settings are missing, mock/log the email
         if not settings.SMTP_USER or not settings.SMTP_PASS:
             logger.info(
@@ -23,21 +22,21 @@ class EmailService:
                 f"   ---[EMAIL BODY END]---\n"
             )
             return True
-
+            
         try:
             msg = MIMEMultipart()
             msg["From"] = f"{settings.FROM_NAME} <{settings.FROM_EMAIL}>"
             msg["To"] = to_email
             msg["Subject"] = subject
             msg.attach(MIMEText(body, "plain"))
-
+            
             # Connect to SMTP
             server = smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT)
             server.starttls()
             server.login(settings.SMTP_USER, settings.SMTP_PASS)
             server.sendmail(settings.FROM_EMAIL, to_email, msg.as_string())
             server.quit()
-
+            
             logger.info(f"Email successfully dispatched via SMTP to {to_email}")
             return True
         except Exception as e:
@@ -75,9 +74,7 @@ class EmailService:
         return cls._send(to_email, subject, body)
 
     @classmethod
-    def send_booking_requested_email(
-        cls, to_email: str, booking_id: str, client_name: str, event_name: str
-    ) -> bool:
+    def send_booking_requested_email(cls, to_email: str, booking_id: str, client_name: str, event_name: str) -> bool:
         subject = f"New Booking Request: {event_name}"
         body = (
             f"Hi,\n\n"
@@ -90,9 +87,7 @@ class EmailService:
         return cls._send(to_email, subject, body)
 
     @classmethod
-    def send_booking_accepted_email(
-        cls, to_email: str, booking_id: str, artist_name: str, event_name: str
-    ) -> bool:
+    def send_booking_accepted_email(cls, to_email: str, booking_id: str, artist_name: str, event_name: str) -> bool:
         subject = f"Booking Request Approved: {event_name}"
         body = (
             f"Hi,\n\n"
@@ -105,9 +100,7 @@ class EmailService:
         return cls._send(to_email, subject, body)
 
     @classmethod
-    def send_booking_rejected_email(
-        cls, to_email: str, booking_id: str, artist_name: str, event_name: str
-    ) -> bool:
+    def send_booking_rejected_email(cls, to_email: str, booking_id: str, artist_name: str, event_name: str) -> bool:
         subject = f"Booking Request Declined: {event_name}"
         body = (
             f"Hi,\n\n"
@@ -120,9 +113,7 @@ class EmailService:
         return cls._send(to_email, subject, body)
 
     @classmethod
-    def send_booking_confirmed_email(
-        cls, to_email: str, booking_id: str, event_name: str
-    ) -> bool:
+    def send_booking_confirmed_email(cls, to_email: str, booking_id: str, event_name: str) -> bool:
         subject = f"Booking Confirmed: {event_name}"
         body = (
             f"Hi,\n\n"
@@ -135,9 +126,7 @@ class EmailService:
         return cls._send(to_email, subject, body)
 
     @classmethod
-    def send_event_reminder_email(
-        cls, to_email: str, booking_id: str, event_name: str, date: str
-    ) -> bool:
+    def send_event_reminder_email(cls, to_email: str, booking_id: str, event_name: str, date: str) -> bool:
         subject = f"Upcoming Event Reminder: {event_name}"
         body = (
             f"Hi,\n\n"

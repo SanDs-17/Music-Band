@@ -9,15 +9,14 @@ from fastapi import UploadFile
 from app.core.config import settings
 from app.utils.image_upload import upload_file_generic
 
-
 class BaseStorage(ABC):
     """Abstract storage class outlining core storage contract operations."""
-
+    
     @abstractmethod
     async def upload(self, file: UploadFile, subfolder: str) -> str:
         """Upload a file to the active storage backend. Returns public url or file path."""
         pass
-
+    
     @abstractmethod
     def delete(self, path: str) -> bool:
         """Delete a file from the active storage backend."""
@@ -26,15 +25,13 @@ class BaseStorage(ABC):
 
 class S3Storage(BaseStorage):
     """Storage client configured for AWS S3 backend."""
-
     def __init__(self):
         import boto3
-
         self.client = boto3.client(
             "s3",
             aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
             aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-            region_name=settings.AWS_REGION,
+            region_name=settings.AWS_REGION
         )
         self.bucket = settings.AWS_BUCKET_NAME
 
@@ -42,9 +39,7 @@ class S3Storage(BaseStorage):
         return await upload_file_generic(file, subfolder)
 
     def delete(self, path: str) -> bool:
-        key = path.replace(
-            f"https://{self.bucket}.s3.{settings.AWS_REGION}.amazonaws.com/", ""
-        )
+        key = path.replace(f"https://{self.bucket}.s3.{settings.AWS_REGION}.amazonaws.com/", "")
         try:
             self.client.delete_object(Bucket=self.bucket, Key=key)
             return True
@@ -54,7 +49,6 @@ class S3Storage(BaseStorage):
 
 class LocalStorage(BaseStorage):
     """Storage client configured for local directory writes."""
-
     async def upload(self, file: UploadFile, subfolder: str) -> str:
         return await upload_file_generic(file, subfolder)
 

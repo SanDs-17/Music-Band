@@ -8,23 +8,20 @@ from app.features.earnings.service import earnings_service
 
 router = APIRouter(tags=["Earnings"])
 
-
 @router.get(
     "/artist",
     response_model=SuccessResponse[EarningsSummaryResponse],
     status_code=status.HTTP_200_OK,
-    summary="Get earnings wallet balance, monthly performance and transactions for performer",
+    summary="Get earnings wallet balance, monthly performance and transactions for performer"
 )
 async def get_artist_earnings_feed(
     current_user_claims: dict = Depends(get_current_artist),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db)
 ):
     """
     Retrieves wallet balances, total income, pending deposits, performance charts, and transaction ledger.
     """
-    summary = earnings_service.get_artist_earnings_summary(
-        db, current_user_claims["sub"]
-    )
+    summary = earnings_service.get_artist_earnings_summary(db, current_user_claims["sub"])
     return SuccessResponse(
         success=True,
         data={
@@ -34,9 +31,9 @@ async def get_artist_earnings_feed(
             "pending_payments": summary["pending_payments"],
             "completed_payments": summary["completed_payments"],
             "revenue_chart": summary["revenue_chart"],
-            "transactions": [_format_tx(tx) for tx in summary["transactions"]],
+            "transactions": [_format_tx(tx) for tx in summary["transactions"]]
         },
-        message="Artist earnings dashboard metrics retrieved.",
+        message="Artist earnings dashboard metrics retrieved."
     )
 
 
@@ -44,18 +41,16 @@ async def get_artist_earnings_feed(
     "/venue",
     response_model=SuccessResponse[EarningsSummaryResponse],
     status_code=status.HTTP_200_OK,
-    summary="Get earnings wallet balance, monthly performance and transactions for venue owner",
+    summary="Get earnings wallet balance, monthly performance and transactions for venue owner"
 )
 async def get_venue_earnings_feed(
     current_user_claims: dict = Depends(get_current_venue_owner),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db)
 ):
     """
     Retrieves wallet balances, total income, pending deposits, performance charts, and transaction ledger.
     """
-    summary = earnings_service.get_venue_earnings_summary(
-        db, current_user_claims["sub"]
-    )
+    summary = earnings_service.get_venue_earnings_summary(db, current_user_claims["sub"])
     return SuccessResponse(
         success=True,
         data={
@@ -65,9 +60,9 @@ async def get_venue_earnings_feed(
             "pending_payments": summary["pending_payments"],
             "completed_payments": summary["completed_payments"],
             "revenue_chart": summary["revenue_chart"],
-            "transactions": [_format_tx(tx) for tx in summary["transactions"]],
+            "transactions": [_format_tx(tx) for tx in summary["transactions"]]
         },
-        message="Venue earnings dashboard metrics retrieved.",
+        message="Venue earnings dashboard metrics retrieved."
     )
 
 
@@ -79,5 +74,5 @@ def _format_tx(tx) -> dict:
         "type": tx.type,
         "status": tx.status,
         "description": tx.description,
-        "created_at": tx.created_at.isoformat(),
+        "created_at": tx.created_at.isoformat()
     }

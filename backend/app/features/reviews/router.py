@@ -185,22 +185,6 @@ def get_public_venue_reviews(
     )
 
 
-@router.get("/public/artist/{artist_id}", status_code=status.HTTP_200_OK)
-def get_public_artist_reviews(
-    artist_id: UUID,
-    rating: Optional[int] = Query(None),
-    search: Optional[str] = Query(None),
-    db: Session = Depends(get_db),
-):
-    res = review_service.get_artist_reviews_summary(
-        db, artist_id=artist_id, rating_filter=rating, search_query=search
-    )
-    return success_response(
-        data=res.model_dump(mode="json"),
-        message="Public artist reviews retrieved successfully",
-    )
-
-
 @router.get("/statistics", status_code=status.HTTP_200_OK)
 def get_reviews_statistics(db: Session = Depends(get_db)):
     res = review_service.get_admin_analytics(db)
@@ -473,14 +457,6 @@ def get_moderation_dashboard_stats(
     return success_response(
         data=stats.model_dump(mode="json"),
         message="Moderation dashboard statistics retrieved",
-    )
-
-
-@router.get("/profile/{user_id}", status_code=status.HTTP_200_OK)
-def get_profile_review_analytics(user_id: UUID, db: Session = Depends(get_db)):
-    res = review_service.get_profile_analytics(db, target_id=user_id)
-    return success_response(
-        data=res.model_dump(mode="json"), message="Profile review analytics retrieved"
     )
 
 

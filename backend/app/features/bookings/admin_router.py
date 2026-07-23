@@ -35,7 +35,9 @@ async def list_admin_bookings(
     """
     Audit query returning all bookings created on the platform with pagination and status filters.
     """
-    results, total = booking_service.get_all_bookings(db, status, search, page, limit)
+    results, total = booking_service.get_all_bookings(
+        db, status, search, page, limit
+    )
     return SuccessResponse(
         success=True,
         data={
