@@ -1,0 +1,312 @@
+{
+  "counts": {
+    "frontend_calls": 57,
+    "backend_endpoints": 94,
+    "mappings": 57,
+    "duplicates": 22,
+    "unused_backend": 66,
+    "missing": 6
+  },
+  "duplicates": {
+    "/activities": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\activities\\activities.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\activities\\activities.py"
+      }
+    ],
+    "/courses": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\courses\\courses.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\courses\\courses.py"
+      }
+    ],
+    "/courses/{course_id}": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\courses\\courses.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\courses\\courses.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\courses\\courses.py"
+      }
+    ],
+    "/courses/{course_id}/registrations": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\courses\\courses.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\courses\\courses.py"
+      }
+    ],
+    "/course-registrations/{registration_id}": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\courses\\courses.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\courses\\courses.py"
+      }
+    ],
+    "/groups/{group_id}/events": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\events\\events.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\events\\events.py"
+      }
+    ],
+    "/events/{event_id}": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\events\\events.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\events\\events.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\events\\events.py"
+      }
+    ],
+    "/fundraising": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\fundraising\\fundraising.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\fundraising\\fundraising.py"
+      }
+    ],
+    "/games": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\games\\games.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\games\\games.py"
+      }
+    ],
+    "/games/{game_id}": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\games\\games.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\games\\games.py"
+      }
+    ],
+    "/groups": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\groups\\groups.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\groups\\groups.py"
+      }
+    ],
+    "/groups/{group_id}": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\groups\\groups.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\groups\\groups.py"
+      }
+    ],
+    "/groups/{group_id}/members": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\groups\\groups.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\groups\\groups.py"
+      }
+    ],
+    "/matches": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\matches\\matches.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\matches\\matches.py"
+      }
+    ],
+    "/matches/{match_id}": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\matches\\matches.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\matches\\matches.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\matches\\matches.py"
+      }
+    ],
+    "/matches/{match_id}/events": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\matches\\matches.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\matches\\matches.py"
+      }
+    ],
+    "/signup-forms": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\onboarding\\onboarding.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\onboarding\\onboarding.py"
+      }
+    ],
+    "/signup-submissions": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\onboarding\\onboarding.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\onboarding\\onboarding.py"
+      }
+    ],
+    "/payments": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\payments\\payments.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\payments\\payments.py"
+      }
+    ],
+    "/payments/{payment_id}": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\payments\\payments.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\payments\\payments.py"
+      }
+    ],
+    "/venues": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\venues\\venues.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\venues\\venues.py"
+      }
+    ],
+    "/venues/{venue_id}/slots": [
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\venues\\venues.py"
+      },
+      {
+        "method": "VAR",
+        "file": "backend\\app\\api\\venues\\venues.py"
+      }
+    ]
+  },
+  "unused_backend": [
+    "/activities/{activity_id}/rsvp",
+    "/activities/{activity_id}/cancel-rsvp",
+    "/activities/{activity_id}",
+    "/activities/{activity_id}/cancel",
+    "/register",
+    "/verify",
+    "/user/register",
+    "/courses/{course_id}",
+    "/courses/{course_id}/registrations",
+    "/course-registrations/{registration_id}",
+    "/dashboard/overview",
+    "/dashboard/coach",
+    "/debug/overview",
+    "/groups/{group_id}/events",
+    "/events",
+    "/events/{event_id}",
+    "/events/{event_id}/invite",
+    "/events/{event_id}/respond",
+    "/events/{event_id}/register-guest",
+    "/events/{event_id}/attendance",
+    "/events/{event_id}/participants",
+    "/events/{event_id}/message",
+    "/events/{event_id}/send-reminder",
+    "/members/registrations",
+    "/fundraising/{campaign_id}",
+    "/fundraising/{campaign_id}/donate",
+    "/fundraising/{campaign_id}/initiate-donation",
+    "/fundraising/{campaign_id}/complete-donation",
+    "/users/{user_id}/games",
+    "/games/{game_id}/join",
+    "/games/{game_id}/join-requests/{request_id}/respond",
+    "/games/{game_id}/waitlist",
+    "/games/{game_id}/players/me",
+    "/games/{game_id}",
+    "/groups/{group_id}",
+    "/groups/{group_id}/members",
+    "/groups/{group_id}/members/import",
+    "/matches",
+    "/matches/{match_id}",
+    "/matches/{match_id}/score",
+    "/matches/{match_id}/events",
+    "/messages",
+    "/messages/group/{group_id}",
+    "/messages/dm/{recipient_id}",
+    "/messages/partners",
+    "/signup-forms/{role}",
+    "/signup-submissions/{submission_id}",
+    "/signup-submissions/{submission_id}/approve",
+    "/payments/{payment_id}",
+    "/venues/{venue_id}/slots",
+    "/bookings",
+    "/venues/owner/{owner_id}",
+    "/venues/{venue_id}/block-slots",
+    "/venues/{venue_id}/unblock-slots",
+    "/venues/{venue_id}/payouts",
+    "/venues/{venue_id}/analytics",
+    "/venues/{venue_id}/courts",
+    "/venues/{venue_id}/reviews",
+    "/bookings/{booking_id}/approve",
+    "/bookings/{booking_id}/reject",
+    "/bookings/{booking_id}/cancel",
+    "/users/{user_id}/bookings",
+    "/bookings/{booking_id}",
+    "/venue-owner/{owner_id}/venues",
+    "/venues/{venue_id}",
+    "/bookings/venue-owner/{owner_id}"
+  ]
+}

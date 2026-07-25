@@ -1,0 +1,218 @@
+/* ─── Event Section (inside dashboard) ──────────── */
+/* Uses design tokens from dashboard.css */
+
+.event-section {
+    width: 100%;
+}
+
+.event-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.event-top span {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--text-primary, #f4f4f5);
+}
+
+.event-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.event-controls select {
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary, #94a3b8);
+    font-size: 13px;
+    font-family: "Outfit", sans-serif;
+    color-scheme: dark;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 14px;
+    padding-right: 30px;
+}
+
+.event-controls select:hover {
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+.create-event-btn {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #c6ff3d, #c6ff3d);
+    color: white;
+    border-radius: 9px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 13px;
+    font-family: "Outfit", sans-serif;
+    box-shadow: 0 4px 14px rgba(198, 255, 61, 0.3);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.create-event-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(198, 255, 61, 0.45);
+}
+
+.loading-box {
+    padding: 40px;
+    text-align: center;
+    color: var(--text-secondary, rgba(148, 163, 184, 0.6));
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.07));
+    font-size: 14px;
+}
+
+.events-list {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 14px;
+}
+
+/* ─── Mini Event Item ─────────────────────────────── */
+.event-item {
+    padding: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 14px;
+    background: rgba(20, 20, 31, 0.8);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.event-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #c6ff3d, #c6ff3d, #d9ff6e);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.event-item:hover {
+    transform: translateY(-4px);
+    border-color: rgba(198, 255, 61, 0.25);
+    box-shadow:
+        0 12px 36px rgba(0, 0, 0, 0.55),
+        0 0 24px rgba(198, 255, 61, 0.06);
+}
+
+.event-item:hover::before {
+    opacity: 1;
+}
+
+.event-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.event-item-title h4 {
+    margin: 0;
+    color: #f4f4f5;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.event-item-group {
+    font-size: 0.78rem;
+    color: rgba(148, 163, 184, 0.5);
+    margin-top: 2px;
+}
+
+.event-type-badge {
+    font-size: 10px;
+    padding: 3px 9px;
+    background: rgba(198, 255, 61, 0.12);
+    border: 1px solid rgba(198, 255, 61, 0.2);
+    border-radius: 12px;
+    color: #d9ff6e;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+.event-detail {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(148, 163, 184, 0.55);
+    font-size: 0.85rem;
+    margin-top: 2px;
+}
+
+/* ─── Empty Box ──────────────────────────────────── */
+.empty-box {
+    text-align: center;
+    padding: 48px 32px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 16px;
+    border: 1.5px dashed rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.empty-box svg {
+    width: 48px;
+    height: 48px;
+    stroke: rgba(198, 255, 61, 0.3);
+    fill: none;
+    stroke-width: 1.5;
+    margin-bottom: 4px;
+}
+
+.empty-box h2 {
+    font-size: 1.2rem;
+    margin: 0;
+    color: #f4f4f5;
+    font-weight: 700;
+}
+
+.empty-box p {
+    color: rgba(148, 163, 184, 0.55);
+    margin: 0;
+    font-size: 14px;
+}
+
+.manage-events-link {
+    margin-top: 16px;
+    padding: 10px 22px;
+    background: linear-gradient(135deg, #c6ff3d, #c6ff3d);
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 13px;
+    box-shadow: 0 4px 14px rgba(198, 255, 61, 0.3);
+    transition: all 0.2s ease;
+}
+
+.manage-events-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(198, 255, 61, 0.45);
+}
