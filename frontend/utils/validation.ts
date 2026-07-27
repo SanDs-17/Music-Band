@@ -71,7 +71,7 @@ export const artistRegisterSchema = z.object({
     drums: z.boolean().default(false),
     lighting: z.boolean().default(false),
     dj_console: z.boolean().default(false),
-  }).default({}),
+  }).partial().default({}),
 
   // Step 6: Media
   gallery: z.array(z.string()).default([]),
@@ -87,7 +87,7 @@ export const artistRegisterSchema = z.object({
     })).default({}),
     holidays: z.array(z.string()).default([]),
     blocked_dates: z.array(z.string()).default([]),
-  }).default({}),
+  }).partial().default({}),
 
   // Step 8: Terms
   acceptTerms: z.boolean().refine((val) => val === true, {
@@ -125,7 +125,7 @@ export const artistProfileUpdateSchema = z.object({
     drums: z.boolean().default(false),
     lighting: z.boolean().default(false),
     dj_console: z.boolean().default(false),
-  }).default({}),
+  }).partial().default({}),
   languages: z.array(z.string()).min(1, "Select at least one language"),
   genres: z.array(z.string()).min(1, "Select at least one genre"),
   social_links: z.object({
@@ -133,7 +133,7 @@ export const artistProfileUpdateSchema = z.object({
     facebook: z.string().optional().default(""),
     twitter: z.string().optional().default(""),
     website: z.string().optional().default(""),
-  }).default({}),
+  }).partial().default({}),
   achievements: z.array(z.string()).default([]),
 });
 

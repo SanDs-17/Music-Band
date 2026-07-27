@@ -193,6 +193,41 @@ class BookingService:
         logger.info(f"Booking request {booking.id} cancelled by user {user_id}")
         return booking
 
+    def complete_booking(self, db: Session, user_id: str, booking_id: UUID) -> Booking:
+        booking = booking_crud.get(db, booking_id)
+        if not booking:
+            raise NotFoundException("Booking request not found.")
+
+        artist = self.artist_crud.get_by_user_id(db, user_id)
+        is_client = str(booking.client_id) == user_id
+        is_artist = artist and booking.artist_profile_id == artist.id
+        if not is_client and not is_artist:
+            raise BadRequestException("Access denied to complete this booking request.")
+
+        if booking.status not in ["accepted", "confirmed"]:
+            raise BadRequestException(f"Cannot mark booking as completed: Current status is {booking.status}.")
+
+        total_amount = float(getattr(booking, "total_price", 0.0) or getattr(booking, "total_amount", 0.0) or 0.0)
+        commission = round(total_amount * 0.10, 2)
+        net_payout = round(total_amount - commission, 2)
+
+        now_str = datetime.utcnow().isoformat()
+        timeline = list(booking.timeline or [])
+        timeline.append({
+            "status": "completed",
+            "timestamp": now_str,
+            "by": "client" if is_client else "artist",
+            "message": f"Event concluded and booking completed. Platform commission (10%): ₹{commission}, Net Payout: ₹{net_payout}."
+        })
+
+        booking.status = "completed"
+        booking.timeline = timeline
+        db.add(booking)
+        db.commit()
+        db.refresh(booking)
+        logger.info(f"Booking request {booking.id} completed by user {user_id}. Commission: {commission}, Net Payout: {net_payout}")
+        return booking
+
     def get_venue_profile(self, db: Session, user_id: str):
         from app.features.venues.crud import VenueCRUD
         venues = VenueCRUD().get_by_user_id(db, user_id)

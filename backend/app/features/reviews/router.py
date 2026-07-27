@@ -3,12 +3,13 @@ from sqlalchemy.orm import Session
 from uuid import UUID
 from typing import Optional
 from app.core.database import get_db
-from app.core.dependencies import get_current_artist, get_current_venue_owner
+from app.core.dependencies import get_current_artist, get_current_venue_owner, get_current_client
 from app.common.schemas.base import SuccessResponse
 from app.features.reviews.schemas import (
     ReviewSummaryResponse,
     ReviewDetailsResponse,
-    ReviewReplyRequest
+    ReviewReplyRequest,
+    ReviewCreateRequest
 )
 from app.features.reviews.service import review_service
 
@@ -67,6 +68,31 @@ async def reply_to_customer_review(
         success=True,
         data=_format_review(review),
         message="Review reply updated."
+    )
+
+
+@router.post(
+    "/artist/{artist_id}",
+    response_model=SuccessResponse[ReviewDetailsResponse],
+    status_code=status.HTTP_201_CREATED,
+    summary="Post a rating and review for an artist (Client only)"
+)
+async def post_artist_review(
+    artist_id: UUID,
+    data: ReviewCreateRequest,
+    current_user_claims: dict = Depends(get_current_client),
+    db: Session = Depends(get_db)
+):
+    """
+    Submits a review and rating (1-5 stars) for a performer. Automatically recalculates the artist profile average rating.
+    """
+    review = review_service.create_artist_review(
+        db, UUID(current_user_claims["sub"]), artist_id, data.rating, data.comment
+    )
+    return SuccessResponse(
+        success=True,
+        data=_format_review(review),
+        message="Artist review created successfully."
     )
 
 

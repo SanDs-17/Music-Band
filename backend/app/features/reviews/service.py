@@ -62,9 +62,31 @@ class ReviewService:
         avg_rating, _, _ = review_crud.get_summary(db, artist_id)
         artist = self.artist_crud.get(db, artist_id)
         if artist:
-            artist.rating = avg_rating
+            artist.rating = round(avg_rating, 1)
             db.add(artist)
             db.commit()
+
+    def create_artist_review(self, db: Session, client_id: UUID, artist_id: UUID, rating: int, comment: str) -> Review:
+        artist = self.artist_crud.get(db, artist_id)
+        if not artist:
+            raise NotFoundException("Artist profile not found.")
+        
+        review = Review(
+            client_id=client_id,
+            artist_profile_id=artist_id,
+            rating=rating,
+            comment=comment,
+            created_at=datetime.utcnow()
+        )
+        db.add(review)
+        db.commit()
+        db.refresh(review)
+        
+        # Proactively update overall artist rating score
+        self._update_artist_average_rating(db, artist_id)
+        
+        logger.info(f"Client user {client_id} created review for artist profile {artist_id}")
+        return review
 
     def get_venue_profile(self, db: Session, user_id: str):
         from app.features.venues.crud import VenueCRUD

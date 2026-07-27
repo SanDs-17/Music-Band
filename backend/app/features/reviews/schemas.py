@@ -29,3 +29,9 @@ class ReviewSummaryResponse(BaseSchema):
 
 class ReviewReplyRequest(BaseSchema):
     reply_comment: str
+
+
+class ReviewCreateRequest(BaseSchema):
+    rating: int
+    comment: str
+

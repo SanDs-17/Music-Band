@@ -162,6 +162,24 @@ async def cancel_booking_request(
         message="Booking request cancelled."
     )
 
+@router.put(
+    "/{booking_id}/complete",
+    response_model=SuccessResponse[BookingResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Mark an artist booking as completed (releases escrow payout minus 10% commission)"
+)
+async def complete_booking_request(
+    booking_id: UUID,
+    current_user_claims: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    booking = booking_service.complete_booking(db, current_user_claims["sub"], booking_id)
+    return SuccessResponse(
+        success=True,
+        data=_format_booking(booking),
+        message="Booking request marked as completed successfully."
+    )
+
 
 @router.get(
     "/venue",
