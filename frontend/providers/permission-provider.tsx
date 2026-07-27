@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuthStore } from "@/store/auth-store";
 
 interface PermissionContextType {
   permissions: string[];
@@ -14,14 +14,12 @@ interface PermissionContextType {
 const PermissionContext = React.createContext<PermissionContextType | null>(null);
 
 export function PermissionProvider({ children }: { children: React.ReactNode }) {
-  const { accessToken, user, isLoading: authLoading } = useAuth();
+  const { accessToken, user } = useAuthStore();
   const [permissions, setPermissions] = React.useState<string[]>([]);
   const [roles, setRoles] = React.useState<string[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
-    if (authLoading) return;
-
     if (!accessToken || !user) {
       setPermissions([]);
       setRoles([]);
@@ -51,7 +49,7 @@ export function PermissionProvider({ children }: { children: React.ReactNode }) 
     } finally {
       setIsLoading(false);
     }
-  }, [accessToken, user, authLoading]);
+  }, [accessToken, user]);
 
   const hasPermission = React.useCallback(
     (permission: string) => {
@@ -74,7 +72,7 @@ export function PermissionProvider({ children }: { children: React.ReactNode }) 
         roles,
         hasPermission,
         hasRole,
-        isLoading: authLoading || isLoading,
+        isLoading,
       }}
     >
       {children}
